@@ -1,10 +1,12 @@
 #include <iostream>
-#include <vector>
 #include <unordered_set>
 #include <queue>
 #include <cmath>
 #include <limits>
 #include <algorithm>
+#include <fstream>
+#include <vector>
+#include <cassert>
 
 using namespace std;
 
@@ -13,6 +15,91 @@ struct Node {
     vector<double> coords;               //coordinates
     vector<Node*> neighbors;           //out-neighbors
 };
+
+vector<vector<int>> ivecs_read(const string& filename, int a = 1, int b = -1) {
+    ifstream file(filename, ios::binary);
+    
+    if (!file.is_open()) {
+        cerr << "Error: Unable to open file " << filename << endl;
+        return {};
+    }
+
+    // Read the dimension of the vectors
+    int d;
+    file.read(reinterpret_cast<char*>(&d), sizeof(int));
+
+    // Calculate the size of each vector in bytes
+    int vecsizeof = 1 * sizeof(int) + d * sizeof(int); // 4 bytes for dimension + d * 4 bytes for vector components
+
+    // Move to the end of the file to find how many vectors are in the file
+    file.seekg(0, ios::end);
+    streampos fileSize = file.tellg();
+    int bmax = fileSize / vecsizeof;
+
+    if (b == -1) {
+        b = bmax;
+    }
+
+    if (a < 1 || b > bmax || b < a) {
+        cerr << "Error: Invalid bounds" << endl;
+        return {};
+    }
+
+    // Go to the position of the first vector to read
+    file.seekg((a - 1) * vecsizeof, ios::beg);
+
+    // Prepare the output vector
+    vector<vector<int>> vectors(b - a + 1, vector<int>(d));
+
+    for (int i = 0; i < b - a + 1; ++i) {
+        // Read the dimension (should be the same for all vectors)
+        int dim;
+        file.read(reinterpret_cast<char*>(&dim), sizeof(int));
+        assert(dim == d); // Ensure all vectors have the same dimension
+
+        // Read the vector components
+        file.read(reinterpret_cast<char*>(vectors[i].data()), d * sizeof(int));
+    }
+
+    file.close();
+    return vectors;
+}
+
+
+vector<vector<float>> read_fvecs(const string &filename, size_t num_vectors = 0) {
+    ifstream file(filename, ios::binary);
+    if (!file) {
+        throw runtime_error("Unable to open file " + filename);
+    }
+
+    int d;
+    // Διαβάζουμε τη διάσταση του πρώτου διανύσματος
+    file.read(reinterpret_cast<char*>(&d), sizeof(int));
+    
+    // Υπολογίζουμε το μέγεθος ενός διανύσματος
+    size_t vec_size = d * sizeof(float);
+
+    // Πάμε στο τέλος για να δούμε πόσα διανύσματα υπάρχουν αν δεν έχει δοθεί το πλήθος
+    if (num_vectors == 0) {
+        file.seekg(0, ios::end);
+        size_t file_size = file.tellg();
+        num_vectors = file_size / (sizeof(int) + vec_size);
+        file.seekg(0, ios::beg);
+    }
+
+    vector<vector<float>> vectors(num_vectors, vector<float>(d));
+
+    // Για κάθε διάνυσμα
+    for (size_t i = 0; i < num_vectors; ++i) {
+        file.read(reinterpret_cast<char*>(&d), sizeof(int));  // Ξαναδιαβάζουμε τη διάσταση
+        file.read(reinterpret_cast<char*>(vectors[i].data()), vec_size);  // Διαβάζουμε το διάνυσμα
+    }
+
+    file.close();
+    return vectors;
+}
+
+
 
 // Distance between two nodes (using Euclidean distance)
 double calculate_distance(const Node* a, const Node* b) {
@@ -90,109 +177,45 @@ vector<Node*> GreedySearch(Node* s, const Node* x_q, int k, int l) {
 
 
 int main() {
-    // Test 1: Small graph, close neighbors
-    cout << "Test 1: Small graph, close neighbors\n";
-    Node node1 = {1, {0.0, 0.0}};
-    Node node2 = {2, {1.0, 1.0}};
-    Node node3 = {3, {2.0, 2.0}};
-    Node node4 = {4, {3.0, 3.0}};
-    Node node5 = {5, {4.0, 4.0}};
-    node1.neighbors = {&node2, &node3};
-    node2.neighbors = {&node1, &node3};
-    node3.neighbors = {&node2, &node4};
-    node4.neighbors = {&node3, &node5};
-    node5.neighbors = {&node4};
+    try {
+        // Read the fvecs dataset
+        auto fvectors = read_fvecs("siftsmall/siftsmall_base.fvecs");
+        cout << "Read " << fvectors.size() << " vectors from the fvecs file.\n";
 
-    Node x_q1 = {6, {3.5, 3.5}};
-    vector<Node*> result1 = GreedySearch(&node1, &x_q1, 3, 4);
+        // Create a list of nodes from the vectors
+        vector<Node> nodes(fvectors.size());
+        for (size_t i = 0; i < fvectors.size(); ++i) {
+            nodes[i].id = i;
+            nodes[i].coords.resize(fvectors[i].size());
+            copy(fvectors[i].begin(), fvectors[i].end(), nodes[i].coords.begin());
+        }
 
-    cout << "Result for Test 1: \n";
-    for (Node* node : result1) {
-        cout << "Node ID: " << node->id << endl;
-    }
+        // For testing, let's connect each node to its next node as a neighbor
+        for (size_t i = 0; i < nodes.size() - 1; ++i) {
+            nodes[i].neighbors.push_back(&nodes[i + 1]);
+        }
 
-    // Test 2: Larger, sparse graph
-    cout << "\nTest 2: Larger, sparse graph\n";
-    Node node6 = {6, {10.0, 10.0}};
-    Node node7 = {7, {15.0, 15.0}};
-    node1.neighbors = {&node2, &node3};
-    node3.neighbors = {&node4};
-    node4.neighbors = {&node5};
-    node5.neighbors = {&node6};
-    node6.neighbors = {&node7};
+        // Use the first node as the start and the last node as the query node
+        Node* start_node = &nodes[0];
+        Node* query_node = &nodes.back();
 
-    Node x_q2 = {8, {12.0, 12.0}};
-    vector<Node*> result2 = GreedySearch(&node1, &x_q2, 2, 3);
-    cout << "Result for Test 2: \n";
-    for (Node* node : result2) {
-        cout << "Node ID: " << node->id << endl;
-    }
+        // Run the GreedySearch algorithm
+        int k = 5; // Number of closest neighbors to find
+        int l = 10; // Limit on the search list size
+        vector<Node*> closest_neighbors = GreedySearch(start_node, query_node, k, l);
 
-    // Test 3: Far-away query point
-    cout << "\nTest 3: Query point far away from nodes\n";
-    Node x_q3 = {9, {100.0, 100.0}};
-    vector<Node*> result3 = GreedySearch(&node1, &x_q3, 2, 3);
-    cout << "Result for Test 3: \n";
-    for (Node* node : result3) {
-        cout << "Node ID: " << node->id << endl;
-    }
+        // Print out the result
+        cout << "Found " << closest_neighbors.size() << " closest neighbors:\n";
+        for (const auto* neighbor : closest_neighbors) {
+            cout << "Node ID: " << neighbor->id << ", Coordinates: ";
+            for (double coord : neighbor->coords) {
+                cout << coord << " ";
+            }
+            cout << endl;
+        }
 
-    // Test 4: Tight search limit
-    cout << "\nTest 4: Tight search list limit L\n";
-    Node x_q4 = {10, {2.5, 2.5}};
-    vector<Node*> result4 = GreedySearch(&node1, &x_q4, 2, 1); // Limit L to 1
-    cout << "Result for Test 4: \n";
-    for (Node* node : result4) {
-        cout << "Node ID: " << node->id << endl;
-    }
-
-      // Test 3: Higher dimensions (3D coordinates)
-    cout << "\nTest 3: 3D graph nodes\n";
-    Node node11 = {11, {1.0, 1.0, 1.0}};
-    Node node12 = {12, {2.0, 2.0, 2.0}};
-    Node node13 = {13, {3.0, 3.0, 3.0}};
-    Node node14 = {14, {4.0, 4.0, 4.0}};
-    Node node15 = {15, {5.0, 5.0, 5.0}};
-    node11.neighbors = {&node12, &node13};
-    node12.neighbors = {&node11, &node13};
-    node13.neighbors = {&node12, &node14};
-    node14.neighbors = {&node13, &node15};
-    node15.neighbors = {&node14};
-
-    Node x_q3 = {16, {3.5, 3.5, 3.5}};
-    vector<Node*> result3 = GreedySearch(&node11, &x_q3, 3, 4);
-    cout << "Result for Test 3: \n";
-    for (Node* node : result3) {
-        cout << "Node ID: " << node->id << endl;
-    }
-
-    // Test 4: Larger, more complex graph with more neighbors
-    cout << "\nTest 4: Larger graph with more neighbors\n";
-    Node node16 = {16, {6.0, 6.0}};
-    Node node17 = {17, {7.0, 7.0}};
-    Node node18 = {18, {8.0, 8.0}};
-    Node node19 = {19, {9.0, 9.0}};
-    Node node20 = {20, {10.0, 10.0}};
-    node15.neighbors = {&node16, &node17};
-    node16.neighbors = {&node15, &node18};
-    node17.neighbors = {&node18};
-    node18.neighbors = {&node19};
-    node19.neighbors = {&node20};
-    
-    Node x_q4 = {21, {9.5, 9.5}};
-    vector<Node*> result4 = GreedySearch(&node11, &x_q4, 5, 6);
-    cout << "Result for Test 4: \n";
-    for (Node* node : result4) {
-        cout << "Node ID: " << node->id << endl;
-    }
-
-    // Test 5: Query node far outside network
-    cout << "\nTest 5: Far away node\n";
-    Node x_q5 = {22, {100.0, 100.0}};
-    vector<Node*> result5 = GreedySearch(&node1, &x_q5, 3, 5);
-    cout << "Result for Test 5: \n";
-    for (Node* node : result5) {
-        cout << "Node ID: " << node->id << endl;
+    } catch (const exception &e) {
+        cerr << "Error: " << e.what() << endl;
     }
 
     return 0;
