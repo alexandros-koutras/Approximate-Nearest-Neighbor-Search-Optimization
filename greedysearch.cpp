@@ -7,6 +7,7 @@
 #include <fstream>
 #include <vector>
 #include <cassert>
+#include <cstdlib>  // For rand() and srand()
 
 using namespace std;
 
@@ -66,37 +67,63 @@ vector<vector<int>> ivecs_read(const string& filename, int a = 1, int b = -1) {
 }
 
 
-vector<vector<float>> read_fvecs(const string &filename, size_t num_vectors = 0) {
-    ifstream file(filename, ios::binary);
-    if (!file) {
-        throw runtime_error("Unable to open file " + filename);
+// Function to read .fvecs file
+vector<Node*> load_vecs(const string& filename) {
+    ifstream input(filename, ios::binary);
+    if (!input) {
+        cerr << "Could not open file: " << filename << endl;
+        exit(1);
     }
 
-    int d;
-    // Διαβάζουμε τη διάσταση του πρώτου διανύσματος
-    file.read(reinterpret_cast<char*>(&d), sizeof(int));
-    
-    // Υπολογίζουμε το μέγεθος ενός διανύσματος
-    size_t vec_size = d * sizeof(float);
+    vector<Node*> nodes;
+    while (true) {
+        //  Read dimensions
+        int d;
+        if (!input.read(reinterpret_cast<char*>(&d), sizeof(int))) {
+            if (input.eof()) break;  
+            cerr << "Error reading dimensions from file." << endl;
+            break;
+        }
+        
+        Node* node = new Node();
+        node->coords.resize(d);
+        for (int i = 0; i < d; ++i) {
+            //  Read each coordinate
+            float value;
+            if (!input.read(reinterpret_cast<char*>(&value), sizeof(float))) {
+                cerr << "Error reading coordinates from file." << endl;
+                break;
+            }
+            node->coords[i] = value;
+            cout << "Value " << i << ": " << value << endl;
 
-    // Πάμε στο τέλος για να δούμε πόσα διανύσματα υπάρχουν αν δεν έχει δοθεί το πλήθος
-    if (num_vectors == 0) {
-        file.seekg(0, ios::end);
-        size_t file_size = file.tellg();
-        num_vectors = file_size / (sizeof(int) + vec_size);
-        file.seekg(0, ios::beg);
+        }
+        node->id = nodes.size();  // Assign node ID sequentially
+        nodes.push_back(node);
     }
+    input.close();
 
-    vector<vector<float>> vectors(num_vectors, vector<float>(d));
+    return nodes;
+}
 
-    // Για κάθε διάνυσμα
-    for (size_t i = 0; i < num_vectors; ++i) {
-        file.read(reinterpret_cast<char*>(&d), sizeof(int));  // Ξαναδιαβάζουμε τη διάσταση
-        file.read(reinterpret_cast<char*>(vectors[i].data()), vec_size);  // Διαβάζουμε το διάνυσμα
+void assign_random_neighbors(vector<Node*>& nodes, int num_neighbors) {
+    srand(time(nullptr)); // Seed for randomness
+
+    for (Node* node : nodes) {
+        vector<Node*> neighbors;
+
+        while (neighbors.size() < num_neighbors) {
+            Node* potential_neighbor = nodes[rand() % nodes.size()];
+            
+            // Avoid self-loops and duplicate neighbors
+            if (potential_neighbor != node && 
+                find(neighbors.begin(), neighbors.end(), potential_neighbor) == neighbors.end()) {
+                neighbors.push_back(potential_neighbor);
+            }
+        }
+        
+        node->neighbors = neighbors;  // Assign the selected neighbors to the node
     }
-
-    file.close();
-    return vectors;
 }
 
 
@@ -112,24 +139,11 @@ double calculate_distance(const Node* a, const Node* b) {
 
 
 // GreedySearch αλγόριθμος
-vector<Node*> GreedySearch(Node* s, const Node* x_q, int k, int l) {
+vector<Node*> GreedySearch(Node* s, const Node* x_q, int k, int list_size) {
 
     unordered_set<Node*> V;                                        // Visited nodes
     vector<Node*> result;                                              // k-closest nodes
     vector<Node*> L = {s};                                             // Η λίστα αναζήτησης ξεκινά με τον κόμβο s
-
-    //uodate search list L function
-    auto update_L = [&](Node* p) {
-
-        //  travers the out-neighbors of the node
-        for (Node* neighbor : p->neighbors) {
-            //  if they are not visited add them to the search list L
-            if (V.find(neighbor) == V.end()) {
-                L.push_back(neighbor);
-            }
-        }
-
-    };
 
     //  while search list is not empty and we have not found all the closest neighbors
     while (!L.empty() && result.size() < k) {
@@ -154,17 +168,25 @@ vector<Node*> GreedySearch(Node* s, const Node* x_q, int k, int l) {
             //  If we have found p_star, we visit it and add it to the result list
             V.insert(p_star); 
             result.push_back(p_star); 
+
             //  update the search list with p_star's out-neighbors
-            update_L(p_star); 
+            for (Node* neighbor : p_star->neighbors) {
+                //  if they are not visited add them to the search list L
+                if (V.find(neighbor) == V.end()) {
+                    L.push_back(neighbor);
+                }
+            }
 
             // if search list overcome l, we maintain the l closest nodes
-            if (L.size() > l) {
-                nth_element(L.begin(), L.begin() + l, L.end(),
-                    [&](Node* a, Node* b) {
+            if (L.size() > list_size) {
+
+                //using the function nth_element to sort only the list_size part of the vector 
+                nth_element(L.begin(), L.begin() + list_size, L.end(), [&](Node* a, Node* b) {
                         return calculate_distance(a, x_q) < calculate_distance(b, x_q);
                     });
-                L.resize(l); // Κρατάμε μόνο τα πρώτα l στοιχεία
+                L.resize(list_size); // keep the list_size
             }
+
         } else {
             // if p_star not found we stop the searching
             break; 
@@ -175,48 +197,53 @@ vector<Node*> GreedySearch(Node* s, const Node* x_q, int k, int l) {
 }
 
 
-
-int main() {
-    try {
-        // Read the fvecs dataset
-        auto fvectors = read_fvecs("siftsmall/siftsmall_base.fvecs");
-        cout << "Read " << fvectors.size() << " vectors from the fvecs file.\n";
-
-        // Create a list of nodes from the vectors
-        vector<Node> nodes(fvectors.size());
-        for (size_t i = 0; i < fvectors.size(); ++i) {
-            nodes[i].id = i;
-            nodes[i].coords.resize(fvectors[i].size());
-            copy(fvectors[i].begin(), fvectors[i].end(), nodes[i].coords.begin());
-        }
-
-        // For testing, let's connect each node to its next node as a neighbor
-        for (size_t i = 0; i < nodes.size() - 1; ++i) {
-            nodes[i].neighbors.push_back(&nodes[i + 1]);
-        }
-
-        // Use the first node as the start and the last node as the query node
-        Node* start_node = &nodes[0];
-        Node* query_node = &nodes.back();
-
-        // Run the GreedySearch algorithm
-        int k = 5; // Number of closest neighbors to find
-        int l = 10; // Limit on the search list size
-        vector<Node*> closest_neighbors = GreedySearch(start_node, query_node, k, l);
-
-        // Print out the result
-        cout << "Found " << closest_neighbors.size() << " closest neighbors:\n";
-        for (const auto* neighbor : closest_neighbors) {
-            cout << "Node ID: " << neighbor->id << ", Coordinates: ";
-            for (double coord : neighbor->coords) {
-                cout << coord << " ";
-            }
-            cout << endl;
-        }
-
-    } catch (const exception &e) {
-        cerr << "Error: " << e.what() << endl;
+int main(int argc, char* argv[]) {
+    if (argc < 5) {
+        cerr << "Usage: " << argv[0] << " <base.fvecs> <query.fvecs> <k> <l>" << endl;
+        return 1;
     }
+
+    // Load base vectors
+    string base_file = argv[1];
+    vector<Node*> nodes = load_vecs(base_file);
+
+    // Load query vectors
+    string query_file = argv[2];
+    vector<Node*> query_nodes = load_vecs(query_file);
+
+    // Parameters
+    int k = stoi(argv[3]);  // number of closest nodes to find
+    int l = stoi(argv[4]);  // max size of search list
+
+    // Assign random neighbors for each node with a fixed number, e.g., 5
+    assign_random_neighbors(nodes, 5);
+
+    // Testing neighbor assignment
+    cout << "Neighbor assignments:" << endl;
+    for (Node* node : nodes) {
+        cout << "Node " << node->id << " neighbors: ";
+        for (Node* neighbor : node->neighbors) {
+            cout << neighbor->id << " ";
+        }
+        cout << endl;
+    }
+
+    // Perform GreedySearch for each query vector
+    for (Node* query : query_nodes) {
+        vector<Node*> nearest_neighbors = GreedySearch(nodes[0], query, k, l);  // Starting from node 0
+
+        // Output the results (IDs of the nearest neighbors)
+        cout << "Query " << query->id << ": ";
+        for (Node* neighbor : nearest_neighbors) {
+            cout << neighbor->id << " ";
+        }
+        cout << endl;
+    }
+
+    // Cleanup: free memory
+    for (Node* node : nodes) delete node;
+    for (Node* query : query_nodes) delete query;
 
     return 0;
 }
+
