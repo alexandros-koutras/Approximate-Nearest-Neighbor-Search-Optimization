@@ -12,7 +12,7 @@
 using namespace std;
 
 struct Node {
-    int id;                                             //node's id
+    unsigned int id;                                             //node's id
     vector<double> coords;               //coordinates
     vector<Node*> neighbors;           //out-neighbors
 };
@@ -127,7 +127,6 @@ void assign_random_neighbors(vector<Node*>& nodes, int num_neighbors) {
 }
 
 
-
 // Distance between two nodes (using Euclidean distance)
 double calculate_distance(const Node* a, const Node* b) {
     double distance = 0.0;
@@ -140,6 +139,10 @@ double calculate_distance(const Node* a, const Node* b) {
 
 // GreedySearch αλγόριθμος
 vector<Node*> GreedySearch(Node* s, const Node* x_q, int k, int list_size) {
+    if (!s) {
+        cerr << "Error: Starting node is null." << endl;
+        return {}; // Return an empty result if the starting node is null
+    }
 
     unordered_set<Node*> V;                                        // Visited nodes
     vector<Node*> result;                                              // k-closest nodes
@@ -197,6 +200,7 @@ vector<Node*> GreedySearch(Node* s, const Node* x_q, int k, int list_size) {
 }
 
 
+/*
 int main(int argc, char* argv[]) {
     if (argc < 5) {
         cerr << "Usage: " << argv[0] << " <base.fvecs> <query.fvecs> <k> <l>" << endl;
@@ -246,4 +250,4 @@ int main(int argc, char* argv[]) {
 
     return 0;
 }
-
+*/
