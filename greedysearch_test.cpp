@@ -56,10 +56,22 @@ void test_single_node() {
     delete node0;
 }
 
+
+void test_multiple_nodes_one_query() {
+    Node node1, node2, query;
+    node1.coords = {1.0, 1.0};
+    node2.coords = {2.0, 2.0};
+    query.coords = {1.5, 1.5};
+    node1.neighbors.push_back(&node2); // Node1 has Node2 as neighbor
+    vector<Node*> result = GreedySearch(&node1, &query, 1, 1);
+    TEST_CHECK(result.size() == 1 && result[0] == &node1); // Node1 should be closest
+}
+
 // List of tests
 TEST_LIST = {
     {"Basic Functionality", test_basic_functionality},
     {"Empty Graph", test_empty_graph},
     {"Single Node Graph", test_single_node},
+    {"Multiple Nodes one query", test_multiple_nodes_one_query},
     {NULL, NULL} // End of the list
 };
