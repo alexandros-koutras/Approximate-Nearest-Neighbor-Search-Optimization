@@ -1,22 +1,6 @@
-#include <iostream>
-#include <vector>
-#include <algorithm>
-#include <cmath>
+#include "../include/vamana.h"
 
-#include "adts.h"
-
-using namespace std;
-
-
-double euclidean(const Node* a, const Node* b) {
-    double sum = 0.0;
-    for (size_t i = 0; i < a->coords.size(); ++i) {
-        sum += pow (a->coords[i] - b->coords[i],2);
-    }
-    return sqrt(sum);
-}
-
-void RobustPrune(Node* node, vector<Node*> possible_neighbours, double a, unsigned int max_neighbours) {
+void RobustPrune(Node* node, vector<Node*> possible_neighbours, double a, int max_neighbours) {
     // Dereference each pointer in node->out_neighbors before inserting
     for (Node* n_ptr : node->out_neighbors) {
         possible_neighbours.push_back(n_ptr); // Keep as pointer

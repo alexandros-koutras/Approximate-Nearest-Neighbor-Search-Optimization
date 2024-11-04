@@ -1,0 +1,44 @@
+#ifndef VAMANA_H
+#define VAMANA_H
+
+#include <vector>
+#include <iostream>
+#include <unordered_set>
+#include <queue>
+#include <cmath>
+#include <limits>
+#include <algorithm>
+#include <fstream>
+#include <cassert>
+#include <cstdlib>  // For rand() and srand()
+#include <random>
+#include <ctime>
+#include <sstream>
+#include <string>
+
+using namespace std;
+
+struct Node {
+    unsigned int id;    
+    int distance;                                         
+    vector<double> coords;  //coordinates
+    vector<Node*> out_neighbors; 
+};
+
+double euclidean(const Node* a, const Node* b);
+
+vector<Node*> load_ivecs(const string& filename);
+
+vector<Node*> load_fvecs(const string& filename);
+
+vector<Node*> load_bvecs(const string& filename);
+
+void RobustPrune(Node* node, vector<Node*> possible_neighbours, double a, int max_neighbours);
+
+vector<Node*> GreedySearch(Node* s, const Node* x_q, int k, int list_size);
+
+void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, double a,int n);
+
+void initializeRandomGraph(vector<Node*>& nodes, int R) ;
+
+#endif // VAMANA_H
