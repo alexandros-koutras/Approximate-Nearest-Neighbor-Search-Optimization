@@ -3,11 +3,9 @@
 
 //random R-regulated directed graph
 void initializeRandomGraph(vector<Node*>& nodes, unsigned int R) {
-    //cout << "Initializing random graph with " << nodes.size() << " nodes."<<endl;
     srand(static_cast<unsigned int>(time(nullptr)));
     
     for (Node* node : nodes) {
-        //cout << "Initializing neighbors for Node ID: " << node->id << std::endl;
         unordered_set<int> neighbors;
         
         while (neighbors.size() < R) {
@@ -16,22 +14,14 @@ void initializeRandomGraph(vector<Node*>& nodes, unsigned int R) {
                 Node* neighbor = nodes[random_index];
                 node->out_neighbors.push_back(neighbor);
                 neighbors.insert(random_index);
-                //cout << "Added neighbor ID: " << neighbor->id << " to Node ID: " << node->id << std::endl;
             }
         }
-        //cout << "Node ID: " << node->id << " initialized with " << node->out_neighbors.size() << " neighbors."<<endl;
     }
-    //cout << "Random graph initialization completed."<<endl;
-
 }
 
 void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, double a,int n) {
-    cout << "Vamanaaaaaa\n";
     //Step 1: Initialize a random R directed graph
     initializeRandomGraph(nodes, R);
-
-    cout << "all good initialise\n";
-    cout << "goes in if\n";
 
     //Step 2: Find the medoid s of the dataset 
     if (n == 0)return;//empty
@@ -50,8 +40,7 @@ void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, double a
                 medoid = i;
             }
         }*/
-        int medoid=approximateMedoid(nodes,k);
-        //cout<<"Found medoid: "<< medoid<<endl;
+    int medoid=approximateMedoid(nodes,k);
     Node* s=nodes[medoid];
 
     //Step 3: Iterate through the dataset in a random order
@@ -64,26 +53,17 @@ void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, double a
             int j = rand()%(i+1);//random num from 0 to i
             swap(permutation[i],permutation[j]);
         }
-    cout << "Mpainoyme stis sunartiseis toy alej kai tis blamenhs\n";
     for (int i : permutation) {
-        //cout<<"Search for node: "<< i <<endl;
         Node* p = nodes[i];
         
         //Run GreedySearch to find the visited set V_p
-        cout << "greedy(mpliaks)\n";
         vector<Node*> V_p = GreedySearch(s, p, 1, L);
-        //cout<<"After the greedy: "<<endl; 
-        // for(Node* node : V_p){
-        //     cout<< node->id <<endl;
-        // }
-        cout << "robust<3\n";
+
         //Run RobustPrune on p with V_p, a, and R
         RobustPrune(p, V_p, a, R);
-        cout << "ok apo ayto\n";
 
         //Add reverse edges 
         for (Node* neighbor : p->out_neighbors) {
-            //cout<<"adding reverse edge for neighbor: "<<neighbor<<" of "<<p<<endl;
 
             // If neighbor exceeds max degree R, apply RobustPrune
             if (neighbor->out_neighbors.size() + 1 > static_cast<size_t>(R)) {
@@ -92,10 +72,9 @@ void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, double a
                 RobustPrune(neighbor, neighbor->out_neighbors, a, R);
             } else {
             //Safe to add p directly without exceeding R
-                 neighbor->out_neighbors.push_back(p);
+                neighbor->out_neighbors.push_back(p);
             }
 
         }
     }
-    cout << "telos vamana\n";
 }

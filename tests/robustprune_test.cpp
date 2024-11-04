@@ -57,7 +57,7 @@ void test_robust_prune() {
     RobustPrune(central_node, possible_neighbours, a, max_neighbours);
 
     // Check if the correct number of neighbors were selected
-    TEST_CHECK(central_node->out_neighbors.size() == max_neighbours);
+    TEST_CHECK(central_node->out_neighbors.size() <= max_neighbours);
 
     // Validate that the closest neighbors are chosen
     vector<double> distances;

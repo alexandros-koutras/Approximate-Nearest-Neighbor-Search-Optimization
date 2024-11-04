@@ -75,7 +75,7 @@ int approximateMedoid(const vector<Node*>& nodes, int k) {
 
     // Find the cluster with the most nodes
     int largestClusterIndex = 0;
-    for (int i = 1; i < clusters.size(); ++i) {
+    for (unsigned int i = 1; i < clusters.size(); ++i) {
         if (clusters[i].size() > clusters[largestClusterIndex].size()) {
             largestClusterIndex = i;
         }
