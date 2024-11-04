@@ -1,7 +1,7 @@
 #include "../include/vamana.h"
 
 //random R-regulated directed graph
-void initializeRandomGraph(vector<Node*>& nodes, int R) {
+void initializeRandomGraph(vector<Node*>& nodes, unsigned int R) {
     //cout << "Initializing random graph with " << nodes.size() << " nodes."<<endl;
     srand(static_cast<unsigned int>(time(nullptr)));
     
@@ -10,7 +10,7 @@ void initializeRandomGraph(vector<Node*>& nodes, int R) {
         unordered_set<int> neighbors;
         
         while (neighbors.size() < R) {
-            int random_index = rand() % nodes.size();
+            unsigned int random_index = rand() % nodes.size();
             if (random_index != node->id && neighbors.find(random_index) == neighbors.end()) {
                 Node* neighbor = nodes[random_index];
                 node->out_neighbors.push_back(neighbor);
@@ -25,25 +25,33 @@ void initializeRandomGraph(vector<Node*>& nodes, int R) {
 }
 
 void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, double a,int n) {
+    cout << "Vamanaaaaaa\n";
     //Step 1: Initialize a random R directed graph
     initializeRandomGraph(nodes, R);
 
+    cout << "all good initialise\n";
+    cout << "goes in if\n";
+
     //Step 2: Find the medoid s of the dataset 
     if (n == 0)return;//empty
-        int medoid = 0;
-        double min_dist = numeric_limits<float>::max();
-        for (int i = 0; i < n; i++){
-            double total_dist  =0;
-            for(int j = 0; j < n; j++){
-                if(i != j){
-                    total_dist += euclidean(nodes[i],nodes[j]);
-                }
-            }
-            if (total_dist < min_dist){
-                min_dist = total_dist;
-                medoid = i;
+    
+    cout << "in if\n";
+    int medoid = 0;
+    double min_dist = numeric_limits<float>::max();
+    cout << "n = " << n << endl;
+    for (int i = 0; i < n; i++){
+        cout << "i = " << i << endl;
+        double total_dist  =0;
+        for(int j = 0; j < n; j++){
+            if(i != j){
+                total_dist += euclidean(nodes[i],nodes[j]);
             }
         }
+        if (total_dist < min_dist){
+            min_dist = total_dist;
+            medoid = i;
+        }
+    }
         //cout<<"Found medoid: "<< medoid<<endl;
     Node* s=nodes[medoid];
 
@@ -57,20 +65,22 @@ void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, double a
             int j = rand()%(i+1);//random num from 0 to i
             swap(permutation[i],permutation[j]);
         }
-
+    cout << "Mpainoyme stis sunartiseis toy alej kai tis blamenhs\n";
     for (int i : permutation) {
         //cout<<"Search for node: "<< i <<endl;
         Node* p = nodes[i];
         
         //Run GreedySearch to find the visited set V_p
+        cout << "greedy(mpliaks)\n";
         vector<Node*> V_p = GreedySearch(s, p, 1, L);
         //cout<<"After the greedy: "<<endl; 
         // for(Node* node : V_p){
         //     cout<< node->id <<endl;
         // }
-
+        cout << "robust<3\n";
         //Run RobustPrune on p with V_p, a, and R
         RobustPrune(p, V_p, a, R);
+        cout << "ok apo ayto\n";
 
         //Add reverse edges 
         for (Node* neighbor : p->out_neighbors) {
@@ -88,4 +98,5 @@ void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, double a
 
         }
     }
+    cout << "telos vamana\n";
 }

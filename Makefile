@@ -13,35 +13,24 @@ TESTS_SRC = $(wildcard $(TESTS)/*.cpp)
 MODULES_OBJ = $(patsubst $(MODULES)/%.cpp,$(MODULES)/%.o,$(MODULES_SRC))
 TESTS_OBJ = $(patsubst $(TESTS)/%.cpp,$(TESTS)/%.o,$(TESTS_SRC))
 
+# Main program source file with main function
+MAIN_SRC = main.cpp  # Make sure this file exists and includes the main function
+
 # Executable program
 EXEC = out
-TEST_EXEC = run_tests  # Name for the test executable
 
 # Default rule
 all: $(EXEC)
 
 # Link object files to create the executable
-$(EXEC): $(MODULES_OBJ)
-	$(CC) -o $@ $(MODULES_OBJ)
+$(EXEC): $(MODULES_OBJ) $(MAIN_SRC)
+	$(CC) $(CFLAGS) -o $@ $(MODULES_OBJ) $(MAIN_SRC)
 
 # Compile .cpp files from MODULES into .o files
 $(MODULES)/%.o: $(MODULES)/%.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Compile and run tests
-tests: $(MODULES_OBJ) $(TESTS_OBJ)
-	$(CC) $(CFLAGS) -o $(TEST_EXEC) $(MODULES_OBJ) $(TESTS_OBJ)
-	./$(TEST_EXEC)  # Run the compiled test executable
-
-# Compile .cpp files from TESTS into .o files
-$(TESTS)/%.o: $(TESTS)/%.cpp
-	$(CC) $(CFLAGS) -c $< -o $@
-
 # Run the executable with additional arguments passed from the command line
 run: all
-	./$(EXEC) $(ARGS)
+	@./$(EXEC) $(ARGS)
 
-# Clean the build directory
-clean:
-	rm -f $(MODULES_OBJ) $(TESTS_OBJ) $(EXEC) $(TEST_EXEC)
-	clear

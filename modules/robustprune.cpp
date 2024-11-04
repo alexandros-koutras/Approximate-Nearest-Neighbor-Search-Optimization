@@ -1,6 +1,7 @@
 #include "../include/vamana.h"
 
-void RobustPrune(Node* node, vector<Node*> possible_neighbours, double a, int max_neighbours) {
+void RobustPrune(Node* node, vector<Node*> possible_neighbours, double a, unsigned int max_neighbours) {
+    cout << "the best\n";
     // Dereference each pointer in node->out_neighbors before inserting
     for (Node* n_ptr : node->out_neighbors) {
         possible_neighbours.push_back(n_ptr); // Keep as pointer

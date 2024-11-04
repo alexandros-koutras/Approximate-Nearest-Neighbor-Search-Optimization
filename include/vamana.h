@@ -20,7 +20,7 @@ using namespace std;
 
 struct Node {
     unsigned int id;    
-    int distance;                                         
+    float distance;                                         
     vector<double> coords;  //coordinates
     vector<Node*> out_neighbors; 
 };
@@ -33,12 +33,14 @@ vector<Node*> load_fvecs(const string& filename);
 
 vector<Node*> load_bvecs(const string& filename);
 
-void RobustPrune(Node* node, vector<Node*> possible_neighbours, double a, int max_neighbours);
+void RobustPrune(Node* node, vector<Node*> possible_neighbours, double a, unsigned int max_neighbours);
 
-vector<Node*> GreedySearch(Node* s, const Node* x_q, int k, int list_size);
+vector<Node*> GreedySearch(Node* s, const Node* x_q, unsigned int k, unsigned int list_size);
 
 void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, double a,int n);
 
-void initializeRandomGraph(vector<Node*>& nodes, int R) ;
+void initializeRandomGraph(vector<Node*>& nodes, unsigned int R) ;
+
+Node* create_node(unsigned int id, const vector<double>& coords);
 
 #endif // VAMANA_H
