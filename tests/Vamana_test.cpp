@@ -1,5 +1,6 @@
 #include "../include/acutest.h"
 #include "../include/vamana.h"
+#include "../include/medoid.h"
 
 //create a node with specific coordinates
 Node* create_node(unsigned int id, const vector<double>& coords) {
@@ -123,10 +124,10 @@ void test_vamana_medoid_calculation() {
     double a = 1.5;
     int n = nodes.size();
 
-    VamanaIndexingAlgorithm(nodes, k, L, R, a, n);
+    int medoid1=approximateMedoid(nodes,k);
 
     //Expected medoid is node 1
-    int medoid = nodes[0]->id;
+    int medoid2 = nodes[0]->id;
     double min_dist = numeric_limits<double>::max();
     for (int i = 0; i < n; i++) {
         double total_dist = 0;
@@ -137,11 +138,11 @@ void test_vamana_medoid_calculation() {
         }
         if (total_dist < min_dist) {
             min_dist = total_dist;
-            medoid = nodes[i]->id;
+            medoid2 = nodes[i]->id;
         }
     }
 
-    TEST_CHECK(medoid == 1);
+    TEST_CHECK(medoid1 == medoid2);
 
     for (Node* node : nodes) delete node;
 }

@@ -1,5 +1,4 @@
-#ifndef VAMANA_H
-#define VAMANA_H
+#pragma once
 
 #include <vector>
 #include <iostream>
@@ -41,4 +40,6 @@ void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, double a
 
 void initializeRandomGraph(vector<Node*>& nodes, int R) ;
 
-#endif // VAMANA_H
+
+
+

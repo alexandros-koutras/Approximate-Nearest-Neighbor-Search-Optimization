@@ -1,4 +1,5 @@
 #include "../include/vamana.h"
+#include "../include/medoid.h"
 
 //random R-regulated directed graph
 void initializeRandomGraph(vector<Node*>& nodes, int R) {
@@ -30,7 +31,8 @@ void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, double a
 
     //Step 2: Find the medoid s of the dataset 
     if (n == 0)return;//empty
-        int medoid = 0;
+        //old medoid time consuming
+        /*int medoid = 0;
         double min_dist = numeric_limits<float>::max();
         for (int i = 0; i < n; i++){
             double total_dist  =0;
@@ -43,7 +45,8 @@ void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, double a
                 min_dist = total_dist;
                 medoid = i;
             }
-        }
+        }*/
+        int medoid=approximateMedoid(nodes,k);
         //cout<<"Found medoid: "<< medoid<<endl;
     Node* s=nodes[medoid];
 
