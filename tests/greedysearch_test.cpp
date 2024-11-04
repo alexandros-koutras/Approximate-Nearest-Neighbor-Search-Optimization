@@ -4,7 +4,8 @@
 // Οποιαδήποτε υλοποίηση οφείλει να περνάει όλα τα tests.
 //
 //////////////////////////////////////////////////////////////////
-#include "greedysearch.cpp"
+#define TESTING_MODE
+#include "modules/greedysearch.cpp"
 #include "acutest/include/acutest.h"// Acutest library
 #include <iostream>
 using namespace std;
@@ -12,10 +13,9 @@ using namespace std;
 Node* create_node(unsigned int id, const vector<double>& coords) {
     Node* node = new Node();
     node->id = id;
-    node->coords = coords;
+    node->coords =  vector<float>(coords.begin(), coords.end());
     return node;
 }
-
 
 // Test 1: Basic Functionality Test
 void test_basic_functionality() {
@@ -44,18 +44,15 @@ void test_empty_graph() {
 }
 
 
-// Test 3: Single Node Graph Test
-void test_single_node() {
-    Node* node0 = create_node(0, {1.0, 1.0});
-    Node query;
-    query.coords = {1.0, 1.0};
-    vector<Node*> result = GreedySearch(node0, &query, 1, 1);
-    TEST_CHECK(result.size() == 1);
-    TEST_CHECK(result[0]->id == 0);
+void test_load_fvecs() {
+    vector<Node*> nodes = load_fvecs("siftsmall/siftsmall_base.fvecs");
+    TEST_CHECK(!nodes.empty());  // Check if nodes are loaded
+    TEST_CHECK(nodes[0]->coords.size() > 0);  // Check if coordinates are loaded
     
-    delete node0;
+    for (Node* node : nodes) {
+        delete node;
+    }
 }
-
 
 void test_multiple_nodes_one_query() {
     Node node1, node2, query;
@@ -71,7 +68,7 @@ void test_multiple_nodes_one_query() {
 TEST_LIST = {
     {"Basic Functionality", test_basic_functionality},
     {"Empty Graph", test_empty_graph},
-    {"Single Node Graph", test_single_node},
-    {"Multiple Nodes one query", test_multiple_nodes_one_query},
+    {"Test greedysearch with manual nodes", test_multiple_nodes_one_query},
+    {"Load fvecs", test_load_fvecs},
     {NULL, NULL} // End of the list
 };

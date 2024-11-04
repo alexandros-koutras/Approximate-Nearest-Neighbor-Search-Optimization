@@ -13,6 +13,7 @@ using namespace std;
 
 struct Node{
     unsigned int id;
+    float distance;
     vector<float> coords;
     vector<Node*> neighbors;
 };
@@ -81,7 +82,7 @@ vector<Node*> load_fvecs(const string& filename) {
                 break;
             }
             node->coords[i] = value;
-            cout << "Value " << i << ": " << value << endl;
+            //cout << "Value " << i << ": " << value << endl;
 
         }
         node->id = nodes.size();  // Assign node ID sequentially
@@ -220,6 +221,7 @@ vector<Node*> GreedySearch(Node* s, const Node* x_q, int k, int list_size) {
     return result; 
 }
 
+#ifndef TESTING_MODE
 int main(int argc, char* argv[]) {
     if (argc < 5) {
         cerr << "Usage: " << argv[0] << " <base.fvecs> <query.fvecs> <k> <l>" << endl;
@@ -269,4 +271,4 @@ int main(int argc, char* argv[]) {
 
     return 0;
 }
-
+#endif
