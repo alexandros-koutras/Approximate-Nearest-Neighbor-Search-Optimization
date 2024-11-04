@@ -1,25 +1,37 @@
 #include "vamana.h"
 
-void RobustPrune(Node* node, vector<Node*>& possible_neighbours, double a, int max_neighbours) {
-    for (auto it = possible_neighbours.begin(); it != possible_neighbours.end(); ) {
-        if (max_neighbours == 0) {
-            break;
-        }
-        Node* possible_vertex = *it;
-        double dist = euclidean(node, possible_vertex);
-        if (dist >= a) {
-            it = possible_neighbours.erase(it);
-        } else {
-            ++it;
-        }
+void RobustPrune(Node* node, vector<Node*> possible_neighbours, double a, int max_neighbours) {
+    // Dereference each pointer in node->out_neighbors before inserting
+    for (Node* n_ptr : node->out_neighbors) {
+        possible_neighbours.push_back(n_ptr); // Keep as pointer
     }
 
-    // Prune excess neighbors if we have more than max_neighbours
-    while (possible_neighbours.size() > static_cast<size_t>(max_neighbours)) {
-        possible_neighbours.pop_back();
+    // Clear node's neighbors
+    node->out_neighbors.clear();
+
+    // Calculate distances to possible neighbors
+    for (Node* n : possible_neighbours) {
+        n->distance = euclidean(node, n);
     }
 
-    for (Node* neighbor : possible_neighbours) {
-        node->add_neighbour(neighbor);
+    // Sort possible neighbors by distance
+    std::sort(possible_neighbours.begin(), possible_neighbours.end(), [](Node* lhs, Node* rhs) {
+        return lhs->distance < rhs->distance;
+    });
+
+    // Select closest neighbors with pruning
+    while (!possible_neighbours.empty() && node->out_neighbors.size() < max_neighbours) {
+        Node* closest = possible_neighbours.front();
+        node->out_neighbors.push_back(closest);
+        possible_neighbours.erase(possible_neighbours.begin());
+
+        auto it = possible_neighbours.begin();
+        while (it != possible_neighbours.end()) {
+            if (a * closest->distance <= (*it)->distance) {
+                it = possible_neighbours.erase(it);
+            } else {
+                ++it;
+            }
+        }
     }
 }

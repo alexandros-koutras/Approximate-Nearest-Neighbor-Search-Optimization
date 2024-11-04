@@ -1,5 +1,13 @@
 #include "vamana.h"
 
+//euclidean distance
+double euclidean(const Node* a, const Node* b) {
+    double sum = 0.0;
+    for (size_t i = 0; i < a->coords.size(); ++i) {
+        sum +=pow (a->coords[i] - b->coords[i],2);
+    }
+    return sqrt(sum);
+}
 // GreedySearch αλγόριθμος
 vector<Node*> GreedySearch(Node* s, const Node* x_q, int k, int list_size) {
     if (!s) {
@@ -62,55 +70,3 @@ vector<Node*> GreedySearch(Node* s, const Node* x_q, int k, int list_size) {
     return result; 
 }
 
-
-/*
-int main(int argc, char* argv[]) {
-    if (argc < 5) {
-        cerr << "Usage: " << argv[0] << " <base.fvecs> <query.fvecs> <k> <l>" << endl;
-        return 1;
-    }
-
-    // Load base vectors
-    string base_file = argv[1];
-    vector<Node*> nodes = load_vecs(base_file);
-
-    // Load query vectors
-    string query_file = argv[2];
-    vector<Node*> query_nodes = load_vecs(query_file);
-
-    // Parameters
-    int k = stoi(argv[3]);  // number of closest nodes to find
-    int l = stoi(argv[4]);  // max size of search list
-
-    // Assign random neighbors for each node with a fixed number, e.g., 5
-    assign_random_neighbors(nodes, 5);
-
-    // Testing neighbor assignment
-    cout << "Neighbor assignments:" << endl;
-    for (Node* node : nodes) {
-        cout << "Node " << node->id << " neighbors: ";
-        for (Node* neighbor : node->neighbors) {
-            cout << neighbor->id << " ";
-        }
-        cout << endl;
-    }
-
-    // Perform GreedySearch for each query vector
-    for (Node* query : query_nodes) {
-        vector<Node*> nearest_neighbors = GreedySearch(nodes[0], query, k, l);  // Starting from node 0
-
-        // Output the results (IDs of the nearest neighbors)
-        cout << "Query " << query->id << ": ";
-        for (Node* neighbor : nearest_neighbors) {
-            cout << neighbor->id << " ";
-        }
-        cout << endl;
-    }
-
-    // Cleanup: free memory
-    for (Node* node : nodes) delete node;
-    for (Node* query : query_nodes) delete query;
-
-    return 0;
-}
-*/
