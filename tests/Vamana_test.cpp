@@ -2,13 +2,13 @@
 #include "../include/vamana.h"
 #include "../include/medoid.h"
 
-//create a node with specific coordinates
 Node* create_node(unsigned int id, const vector<double>& coords) {
     Node* node = new Node();
     node->id = id;
     node->coords = coords;
     return node;
 }
+
 
 // Basic Vamana Indexing Functionality
 void test_vamana_basic_functionality() {
@@ -22,7 +22,7 @@ void test_vamana_basic_functionality() {
     // for(int i=0;i<4;i++){
     //     cout << "Node ID: " << (nodes[i] ? nodes[i]->id : -1) << " | Possible neighbors count: " << nodes[i]->out_neighbors.size() << std::endl;}
     
-    int k = 1, L = 2, R = 2;
+    unsigned int k = 1, L = 2, R = 2;
     double a = 1.5;
     int n = nodes.size();
 
@@ -47,7 +47,7 @@ void test_vamana_small_dataset() {
     // for(int i=0;i<2;i++){
     //     cout << "Node ID: " << (nodes[i] ? nodes[i]->id : -1) << " | Possible neighbors count: " << nodes[i]->out_neighbors.size() << std::endl;}
 
-    int k = 1, L = 1, R = 1;
+    unsigned int k = 1, L = 1, R = 1;
     double a = 1.5;
     int n = nodes.size();
 
@@ -97,7 +97,7 @@ void test_vamana_large_dataset() {
         nodes.push_back(create_node(i, {static_cast<double>(i), static_cast<double>(i)}));
     }
 
-    int k = 1, L = 10, R = 5;
+    unsigned int k = 1, L = 10, R = 5;
     double a = 1.5;
     int n = nodes.size();
 

@@ -26,7 +26,7 @@ vector<Node*> load_ivecs(const string& filename) {
                 break;
             }
             node->coords[i] = value;
-            cout << "Value " << i << ": " << value << endl;
+            //out << "Value " << i << ": " << value << endl;
         }
         node->id = nodes.size();  // Assign node ID sequentially
         nodes.push_back(node);
@@ -64,7 +64,7 @@ vector<Node*> load_fvecs(const string& filename) {
                 break;
             }
             node->coords[i] = value;
-            cout << "Value " << i << ": " << value << endl;
+            //cout << "Value " << i << ": " << value << endl;
 
         }
         node->id = nodes.size();  // Assign node ID sequentially
@@ -101,7 +101,7 @@ vector<Node*> load_bvecs(const string& filename) {
                 break;
             }
             node->coords[i] = value;
-            cout << "Value " << i << ": " << static_cast<int>(value) << endl;
+            //cout << "Value " << i << ": " << static_cast<int>(value) << endl;
         }
         node->id = nodes.size();  // Assign node ID sequentially
         nodes.push_back(node);
