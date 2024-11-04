@@ -1,4 +1,4 @@
-#include "vamana.h"
+#include "../include/vamana.h"
 
 //random R-regulated directed graph
 void initializeRandomGraph(vector<Node*>& nodes, int R) {
@@ -44,7 +44,7 @@ void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, double a
                 medoid = i;
             }
         }
-        cout<<"Found medoid: "<< medoid<<endl;
+        //cout<<"Found medoid: "<< medoid<<endl;
     Node* s=nodes[medoid];
 
     //Step 3: Iterate through the dataset in a random order

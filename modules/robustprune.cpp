@@ -1,4 +1,4 @@
-#include "vamana.h"
+#include "../include/vamana.h"
 
 void RobustPrune(Node* node, vector<Node*> possible_neighbours, double a, int max_neighbours) {
     // Dereference each pointer in node->out_neighbors before inserting

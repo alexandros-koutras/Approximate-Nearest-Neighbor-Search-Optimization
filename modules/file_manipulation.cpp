@@ -1,4 +1,4 @@
-#include "vamana.h"
+#include "../include/vamana.h"
 
 // Function to read .ivecs file
 vector<Node*> load_ivecs(const string& filename) {

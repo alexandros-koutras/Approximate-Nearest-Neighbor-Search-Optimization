@@ -1,4 +1,4 @@
-#include "vamana.h"
+#include "include/vamana.h"
 
 //function to check the kind of the base file
 bool ends_with(const string& str, const string& suffix) {

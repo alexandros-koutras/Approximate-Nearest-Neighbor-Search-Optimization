@@ -1,5 +1,5 @@
-#include "acutest.h"
-#include "vamana.h"
+#include "../include/acutest.h"
+#include "../include/vamana.h"
 
 //create a node with specific coordinates
 Node* create_node(unsigned int id, const vector<double>& coords) {

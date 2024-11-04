@@ -1,4 +1,4 @@
-#include "vamana.h"
+#include "../include/vamana.h"
 
 //euclidean distance
 double euclidean(const Node* a, const Node* b) {
