@@ -8,29 +8,39 @@ TESTS = ./tests
 INCLUDE = ./include
 
 # Automatically find all .cpp files and convert them to .o
+MAIN_SRC = main.cpp
+MAIN_OBJ = $(patsubst %.cpp,%.o,$(MAIN_SRC))
 MODULES_SRC = $(wildcard $(MODULES)/*.cpp)
-TESTS_SRC = $(wildcard $(TESTS)/*.cpp)
 MODULES_OBJ = $(patsubst $(MODULES)/%.cpp,$(MODULES)/%.o,$(MODULES_SRC))
+TESTS_SRC = $(wildcard $(TESTS)/*.cpp)
 TESTS_OBJ = $(patsubst $(TESTS)/%.cpp,$(TESTS)/%.o,$(TESTS_SRC))
 
-# Main program source file with main function
-MAIN_SRC = main.cpp  # Make sure this file exists and includes the main function
-
 # Executable program
-EXEC = out
+TEST_EXEC = run_tests
+EXEC = project
 
 # Default rule
 all: $(EXEC)
 
 # Link object files to create the executable
-$(EXEC): $(MODULES_OBJ) $(MAIN_SRC)
-	$(CC) $(CFLAGS) -o $@ $(MODULES_OBJ) $(MAIN_SRC)
+$(EXEC): $(MODULES_OBJ) $(MAIN_OBJ)
+	$(CC) $(CFLAGS) -o $@ $(MODULES_OBJ) $(MAIN_OBJ)
 
 # Compile .cpp files from MODULES into .o files
 $(MODULES)/%.o: $(MODULES)/%.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
+tests: $(MODULES_OBJ)
+	$(foreach test_src, $(TESTS_SRC), \
+		$(CC) $(CFLAGS) -o $(basename $(test_src)) $(MODULES_OBJ) $(test_src); \
+		./$(basename $(test_src)) || echo "$(test_src) failed."; \
+	)
+
 # Run the executable with additional arguments passed from the command line
 run: all
 	@./$(EXEC) $(ARGS)
+
+# Clean the executable files 
+clean:
+	rm -f $(MODULES_OBJ) $(TESTS_OBJ) $(MAIN_OBJ) $(EXEC) $(basename $(TESTS_SRC))
 

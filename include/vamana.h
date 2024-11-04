@@ -35,6 +35,8 @@ vector<Node*> load_bvecs(const string& filename);
 
 void RobustPrune(Node* node, vector<Node*> possible_neighbours, double a, unsigned int max_neighbours);
 
+bool compare_distance(Node* node1, Node* node2);
+
 vector<Node*> GreedySearch(Node* s, const Node* x_q, unsigned int k, unsigned int list_size);
 
 void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, double a,int n);
