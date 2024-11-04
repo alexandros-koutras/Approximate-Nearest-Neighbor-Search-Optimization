@@ -15,7 +15,7 @@ void RobustPrune(Node* node, vector<Node*> possible_neighbours, double a, int ma
     }
 
     // Sort possible neighbors by distance
-    std::sort(possible_neighbours.begin(), possible_neighbours.end(), [](Node* lhs, Node* rhs) {
+    sort(possible_neighbours.begin(), possible_neighbours.end(), [](Node* lhs, Node* rhs) {
         return lhs->distance < rhs->distance;
     });
 

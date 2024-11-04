@@ -8,6 +8,7 @@ double euclidean(const Node* a, const Node* b) {
     }
     return sqrt(sum);
 }
+
 // GreedySearch αλγόριθμος
 vector<Node*> GreedySearch(Node* s, const Node* x_q, int k, int list_size) {
     if (!s) {
@@ -30,7 +31,9 @@ vector<Node*> GreedySearch(Node* s, const Node* x_q, int k, int list_size) {
         for (Node* p : L) {
             //  and calculate the distance from x_q for the nodes that are not visited
             if (V.find(p) == V.end()) {
+
                 double distance = euclidean(p, x_q);
+              
                 if (distance < min_distance) {
                     min_distance = distance;
                     p_star = p;
@@ -44,6 +47,7 @@ vector<Node*> GreedySearch(Node* s, const Node* x_q, int k, int list_size) {
             result.push_back(p_star); 
 
             //  update the search list with p_star's out-neighbors
+
             for (Node* neighbor : p_star->out_neighbors) {
                 //  if they are not visited add them to the search list L
                 if (V.find(neighbor) == V.end()) {
@@ -56,7 +60,9 @@ vector<Node*> GreedySearch(Node* s, const Node* x_q, int k, int list_size) {
 
                 //using the function nth_element to sort only the list_size part of the vector 
                 nth_element(L.begin(), L.begin() + list_size, L.end(), [&](Node* a, Node* b) {
+
                         return euclidean(a, x_q) < euclidean(b, x_q);
+
                     });
                 L.resize(list_size); // keep the list_size
             }
@@ -69,4 +75,5 @@ vector<Node*> GreedySearch(Node* s, const Node* x_q, int k, int list_size) {
 
     return result; 
 }
+
 
