@@ -41,8 +41,19 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    cout << endl << endl;
+    cout << "Base file: " << argv[1] << endl;
+    cout << "k: " << argv[2] << endl;
+    cout << "L: " << argv[3] << endl;
+    cout << "R: " << argv[4] << endl;
+    cout << "a: " << argv[5] << endl;
+    cout << endl;
+    cout << "Now the implementation of the vamana algorithm is starting!" << endl;
+
     // Run the Vamana Indexing Algorithm
     VamanaIndexingAlgorithm(nodes,k, L, R, a,n);
+
+    cout << "The vamana graph has been successfully implemented" << endl;
 
     // Cleanup: free memory
     for (Node* node : nodes) delete node;

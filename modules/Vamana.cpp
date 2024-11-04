@@ -43,6 +43,16 @@ void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, double a
     int medoid=approximateMedoid(nodes,k);
     Node* s=nodes[medoid];
 
+    cout << "The medoid point found: " << endl;
+    cout << "[ ";
+    for (unsigned int i = 0; i < s->coords.size(); i++) {
+        if (i == s->coords.size() - 1) {
+            cout << s->coords.at(i);
+        }
+        cout << s->coords.at(i) << ", ";
+    }
+    cout << "]" << endl;
+
     //Step 3: Iterate through the dataset in a random order
      vector<int> permutation(n);//list of all indices
         for(int i = 0; i < n; i++){//populate the list with indices from 0 to n-1
