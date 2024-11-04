@@ -1,5 +1,4 @@
-#ifndef VAMANA_H
-#define VAMANA_H
+#pragma once
 
 #include <vector>
 #include <iostream>
@@ -45,4 +44,6 @@ void initializeRandomGraph(vector<Node*>& nodes, unsigned int R) ;
 
 Node* create_node(unsigned int id, const vector<double>& coords);
 
-#endif // VAMANA_H
+
+
+
