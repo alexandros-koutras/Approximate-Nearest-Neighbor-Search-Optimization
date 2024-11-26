@@ -14,6 +14,7 @@ bool ends_with(const string& str, const string& suffix) {
 int main(int argc, char* argv[]) {
     if (argc < 11) {
         cerr << "Usage: " << argv[0] << " -i <base.vecs> -k <k> -l <L> -r <R> -a <a>\n";
+        
         return 1;
     }
 
