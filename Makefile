@@ -43,7 +43,7 @@ run: all
 check: tests
 
 # Run the executable with Valgrind
-run_valgrind: all
+valgrind: all
 	valgrind --leak-check=full --track-origins=yes ./$(EXEC) $(ARGS)
 
 # Clean the executable files 

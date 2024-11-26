@@ -48,6 +48,7 @@ void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, double a
     for (unsigned int i = 0; i < s->coords.size(); i++) {
         if (i == s->coords.size() - 1) {
             cout << s->coords.at(i);
+            break;
         }
         cout << s->coords.at(i) << ", ";
     }
