@@ -8,8 +8,8 @@
 using namespace std;
 
 
-double euclidean(const Node* a, const Node* b) {
-    double sum = 0.0;
+float euclidean(const Node* a, const Node* b) {
+    float sum = 0.0;
     for (size_t i = 0; i < a->coords.size(); ++i) {
         sum += pow (a->coords[i] - b->coords[i],2);
     }
@@ -51,3 +51,39 @@ void RobustPrune(Node* node, vector<Node*> possible_neighbours, double a, unsign
         }
     }
 }
+
+
+
+
+// void testRobustPrune() {
+//     Node node1;
+//     node1.coords = {{0.0, 0.0, 0.0}};
+//     vector<Node*> neighbours = {&node1};
+
+//     for (int i = 0; i > 100000; i++) {
+//         Node* node = new Node(); // Dynamically allocate memory
+//         node->coords = {{(float)i, (float)i, (float)i}};
+//         neighbours.push_back(node);
+//     }
+
+//     cout << "size = " << neighbours.size() << endl;
+    
+//     // Call RobustPrune to test behavior
+//     RobustPrune(&node1, neighbours, 1.5, 3);
+
+//     // Free allocated memory to avoid memory leaks
+//     for (Node* n : neighbours) {
+//         if (n != &node1) { // Avoid deleting the statically allocated node1
+//             delete n;
+//         }
+//     }
+
+//     // Basic assertions to check if pruning works as expected
+//     std::cout << "Test passed!" << std::endl;
+// }
+
+
+// int main() {
+//     testRobustPrune();
+//     return 0;
+// }
