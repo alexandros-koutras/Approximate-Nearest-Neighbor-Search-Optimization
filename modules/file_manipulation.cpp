@@ -77,6 +77,7 @@ vector<Node*> load_fvecs(const string& filename) {
 
 // Function to read .bvecs file
 vector<Node*> load_bvecs(const string& filename) {
+
     ifstream input(filename, ios::binary);
     if (!input) {
         cerr << "Could not open file: " << filename << endl;
@@ -109,4 +110,35 @@ vector<Node*> load_bvecs(const string& filename) {
     input.close();
 
     return nodes;
+}
+
+// Function to read .ivecs ground truth file
+vector<vector<int>> load_groundtruth(const string& filename) {
+    ifstream input(filename, ios::binary);
+    if (!input) {
+        cerr << "Could not open file: " << filename << endl;
+        exit(1);
+    }
+
+    vector<vector<int>> groundtruth;
+    while (true) {
+        int k;
+        if (!input.read(reinterpret_cast<char*>(&k), sizeof(int))) {
+            if (input.eof()) break;
+            cerr << "Error reading number of neighbors from file." << endl;
+            break;
+        }
+
+        vector<int> neighbors(k);
+        for (int i = 0; i < k; ++i) {
+            if (!input.read(reinterpret_cast<char*>(&neighbors[i]), sizeof(int))) {
+                cerr << "Error reading neighbor IDs from file." << endl;
+                break;
+            }
+        }
+        groundtruth.push_back(neighbors);
+    }
+    input.close();
+
+    return groundtruth;
 }

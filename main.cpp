@@ -11,6 +11,26 @@ bool ends_with(const string& str, const string& suffix) {
     }
 }
 
+double computeRecall(const vector<int>& groundTruth, const vector<Node*>& retrievedNeighbors) {
+    int truePositiveCount = 0;
+    unordered_set<int> retrievedIds;
+
+    // Store retrieved neighbor IDs in a set for fast lookup
+    for (Node* node : retrievedNeighbors) {
+        retrievedIds.insert(node->id);
+    }
+
+    // Count the number of true positives (common neighbors)
+    for (int gtId : groundTruth) {
+        if (retrievedIds.find(gtId) != retrievedIds.end()) {
+            truePositiveCount++;
+        }
+    }
+
+    // Recall is the fraction of true positive neighbors
+    return static_cast<double>(truePositiveCount) / retrievedNeighbors.size();
+}
+
 int main(int argc, char* argv[]) {
     if (argc < 11) {
         cerr << "Usage: " << argv[0] << " -i <base.vecs> -q <query.vecs>-g <groundtruth.vecs> -k <k> -l <L> -r <R> -a <a>\n";
@@ -30,8 +50,10 @@ int main(int argc, char* argv[]) {
                 break;
             case 'q':
                 query_file = optarg;
+                break;
             case 'g':
                 groundtruth_file = optarg;
+                break;
             case 'k':
                 k = stoi(optarg);
                 break;

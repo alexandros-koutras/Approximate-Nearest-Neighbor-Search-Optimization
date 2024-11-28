@@ -1,6 +1,6 @@
 #include "../include/vamana.h"
 
-//find the centroid of a cluster
+//find the centroid of a cluster 
 Node* findCentroid(const vector<Node*>& cluster) {
     size_t dimensions = cluster[0]->coords.size();//number of dimensions
     Node* centroid = new Node;//centroid node and coordinates initialization

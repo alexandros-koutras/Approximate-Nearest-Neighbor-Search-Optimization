@@ -37,6 +37,8 @@ vector<Node*> load_fvecs(const string& filename);
 
 vector<Node*> load_bvecs(const string& filename);
 
+vector<vector<int>> load_groundtruth(const string& filename);
+
 void RobustPrune(Node* node, vector<Node*> possible_neighbours, double a, unsigned int max_neighbours);
 
 bool compare_distance(Node* node1, Node* node2);
@@ -49,25 +51,7 @@ void initializeRandomGraph(vector<Node*>& nodes, unsigned int R) ;
 
 Node* create_node(unsigned int id, const vector<double>& coords);
 
-double computeRecall(const vector<int>& groundTruth, const vector<Node*>& retrievedNeighbors) {
-    int truePositiveCount = 0;
-    unordered_set<int> retrievedIds;
-
-    // Store retrieved neighbor IDs in a set for fast lookup
-    for (Node* node : retrievedNeighbors) {
-        retrievedIds.insert(node->id);
-    }
-
-    // Count the number of true positives (common neighbors)
-    for (int gtId : groundTruth) {
-        if (retrievedIds.find(gtId) != retrievedIds.end()) {
-            truePositiveCount++;
-        }
-    }
-
-    // Recall is the fraction of true positive neighbors
-    return static_cast<double>(truePositiveCount) / retrievedNeighbors.size();
-}
+double computeRecall(const vector<int>& groundTruth, const vector<Node*>& retrievedNeighbors);
 
 
 
