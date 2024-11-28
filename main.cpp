@@ -13,21 +13,25 @@ bool ends_with(const string& str, const string& suffix) {
 
 int main(int argc, char* argv[]) {
     if (argc < 11) {
-        cerr << "Usage: " << argv[0] << " -i <base.vecs> -k <k> -l <L> -r <R> -a <a>\n";
+        cerr << "Usage: " << argv[0] << " -i <base.vecs> -q <query.vecs>-g <groundtruth.vecs> -k <k> -l <L> -r <R> -a <a>\n";
         
         return 1;
     }
 
-    string base_file;
+    string base_file, query_file, groundtruth_file;
     int k = 0, L = 0, R = 0;
     double a = 0.0;
 
     int opt;
-    while ((opt = getopt(argc, argv, "i:k:l:r:a:")) != -1) {
+    while ((opt = getopt(argc, argv, "i:q:g:k:l:r:a:")) != -1) {
         switch (opt) {
             case 'i':
                 base_file = optarg;
                 break;
+            case 'q':
+                query_file = optarg;
+            case 'g':
+                groundtruth_file = optarg;
             case 'k':
                 k = stoi(optarg);
                 break;
@@ -68,6 +72,8 @@ int main(int argc, char* argv[]) {
 
     cout << endl << endl;
     cout << "Base file: " << base_file << endl;
+    cout << "Query file: " <<query_file << endl;
+    cout << "Groundtruth file: " << groundtruth_file << endl;
     cout << "k: " << k << endl;
     cout << "L: " << L << endl;
     cout << "R: " << R << endl;
@@ -81,6 +87,50 @@ int main(int argc, char* argv[]) {
     // Run the Vamana Indexing Algorithm
     VamanaIndexingAlgorithm(nodes,k, L, R, a,n);
 
+    cout << "Graph has been created!" <<endl;
+
+
+    vector<Node*> queries = load_fvecs(query_file);
+    vector<vector<int>> groundtruth = load_groundtruth(groundtruth_file);
+
+    double totalRecall = 0.0;
+    int queryCount = 0;
+
+    for (size_t i = 0; i < queries.size(); ++i) {
+        Node* queryNode = queries[i];
+        vector<int>& groundTruthForQuery = groundtruth[i];  // Get the ground truth for this query
+
+        // Perform Greedy Search for the query
+        int randomIndex = rand() % nodes.size();
+        vector<Node*> nearestNeighbors = GreedySearch(nodes.at(randomIndex), queryNode, k, L);
+
+        // Print nearest neighbors from GreedySearch
+        cout << "Nearest neighbors from GreedySearch for query " << queryNode->id << ": ";
+        for (Node* neighbor : nearestNeighbors) {
+            cout << neighbor->id << " ";
+        }
+        cout << endl;
+
+        // Print ground truth neighbors for the query
+        cout << "Ground truth neighbors for query " << queryNode->id << ": ";
+        for (int gtId : groundTruthForQuery) {
+            cout << gtId << " ";
+        }
+        cout << endl;
+
+        // Compute Recall for this query
+        double recall = computeRecall(groundTruthForQuery, nearestNeighbors);
+        totalRecall += recall;
+        queryCount++;
+
+        // Print the recall for this query
+        cout << "Recall for query " << queryNode->id << ": " << recall << endl;
+        cout << "--------------------------------------------------" << endl;
+    }
+
+    double averageRecall = totalRecall / queryCount;
+    cout << "Average Recall: " << averageRecall << endl;
+
     // End time measurement
     auto end = chrono::high_resolution_clock::now();
 
@@ -90,8 +140,8 @@ int main(int argc, char* argv[]) {
     cout << "The vamana graph has been successfully implemented" << endl;
     cout << "Execution time: " << duration.count() << " seconds" << endl;
 
-    // Cleanup: free memory
-    for (Node* node : nodes) delete node;
+    //Free the allocated memory
+    for(Node* node: nodes) delete node;
 
 
     return 0;

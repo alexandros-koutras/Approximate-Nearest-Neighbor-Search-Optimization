@@ -6,6 +6,7 @@ Node* create_node(unsigned int id, const vector<double>& coords) {
     Node* node = new Node();
     node->id = id;
     node->coords = coords;
+    
     return node;
 }
 

@@ -22,6 +22,11 @@ struct Node {
     float distance;                                         
     vector<double> coords;  //coordinates
     vector<Node*> out_neighbors; 
+
+    ~Node() {
+        // Clear neighbors if needed (e.g., no shared ownership)
+        out_neighbors.clear();
+    }
 };
 
 double euclidean(const Node* a, const Node* b);
@@ -43,6 +48,26 @@ void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, double a
 void initializeRandomGraph(vector<Node*>& nodes, unsigned int R) ;
 
 Node* create_node(unsigned int id, const vector<double>& coords);
+
+double computeRecall(const vector<int>& groundTruth, const vector<Node*>& retrievedNeighbors) {
+    int truePositiveCount = 0;
+    unordered_set<int> retrievedIds;
+
+    // Store retrieved neighbor IDs in a set for fast lookup
+    for (Node* node : retrievedNeighbors) {
+        retrievedIds.insert(node->id);
+    }
+
+    // Count the number of true positives (common neighbors)
+    for (int gtId : groundTruth) {
+        if (retrievedIds.find(gtId) != retrievedIds.end()) {
+            truePositiveCount++;
+        }
+    }
+
+    // Recall is the fraction of true positive neighbors
+    return static_cast<double>(truePositiveCount) / retrievedNeighbors.size();
+}
 
 
 
