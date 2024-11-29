@@ -2,7 +2,7 @@
 
 
 // This is the euklideian method to calculate the distance of 2 nodes
-float euclidean(const Node* a, const Node* b) {
+double euclidean(const Node* a, const Node* b) {
     float sum = 0.0;
     for (size_t i = 0; i < a->coords.size(); ++i) {
         float diff = a->coords[i] - b->coords[i];
@@ -16,7 +16,7 @@ bool compare_distance(Node* node1, Node* node2) {
     return node1->distance < node2->distance;
 }
 
-void RobustPrune(Node* node, vector<Node*> possible_neighbours, float a, unsigned int max_neighbours) {
+void FilteredRobustPrune(Node* node, vector<Node*> possible_neighbours, float a, unsigned int max_neighbours) {
     // Add the already existing neighbors to the possible neighbors
     for (Node* n_ptr : node->out_neighbors) {
         possible_neighbours.push_back(n_ptr);
@@ -57,6 +57,9 @@ void RobustPrune(Node* node, vector<Node*> possible_neighbours, float a, unsigne
         // Pruning method
         auto it = possible_neighbours.begin();
         while (it != possible_neighbours.end()) {
+            if (node->coords.at(0) != closest->coords.at(0) && (*it)->coords.at(0) != closest->coords.at(0)) {
+                continue;
+            }
             float pruning = a * euclidean(closest, *it); 
             if (pruning <= (*it)->distance) {
                 it = possible_neighbours.erase(it);

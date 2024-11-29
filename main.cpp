@@ -109,7 +109,7 @@ int main(int argc, char* argv[]) {
     auto start = chrono::high_resolution_clock::now();
 
     // Run the Vamana Indexing Algorithm
-    VamanaIndexingAlgorithm(nodes, k, L, R, a, n);
+    DirectedGraph graph = FilteredVamana(nodes, k, L, R, a);
 
     // End time measurement
     auto end = chrono::high_resolution_clock::now();
