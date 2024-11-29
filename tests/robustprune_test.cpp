@@ -16,6 +16,9 @@ void test_euclidean_distance() {
     Node* node2 = create_node(2, {4.0, 5.0, 6.0});
     double expected_distance = sqrt(27.0);  // sqrt((4-1)^2 + (5-2)^2 + (6-3)^2)
     TEST_CHECK(euclidean(node1, node2) == expected_distance);
+
+    delete node1;
+    delete node2;
 }
 
 void test_node_add_get_neighbour() {
@@ -25,6 +28,9 @@ void test_node_add_get_neighbour() {
 
     TEST_CHECK(node1->out_neighbors.size() == 1);
     TEST_CHECK(node1->out_neighbors.at(0)->coords == node2->coords);
+
+    delete node1;
+    delete node2;
 }
 
 void test_compare_func_for_nodes() {
@@ -37,6 +43,10 @@ void test_compare_func_for_nodes() {
 
     bool d = compare_distance(node1, node2);
     TEST_CHECK(d == true);
+
+    delete reference_node;
+    delete node1;
+    delete node2;
 }
 
 void test_robust_prune() {
@@ -76,6 +86,12 @@ void test_robust_prune() {
     // Ensure distances are sorted
     bool sorted = is_sorted(distances.begin(), distances.end());
     TEST_CHECK(sorted);
+
+    delete central_node;
+    delete node1;
+    delete node2;
+    delete node3;
+    delete node4;
 }
 
 

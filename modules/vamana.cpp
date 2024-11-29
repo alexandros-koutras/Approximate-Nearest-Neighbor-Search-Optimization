@@ -1,5 +1,4 @@
 #include "../include/vamana.h"
-#include "../include/medoid.h"
 
 //random R-regulated directed graph
 void initializeRandomGraph(vector<Node*>& nodes, unsigned int R) {
@@ -11,8 +10,7 @@ void initializeRandomGraph(vector<Node*>& nodes, unsigned int R) {
         while (neighbors.size() < R) {
             unsigned int random_index = rand() % nodes.size();
             if (random_index != node->id && neighbors.find(random_index) == neighbors.end()) {
-                Node* neighbor = nodes[random_index];
-                node->out_neighbors.push_back(neighbor);
+                node->out_neighbors.push_back(nodes[random_index]);
                 neighbors.insert(random_index);
             }
         }
@@ -24,27 +22,33 @@ void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, double a
     initializeRandomGraph(nodes, R);
 
     //Step 2: Find the medoid s of the dataset 
-    if (n == 0)return;//empty
-        //old medoid time consuming
-        /*int medoid = 0;
-        double min_dist = numeric_limits<float>::max();
-        for (int i = 0; i < n; i++){
-            double total_dist  =0;
-            for(int j = 0; j < n; j++){
-                if(i != j){
-                    total_dist += euclidean(nodes[i],nodes[j]);
-                }
-            }
-            if (total_dist < min_dist){
-                min_dist = total_dist;
-                medoid = i;
-            }
-        }*/
-    int medoid=approximateMedoid(nodes,k);
-    Node* s=nodes[medoid];
+    if (n == 0)
+        return;     //empty
+
+    //old medoid time consuming
+    // int medoid = 0;
+    // double min_dist = numeric_limits<float>::max();
+
+    // for (int i = 0; i < n; i++){
+    //     double total_dist  =0;
+    //     for(int j = 0; j < n; j++){
+    //         if(i != j){
+    //             total_dist += euclidean(nodes[i],nodes[j]);
+    //         }
+    //     }
+    //     if (total_dist < min_dist){
+    //         min_dist = total_dist;
+    //         medoid = i;
+    //     }
+    // }
+
+    cout << "Medoid time mfs\n";
+    int medoid = approximateMedoid(nodes,k);
+    Node* s = nodes[medoid];
 
     cout << "The medoid point found: " << endl;
     cout << "[ ";
+
     for (unsigned int i = 0; i < s->coords.size(); i++) {
         if (i == s->coords.size() - 1) {
             cout << s->coords.at(i);
@@ -55,15 +59,18 @@ void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, double a
     cout << "]" << endl;
 
     //Step 3: Iterate through the dataset in a random order
-     vector<int> permutation(n);//list of all indices
-        for(int i = 0; i < n; i++){//populate the list with indices from 0 to n-1
-            permutation[i]=i;
-        }
-        //fisher-yates shuffles //random_graph()
-        for(int i = n-1;i>0;i--){
-            int j = rand()%(i+1);//random num from 0 to i
-            swap(permutation[i],permutation[j]);
-        }
+    vector<int> permutation(n);         //list of all indices
+
+    for(int i = 0; i < n; i++){     //populate the list with indices from 0 to n-1
+        permutation[i]=i;
+    }
+
+    //fisher-yates shuffles //random_graph()
+    for(int i = n - 1; i > 0; i--){
+        int j = rand() % (i + 1);//random num from 0 to i
+        swap(permutation[i], permutation[j]);
+    }
+    
     for (int i : permutation) {
         Node* p = nodes[i];
         

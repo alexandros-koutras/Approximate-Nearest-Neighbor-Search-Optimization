@@ -21,6 +21,14 @@ void RobustPrune(Node* node, vector<Node*> possible_neighbours, double a, unsign
         possible_neighbours.push_back(n_ptr);
     }
 
+    for (auto it = possible_neighbours.begin(); it != possible_neighbours.end(); ) {
+        if ((*it)->id == node->id) {
+            it = possible_neighbours.erase(it);  // Erase and move the iterator to the next element
+        } else {
+            ++it;  // Only increment the iterator if no element was erased
+        }
+    }
+
     // Clear node's neighbors
     node->out_neighbors.clear();
 
