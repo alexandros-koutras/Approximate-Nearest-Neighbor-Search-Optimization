@@ -1,6 +1,5 @@
 #include "../include/acutest.h"
 #include "../include/vamana.h"
-#include "../include/medoid.h"
 
 Node* create_node(unsigned int id, const vector<double>& coords) {
     Node* node = new Node();
