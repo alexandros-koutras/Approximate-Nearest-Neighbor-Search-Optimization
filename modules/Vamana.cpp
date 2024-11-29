@@ -30,7 +30,6 @@ void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, double a
     //Step 1: Initialize a random R directed graph
     initializeRandomGraph(nodes, R);
 
-    cout << "all good initialise\n";
     cout << "goes in if\n";
 
     //Step 2: Find the medoid s of the dataset 
@@ -51,7 +50,7 @@ void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, double a
             }
         }*/
         int medoid=approximateMedoid(nodes,k);
-        //cout<<"Found medoid: "<< medoid<<endl;
+        cout<<"Found medoid: "<< medoid<<endl;
     Node* s=nodes[medoid];
 
     //Step 3: Iterate through the dataset in a random order
@@ -64,22 +63,19 @@ void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, double a
             int j = rand()%(i+1);//random num from 0 to i
             swap(permutation[i],permutation[j]);
         }
-    cout << "Mpainoyme stis sunartiseis toy alej kai tis blamenhs\n";
+    cout << "Mpainoyme stis aux functions\n";
     for (int i : permutation) {
         //cout<<"Search for node: "<< i <<endl;
         Node* p = nodes[i];
         
         //Run GreedySearch to find the visited set V_p
-        cout << "greedy(mpliaks)\n";
         vector<Node*> V_p = GreedySearch(s, p, 1, L);
         //cout<<"After the greedy: "<<endl; 
         // for(Node* node : V_p){
         //     cout<< node->id <<endl;
         // }
-        cout << "robust<3\n";
         //Run RobustPrune on p with V_p, a, and R
         RobustPrune(p, V_p, a, R);
-        cout << "ok apo ayto\n";
 
         //Add reverse edges 
         for (Node* neighbor : p->out_neighbors) {

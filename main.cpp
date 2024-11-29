@@ -44,7 +44,6 @@ int main(int argc, char* argv[]) {
     // Run the Vamana Indexing Algorithm
     cout << "heyyy\n";
     VamanaIndexingAlgorithm(nodes,k, L, R, a,n);
-    cout << "222222\n";
 
     // Cleanup: free memory
     for (Node* node : nodes) delete node;

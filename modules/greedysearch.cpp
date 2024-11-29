@@ -3,7 +3,7 @@
 
 // GreedySearch αλγόριθμος
 vector<Node*> GreedySearch(Node* s, const Node* x_q, unsigned int k, unsigned int list_size) {
-    cout << "mpliax\n";
+    
     if (!s) {
         //cerr << "Error: Starting node is null." << endl;
         return {}; // Return an empty result if the starting node is null
