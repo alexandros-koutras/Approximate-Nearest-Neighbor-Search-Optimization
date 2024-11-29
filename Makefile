@@ -40,7 +40,12 @@ tests: $(MODULES_OBJ)
 run: all
 	@./$(EXEC) $(ARGS)
 
+check: tests
+
+# Run the executable with Valgrind
+valgrind: all
+	valgrind --leak-check=full --track-origins=yes ./$(EXEC) $(ARGS)
+
 # Clean the executable files 
 clean:
 	rm -f $(MODULES_OBJ) $(TESTS_OBJ) $(MAIN_OBJ) $(EXEC) $(basename $(TESTS_SRC))
-

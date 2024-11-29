@@ -120,8 +120,7 @@ void test_vamana_medoid_calculation() {
         create_node(3, {1.0, 1.0})   
     };                               
 
-    int k = 1, L = 2, R = 2;
-    double a = 1.5;
+    unsigned int k = 1;
     int n = nodes.size();
 
     int medoid1=approximateMedoid(nodes,k);

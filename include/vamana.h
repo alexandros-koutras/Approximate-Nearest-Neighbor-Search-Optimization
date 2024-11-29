@@ -26,9 +26,11 @@ struct Node {
 
 double euclidean(const Node* a, const Node* b);
 
-vector<Node*> load_ivecs(const string& filename);
+vector<vector<int>> loadIvecs(const string& filename);
 
-vector<Node*> load_fvecs(const string& filename);
+vector<vector<float>> loadFvecs(const string& filename);
+
+vector<Node*> createNodesFromVectors(const vector<vector<float>>& vectors);
 
 vector<Node*> load_bvecs(const string& filename);
 
@@ -44,6 +46,8 @@ void initializeRandomGraph(vector<Node*>& nodes, unsigned int R) ;
 
 Node* create_node(unsigned int id, const vector<double>& coords);
 
+Node* findCentroid(const vector<Node*>& cluster);
 
+vector<vector<Node*>> kMeansClustering(const vector<Node*>& nodes, int k, int maxIterations = 100);
 
-
+int approximateMedoid(const vector<Node*>& nodes, int k);
