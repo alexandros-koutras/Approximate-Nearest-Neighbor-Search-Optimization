@@ -11,7 +11,7 @@ bool ends_with(const string& str, const string& suffix) {
     }
 }
 
-double computeRecall(const vector<int>& groundTruth, const vector<Node*>& retrievedNeighbors) {
+float computeRecall(const vector<int>& groundTruth, const vector<Node*>& retrievedNeighbors) {
     int truePositiveCount = 0;
     unordered_set<int> retrievedIds;
 
@@ -28,7 +28,7 @@ double computeRecall(const vector<int>& groundTruth, const vector<Node*>& retrie
     }
 
     // Recall is the fraction of true positive neighbors
-    return static_cast<double>(truePositiveCount) / retrievedNeighbors.size();
+    return static_cast<float>(truePositiveCount) / retrievedNeighbors.size();
 }
 
 int main(int argc, char* argv[]) {
@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
     string query_file;
     string groundtruth_file;
     int k = 0, L = 0, R = 0;
-    double a = 0.0;
+    float a = 0.0;
 
     int opt;
     while ((opt = getopt(argc, argv, "i:q:g:k:l:r:a:")) != -1) {
@@ -115,7 +115,7 @@ int main(int argc, char* argv[]) {
     auto end = chrono::high_resolution_clock::now();
 
     // Calculate elapsed time
-    chrono::duration<double> duration = end - start;
+    chrono::duration<float> duration = end - start;
 
     cout << "The vamana graph has been successfully implemented" << endl;
     cout << "Execution time: " << duration.count() << " seconds" << endl;
@@ -125,7 +125,7 @@ int main(int argc, char* argv[]) {
 
     vector<vector<int>> groundtruth = loadIvecs(groundtruth_file);
 
-    double totalRecall = 0.0;
+    float totalRecall = 0.0;
     int queryCount = 0;
 
     for (size_t i = 0; i < queries.size(); ++i) {
@@ -151,7 +151,7 @@ int main(int argc, char* argv[]) {
         cout << endl;
 
         // Compute Recall for this query
-        double recall = computeRecall(groundTruthForQuery, nearestNeighbors);
+        float recall = computeRecall(groundTruthForQuery, nearestNeighbors);
         totalRecall += recall;
         queryCount++;
 
@@ -160,7 +160,7 @@ int main(int argc, char* argv[]) {
         cout << "--------------------------------------------------" << endl;
     }
 
-    double averageRecall = totalRecall / queryCount;
+    float averageRecall = totalRecall / queryCount;
     cout << "Average Recall: " << averageRecall << endl;
 
     // Cleanup: free memory

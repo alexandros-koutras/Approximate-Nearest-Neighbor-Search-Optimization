@@ -17,14 +17,14 @@ vector<Node*> GreedySearch(Node* s, const Node* x_q, unsigned int k, unsigned in
 
         //find the closest unvisited node to x_q
         Node* p_star = nullptr;
-        double min_distance = numeric_limits<double>::max();
+        float min_distance = numeric_limits<float>::max();
 
         //  traverse the search list L
         for (Node* p : L) {
             //  and calculate the distance from x_q for the nodes that are not visited
             if (V.find(p) == V.end()) {
 
-                double distance = euclidean(p, x_q);
+                float distance = euclidean(p, x_q);
               
                 if (distance < min_distance) {
                     min_distance = distance;

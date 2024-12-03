@@ -20,11 +20,11 @@ using namespace std;
 struct Node {
     unsigned int id;    
     float distance;                                         
-    vector<double> coords;  //coordinates
+    vector<float> coords;  //coordinates
     vector<Node*> out_neighbors; 
 };
 
-double euclidean(const Node* a, const Node* b);
+float euclidean(const Node* a, const Node* b);
 
 vector<vector<int>> loadIvecs(const string& filename);
 
@@ -34,17 +34,17 @@ vector<Node*> createNodesFromVectors(const vector<vector<float>>& vectors);
 
 vector<Node*> load_bvecs(const string& filename);
 
-void RobustPrune(Node* node, vector<Node*> possible_neighbours, double a, unsigned int max_neighbours);
+void RobustPrune(Node* node, vector<Node*> possible_neighbours, float a, unsigned int max_neighbours);
 
 bool compare_distance(Node* node1, Node* node2);
 
 vector<Node*> GreedySearch(Node* s, const Node* x_q, unsigned int k, unsigned int list_size);
 
-void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, double a,int n);
+void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, float a,int n);
 
 void initializeRandomGraph(vector<Node*>& nodes, unsigned int R) ;
 
-Node* create_node(unsigned int id, const vector<double>& coords);
+Node* create_node(unsigned int id, const vector<float>& coords);
 
 Node* findCentroid(const vector<Node*>& cluster);
 

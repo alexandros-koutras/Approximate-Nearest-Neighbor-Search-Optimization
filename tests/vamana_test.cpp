@@ -1,7 +1,7 @@
 #include "../include/acutest.h"
 #include "../include/vamana.h"
 
-Node* create_node(unsigned int id, const vector<double>& coords) {
+Node* create_node(unsigned int id, const vector<float>& coords) {
     Node* node = new Node();
     node->id = id;
     node->coords = coords;
@@ -22,7 +22,7 @@ void test_vamana_basic_functionality() {
     //     cout << "Node ID: " << (nodes[i] ? nodes[i]->id : -1) << " | Possible neighbors count: " << nodes[i]->out_neighbors.size() << std::endl;}
     
     unsigned int k = 1, L = 2, R = 2;
-    double a = 1.5;
+    float a = 1.5;
     int n = nodes.size();
 
     VamanaIndexingAlgorithm(nodes, k, L, R, a, n);
@@ -47,7 +47,7 @@ void test_vamana_small_dataset() {
     //     cout << "Node ID: " << (nodes[i] ? nodes[i]->id : -1) << " | Possible neighbors count: " << nodes[i]->out_neighbors.size() << std::endl;}
 
     unsigned int k = 1, L = 1, R = 1;
-    double a = 1.5;
+    float a = 1.5;
     int n = nodes.size();
 
     VamanaIndexingAlgorithm(nodes, k, L, R, a, n);
@@ -93,11 +93,11 @@ void test_vamana_large_dataset() {
     const int num_nodes = 100;
     vector<Node*> nodes;
     for (int i = 0; i < num_nodes; ++i) {
-        nodes.push_back(create_node(i, {static_cast<double>(i), static_cast<double>(i)}));
+        nodes.push_back(create_node(i, {static_cast<float>(i), static_cast<float>(i)}));
     }
 
     unsigned int k = 1, L = 10, R = 5;
-    double a = 1.5;
+    float a = 1.5;
     int n = nodes.size();
 
     VamanaIndexingAlgorithm(nodes, k, L, R, a, n);
@@ -126,9 +126,9 @@ void test_vamana_medoid_calculation() {
 
     //Expected medoid is node 1
     int medoid2 = nodes[0]->id;
-    double min_dist = numeric_limits<double>::max();
+    float min_dist = numeric_limits<float>::max();
     for (int i = 0; i < n; i++) {
-        double total_dist = 0;
+        float total_dist = 0;
         for (int j = 0; j < n; j++) {
             if (i != j) {
                 total_dist += euclidean(nodes[i], nodes[j]);

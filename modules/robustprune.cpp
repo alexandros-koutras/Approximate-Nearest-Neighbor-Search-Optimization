@@ -2,10 +2,11 @@
 
 
 // This is the euklideian method to calculate the distance of 2 nodes
-double euclidean(const Node* a, const Node* b) {
-    double sum = 0.0;
+float euclidean(const Node* a, const Node* b) {
+    float sum = 0.0;
     for (size_t i = 0; i < a->coords.size(); ++i) {
-        sum += pow (a->coords[i] - b->coords[i],2);
+        float diff = a->coords[i] - b->coords[i];
+        sum += diff * diff;
     }
     return sqrt(sum);
 }
@@ -15,7 +16,7 @@ bool compare_distance(Node* node1, Node* node2) {
     return node1->distance < node2->distance;
 }
 
-void RobustPrune(Node* node, vector<Node*> possible_neighbours, double a, unsigned int max_neighbours) {
+void RobustPrune(Node* node, vector<Node*> possible_neighbours, float a, unsigned int max_neighbours) {
     // Add the already existing neighbors to the possible neighbors
     for (Node* n_ptr : node->out_neighbors) {
         possible_neighbours.push_back(n_ptr);
@@ -42,17 +43,22 @@ void RobustPrune(Node* node, vector<Node*> possible_neighbours, double a, unsign
 
     // Select closest neighbors with pruning
     // Iterate through the possible neighbors until empty or reach maxinum neighbors
-    while (!possible_neighbours.empty() && node->out_neighbors.size() < max_neighbours) {
+    while (!possible_neighbours.empty()) {
         Node* closest = possible_neighbours.front();
 
         // Add the node to the neighbours of the node and remove it from the possible ones
         node->out_neighbors.push_back(closest);
         possible_neighbours.erase(possible_neighbours.begin());
 
+        if (node->out_neighbors.size() == max_neighbours) {
+            break;
+        }
+
         // Pruning method
         auto it = possible_neighbours.begin();
         while (it != possible_neighbours.end()) {
-            if (a * closest->distance <= (*it)->distance) {
+            float pruning = a * euclidean(closest, *it); 
+            if (pruning <= (*it)->distance) {
                 it = possible_neighbours.erase(it);
             } else {
                 ++it;

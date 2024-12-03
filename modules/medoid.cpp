@@ -18,7 +18,7 @@ Node* findCentroid(const vector<Node*>& cluster) {
     }
 
     // Divide each coordinate sum by the number of points to get the centroid
-    for (double& value : centroid->coords) {
+    for (float& value : centroid->coords) {
         value /= cluster.size();
     }
 
@@ -50,9 +50,9 @@ vector<vector<Node*>> kMeansClustering(const vector<Node*>& nodes, int k, int ma
         // Assign each node to the nearest centroid
         for (const Node* node : nodes) {
             int closestCluster = 0;
-            double minDist = euclidean(node, centroids[0]); // Distance to the first centroid
+            float minDist = euclidean(node, centroids[0]); // Distance to the first centroid
             for (int j = 1; j < k; ++j) {
-                double dist = euclidean(node, centroids[j]);
+                float dist = euclidean(node, centroids[j]);
                 if (dist < minDist) { // If a nearer centroid is found
                     minDist = dist;
                     closestCluster = j;
@@ -112,9 +112,9 @@ int approximateMedoid(const vector<Node*>& nodes, int k) {
 
     // Find the node within the largest cluster closest to the centroid
     int medoidIndex = -1;
-    double minDist = std::numeric_limits<double>::max();
+    float minDist = std::numeric_limits<float>::max();
     for (const Node* node : clusters[largestClusterIndex]) {
-        double dist = euclidean(node, centroid);
+        float dist = euclidean(node, centroid);
         if (dist < minDist) {
             minDist = dist;
             medoidIndex = node->id;

@@ -3,7 +3,7 @@
 #include "../include/vamana.h"
 
 // Helper function to create a Node with specified coordinates
-Node* create_node(unsigned int id, const vector<double>& coords) {
+Node* create_node(unsigned int id, const vector<float>& coords) {
     Node* node = new Node();
     node->id = id;
     node->coords = coords;
@@ -14,7 +14,7 @@ Node* create_node(unsigned int id, const vector<double>& coords) {
 void test_euclidean_distance() {
     Node* node1 = create_node(1, {1.0, 2.0, 3.0});
     Node* node2 = create_node(2, {4.0, 5.0, 6.0});
-    double expected_distance = sqrt(27.0);  // sqrt((4-1)^2 + (5-2)^2 + (6-3)^2)
+    float expected_distance = sqrt(27.0);  // sqrt((4-1)^2 + (5-2)^2 + (6-3)^2)
     TEST_CHECK(euclidean(node1, node2) == expected_distance);
 
     delete node1;
@@ -61,7 +61,7 @@ void test_robust_prune() {
 
     // Define parameters
     unsigned int max_neighbours = 2;
-    double a = 1.5;
+    float a = 1.5;
 
     // Run RobustPrune
     RobustPrune(central_node, possible_neighbours, a, max_neighbours);
@@ -70,15 +70,15 @@ void test_robust_prune() {
     TEST_CHECK(central_node->out_neighbors.size() <= max_neighbours);
 
     // Validate that the closest neighbors are chosen
-    vector<double> distances;
+    vector<float> distances;
     for (Node* neighbor : central_node->out_neighbors) {
         distances.push_back(neighbor->distance);
     }
     
     // Check if distances are sorted and within the acceptable range
-    double closest_distance = distances.front();
+    float closest_distance = distances.front();
     bool in_range = true;
-    for (double dist : distances) {
+    for (float dist : distances) {
         TEST_CHECK(dist <= a * closest_distance);
         in_range = in_range && (dist <= a * closest_distance);
     }
