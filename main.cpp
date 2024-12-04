@@ -133,8 +133,8 @@ int main(int argc, char* argv[]) {
         vector<int>& groundTruthForQuery = groundtruth[i];  // Get the ground truth for this query
 
         // Perform Greedy Search for the query
-        int randomIndex = rand() % nodes.size();
-        vector<Node*> nearestNeighbors = GreedySearch(nodes.at(randomIndex), queryNode, k, L);
+        int medoid = approximateMedoid(nodes,k);
+        vector<Node*> nearestNeighbors = GreedySearch(nodes.at(medoid), queryNode, k, L);
 
         // Print nearest neighbors from GreedySearch
         cout << "Nearest neighbors from GreedySearch for query " << queryNode->id << ": ";
