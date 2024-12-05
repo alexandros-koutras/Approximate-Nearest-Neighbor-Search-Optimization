@@ -1,5 +1,13 @@
 #include "../includes/greedysearch.h"
 
+double euclidean(const Node* a, const Node* b) {
+    double sum = 0.0;
+    for (size_t i = 0; i < a->coords.size(); ++i) {
+        sum += pow (a->coords[i] - b->coords[i],2);
+    }
+    return sqrt(sum);
+}
+
 
 // GreedySearch αλγόριθμος
 vector<Node*> GreedySearch(Node* s, const Node* x_q, unsigned int k, unsigned int list_size) {

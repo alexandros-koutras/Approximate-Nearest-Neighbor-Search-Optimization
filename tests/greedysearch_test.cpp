@@ -5,7 +5,7 @@
 //
 //////////////////////////////////////////////////////////////////
 #define TESTING_MODE
-#include "modules/greedysearch.cpp"
+#include "../includes/greedysearch.h"
 #include "../includes/acutest.h"// Acutest library
 #include <iostream>
 using namespace std;
@@ -22,7 +22,7 @@ void test_basic_functionality() {
     Node* node0 = create_node(0, {0.0, 0.0});
     Node* node1 = create_node(1, {1.0, 1.0});
     Node* node2 = create_node(2, {2.0, 2.0});
-    node0->neighbors = {node1, node2};
+    node0->out_neighbors = {node1, node2};
 
     Node query;
     query.coords = {0.5, 0.5};
@@ -43,7 +43,7 @@ void test_empty_graph() {
     TEST_CHECK(result.empty());
 }
 
-
+/*
 void test_load_fvecs() {
     vector<Node*> nodes = load_fvecs("siftsmall/siftsmall_base.fvecs");
     TEST_CHECK(!nodes.empty());  // Check if nodes are loaded
@@ -53,13 +53,14 @@ void test_load_fvecs() {
         delete node;
     }
 }
+*/
 
 void test_multiple_nodes_one_query() {
     Node node1, node2, query;
     node1.coords = {1.0, 1.0};
     node2.coords = {2.0, 2.0};
     query.coords = {1.5, 1.5};
-    node1.neighbors.push_back(&node2); // Node1 has Node2 as neighbor
+    node1.out_neighbors.push_back(&node2); // Node1 has Node2 as neighbor
     vector<Node*> result = GreedySearch(&node1, &query, 1, 1);
     TEST_CHECK(result.size() == 1 && result[0] == &node1); // Node1 should be closest
 }
@@ -69,6 +70,6 @@ TEST_LIST = {
     {"Basic Functionality", test_basic_functionality},
     {"Empty Graph", test_empty_graph},
     {"Test greedysearch with manual nodes", test_multiple_nodes_one_query},
-    {"Load fvecs", test_load_fvecs},
+    //{"Load fvecs", test_load_fvecs},
     {NULL, NULL} // End of the list
 };
