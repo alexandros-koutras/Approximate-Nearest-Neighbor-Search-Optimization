@@ -43,7 +43,7 @@ void test_empty_graph() {
     TEST_CHECK(result.empty());
 }
 
-/*
+
 void test_load_fvecs() {
     vector<Node*> nodes = load_fvecs("siftsmall/siftsmall_base.fvecs");
     TEST_CHECK(!nodes.empty());  // Check if nodes are loaded
@@ -53,7 +53,7 @@ void test_load_fvecs() {
         delete node;
     }
 }
-*/
+
 
 void test_multiple_nodes_one_query() {
     Node node1, node2, query;
@@ -70,6 +70,6 @@ TEST_LIST = {
     {"Basic Functionality", test_basic_functionality},
     {"Empty Graph", test_empty_graph},
     {"Test greedysearch with manual nodes", test_multiple_nodes_one_query},
-    //{"Load fvecs", test_load_fvecs},
+    {"Load fvecs", test_load_fvecs},
     {NULL, NULL} // End of the list
 };
