@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////
 #define TESTING_MODE
 #include "modules/greedysearch.cpp"
-#include "acutest/include/acutest.h"// Acutest library
+#include "../includes/acutest.h"// Acutest library
 #include <iostream>
 using namespace std;
 
