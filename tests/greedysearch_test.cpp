@@ -1,19 +1,15 @@
-//////////////////////////////////////////////////////////////////
-//
-// Unit tests για τον ADT Map.
-// Οποιαδήποτε υλοποίηση οφείλει να περνάει όλα τα tests.
-//
-//////////////////////////////////////////////////////////////////
 #define TESTING_MODE
+
 #include "../includes/greedysearch.h"
 #include "../includes/acutest.h"// Acutest library
 #include <iostream>
 using namespace std;
 
+
 Node* create_node(unsigned int id, const vector<double>& coords) {
     Node* node = new Node();
     node->id = id;
-    node->coords =  vector<float>(coords.begin(), coords.end());
+    node->coords = coords;
     return node;
 }
 
@@ -45,7 +41,8 @@ void test_empty_graph() {
 
 
 void test_load_fvecs() {
-    vector<Node*> nodes = load_fvecs("siftsmall/siftsmall_base.fvecs");
+    vector<vector<float>> fvecsData = loadFvecs("siftsmall/siftsmall_base.fvecs");
+    vector<Node*> nodes = createNodesFromVectors(fvecsData);
     TEST_CHECK(!nodes.empty());  // Check if nodes are loaded
     TEST_CHECK(nodes[0]->coords.size() > 0);  // Check if coordinates are loaded
     

@@ -1,3 +1,4 @@
+
 #include "../includes/greedysearch.h"
 
 double euclidean(const Node* a, const Node* b) {
@@ -48,6 +49,7 @@ vector<Node*> load_fvecs(const string& filename) {
 }
 
 
+
 // GreedySearch αλγόριθμος
 vector<Node*> GreedySearch(Node* s, const Node* x_q, unsigned int k, unsigned int list_size) {
     if (!s) {
@@ -71,10 +73,12 @@ vector<Node*> GreedySearch(Node* s, const Node* x_q, unsigned int k, unsigned in
         // Εύρεση του πλησιέστερου κόμβου που δεν έχει επισκεφθεί
         for (Node* p : L) {
             if (V.find(p) == V.end()) {
+
                 if (distances.find(p) == distances.end()) {
                     distances[p] = euclidean(p, x_q); // Υπολογισμός απόστασης
                 }
                 double distance = distances[p];
+
                 if (distance < min_distance) {
                     min_distance = distance;
                     p_star = p;
@@ -112,6 +116,7 @@ vector<Node*> GreedySearch(Node* s, const Node* x_q, unsigned int k, unsigned in
         }
     }
 
+
     if (L.size() > k) {
         //using the function nth_element to sort only the list_size part of the vector 
         nth_element(L.begin(), L.begin() + k, L.end(), [&](Node* a, Node* b) {
@@ -122,4 +127,3 @@ vector<Node*> GreedySearch(Node* s, const Node* x_q, unsigned int k, unsigned in
         L.resize(k);
     }
     return L; 
-}
