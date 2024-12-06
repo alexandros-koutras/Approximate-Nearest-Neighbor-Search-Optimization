@@ -67,17 +67,19 @@ vector<Node*> GreedySearch(Node* s, const Node* x_q, unsigned int k, unsigned in
 
         //find the closest unvisited node to x_q
         Node* p_star = nullptr;
-        double min_distance = numeric_limits<double>::max();
+        float min_distance = numeric_limits<float>::max();
 
         //  traverse the search list L
         // Εύρεση του πλησιέστερου κόμβου που δεν έχει επισκεφθεί
         for (Node* p : L) {
             if (V.find(p) == V.end()) {
 
+
                 if (distances.find(p) == distances.end()) {
                     distances[p] = euclidean(p, x_q); // Υπολογισμός απόστασης
                 }
                 double distance = distances[p];
+
 
                 if (distance < min_distance) {
                     min_distance = distance;

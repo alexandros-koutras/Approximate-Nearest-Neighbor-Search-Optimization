@@ -17,7 +17,7 @@ void initializeRandomGraph(vector<Node*>& nodes, unsigned int R) {
     }
 }
 
-void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, double a,int n) {
+void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, float a, int n) {
     //Step 1: Initialize a random R directed graph
     initializeRandomGraph(nodes, R);
 
@@ -26,24 +26,23 @@ void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, double a
         return;     //empty
 
     //old medoid time consuming
-    // int medoid = 0;
-    // double min_dist = numeric_limits<float>::max();
+    int medoid = 0;
+    float min_dist = numeric_limits<float>::max();
 
-    // for (int i = 0; i < n; i++){
-    //     double total_dist  =0;
-    //     for(int j = 0; j < n; j++){
-    //         if(i != j){
-    //             total_dist += euclidean(nodes[i],nodes[j]);
-    //         }
-    //     }
-    //     if (total_dist < min_dist){
-    //         min_dist = total_dist;
-    //         medoid = i;
-    //     }
-    // }
+    for (int i = 0; i < n; i++){
+        float total_dist  =0;
+        for(int j = 0; j < n; j++){
+            if(i != j){
+                total_dist += euclidean(nodes[i],nodes[j]);
+            }
+        }
+        if (total_dist < min_dist){
+            min_dist = total_dist;
+            medoid = i;
+        }
+    }
 
-    cout << "Medoid time mfs\n";
-    int medoid = approximateMedoid(nodes,k);
+    // int medoid = approximateMedoid(nodes,k);
     Node* s = nodes[medoid];
 
     cout << "The medoid point found: " << endl;
