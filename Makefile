@@ -1,51 +1,39 @@
 # Compiler and flags
-CC = g++
-CFLAGS = -Wall -Werror -g -I$(INCLUDE)
 
-# Paths
-MODULES = ./modules
-TESTS = ./tests
-INCLUDE = ./include
+CXX = g++
+CXXFLAGS = -std=c++17 -Wall -O2 -Iincludes
 
-# Automatically find all .cpp files and convert them to .o
-MAIN_SRC = main.cpp
-MAIN_OBJ = $(patsubst %.cpp,%.o,$(MAIN_SRC))
-MODULES_SRC = $(wildcard $(MODULES)/*.cpp)
-MODULES_OBJ = $(patsubst $(MODULES)/%.cpp,$(MODULES)/%.o,$(MODULES_SRC))
-TESTS_SRC = $(wildcard $(TESTS)/*.cpp)
-TESTS_OBJ = $(patsubst $(TESTS)/%.cpp,$(TESTS)/%.o,$(TESTS_SRC))
+# Folders
+INCLUDES = includes
+MODULES = modules
+TESTS = tests
 
-# Executable program
-TEST_EXEC = run_tests
-EXEC = project
+# Source files
+MODULE_SRCS = $(MODULES)/greedysearch.cpp $(MODULES)/filteredgreedysearch.cpp
+MODULE_OBJS = $(MODULE_SRCS:.cpp=.o)
 
-# Default rule
-all: $(EXEC)
+TEST_SRCS = $(TESTS)/filteredgreedysearch_test.cpp $(TESTS)/greedysearch_test.cpp
+TEST_OBJS = $(TEST_SRCS:.cpp=.o)
 
-# Link object files to create the executable
-$(EXEC): $(MODULES_OBJ) $(MAIN_OBJ)
-	$(CC) $(CFLAGS) -o $@ $(MODULES_OBJ) $(MAIN_OBJ)
+# Executables
+TEST_EXECUTABLES = test_greedysearch test_filteredgreedysearch
 
-# Compile .cpp files from MODULES into .o files
-$(MODULES)/%.o: $(MODULES)/%.cpp
-	$(CC) $(CFLAGS) -c $< -o $@
+# Rules
+.PHONY: all clean
 
-tests: $(MODULES_OBJ)
-	$(foreach test_src, $(TESTS_SRC), \
-		$(CC) $(CFLAGS) -o $(basename $(test_src)) $(MODULES_OBJ) $(test_src); \
-		./$(basename $(test_src)) || echo "$(test_src) failed."; \
-	)
+all: $(TEST_EXECUTABLES)
 
-# Run the executable with additional arguments passed from the command line
-run: all
-	@./$(EXEC) $(ARGS)
+# Create executables for tests
+test_greedysearch: $(MODULE_OBJS) $(TESTS)/greedysearch_test.o
+	$(CXX) $(CXXFLAGS) -o $@ $^
 
-check: tests
+test_filteredgreedysearch: $(MODULE_OBJS) $(TESTS)/filteredgreedysearch_test.o
+	$(CXX) $(CXXFLAGS) -o $@ $^
 
-# Run the executable with Valgrind
-valgrind: all
-	valgrind --leak-check=full --track-origins=yes ./$(EXEC) $(ARGS)
+# Compile object files
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Clean the executable files 
+# Clean up generated files
 clean:
-	rm -f $(MODULES_OBJ) $(TESTS_OBJ) $(MAIN_OBJ) $(EXEC) $(basename $(TESTS_SRC))
+	rm -f $(MODULE_OBJS) $(TEST_OBJS) $(TEST_EXECUTABLES)
