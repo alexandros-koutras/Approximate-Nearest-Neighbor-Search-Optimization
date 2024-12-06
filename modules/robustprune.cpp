@@ -1,9 +1,8 @@
 #include "../include/vamana.h"
 
 
-// This is the euklideian method to calculate the distance of 2 nodes
-double euclidean(const Node* a, const Node* b) {
-    double sum = 0.0;
+float euclidean(const Node* a, const Node* b) {
+    float sum = 0.0;
     for (size_t i = 0; i < a->coords.size(); ++i) {
         sum += pow (a->coords[i] - b->coords[i],2);
     }
