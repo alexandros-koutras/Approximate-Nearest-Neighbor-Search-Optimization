@@ -1,9 +1,11 @@
 #define TESTING_MODE
-#include "../include/acutest.h"// Acutest library
-#include "../include/vamana.h"
+
+#include "../includes/greedysearch.h"
+#include "../includes/acutest.h"// Acutest library
+using namespace std;
 
 
-Node* create_node(unsigned int id, const vector<double>& coords) {
+Node* create_node(unsigned int id, const vector<float>& coords) {
     Node* node = new Node();
     node->id = id;
     node->coords = coords;
@@ -46,6 +48,7 @@ void test_load_fvecs() {
         delete node;
     }
 }
+
 
 void test_multiple_nodes_one_query() {
     Node node1, node2, query;
