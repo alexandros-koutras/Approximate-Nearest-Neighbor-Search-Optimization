@@ -1,11 +1,4 @@
-#include <iostream>
-#include <vector>
-#include <algorithm>
-#include <cmath>
-
-#include "adts.h"
-
-using namespace std;
+#include "../include/vamana.h"
 
 
 float euclidean(const Node* a, const Node* b) {
@@ -16,10 +9,15 @@ float euclidean(const Node* a, const Node* b) {
     return sqrt(sum);
 }
 
+// Compare function for 2 nodes based to their distance to another common node
+bool compare_distance(Node* node1, Node* node2) {
+    return node1->distance < node2->distance;
+}
+
 void RobustPrune(Node* node, vector<Node*> possible_neighbours, double a, unsigned int max_neighbours) {
-    // Dereference each pointer in node->out_neighbors before inserting
+    // Add the already existing neighbors to the possible neighbors
     for (Node* n_ptr : node->out_neighbors) {
-        possible_neighbours.push_back(n_ptr); // Keep as pointer
+        possible_neighbours.push_back(n_ptr);
     }
 
     // Clear node's neighbors
@@ -31,16 +29,18 @@ void RobustPrune(Node* node, vector<Node*> possible_neighbours, double a, unsign
     }
 
     // Sort possible neighbors by distance
-    sort(possible_neighbours.begin(), possible_neighbours.end(), [](Node* lhs, Node* rhs) {
-        return lhs->distance < rhs->distance;
-    });
+    sort(possible_neighbours.begin(), possible_neighbours.end(), compare_distance);
 
     // Select closest neighbors with pruning
+    // Iterate through the possible neighbors until empty or reach maxinum neighbors
     while (!possible_neighbours.empty() && node->out_neighbors.size() < max_neighbours) {
         Node* closest = possible_neighbours.front();
+
+        // Add the node to the neighbours of the node and remove it from the possible ones
         node->out_neighbors.push_back(closest);
         possible_neighbours.erase(possible_neighbours.begin());
 
+        // Pruning method
         auto it = possible_neighbours.begin();
         while (it != possible_neighbours.end()) {
             if (a * closest->distance <= (*it)->distance) {
@@ -51,39 +51,3 @@ void RobustPrune(Node* node, vector<Node*> possible_neighbours, double a, unsign
         }
     }
 }
-
-
-
-
-// void testRobustPrune() {
-//     Node node1;
-//     node1.coords = {{0.0, 0.0, 0.0}};
-//     vector<Node*> neighbours = {&node1};
-
-//     for (int i = 0; i > 100000; i++) {
-//         Node* node = new Node(); // Dynamically allocate memory
-//         node->coords = {{(float)i, (float)i, (float)i}};
-//         neighbours.push_back(node);
-//     }
-
-//     cout << "size = " << neighbours.size() << endl;
-    
-//     // Call RobustPrune to test behavior
-//     RobustPrune(&node1, neighbours, 1.5, 3);
-
-//     // Free allocated memory to avoid memory leaks
-//     for (Node* n : neighbours) {
-//         if (n != &node1) { // Avoid deleting the statically allocated node1
-//             delete n;
-//         }
-//     }
-
-//     // Basic assertions to check if pruning works as expected
-//     std::cout << "Test passed!" << std::endl;
-// }
-
-
-// int main() {
-//     testRobustPrune();
-//     return 0;
-// }
