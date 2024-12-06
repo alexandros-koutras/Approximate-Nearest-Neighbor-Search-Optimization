@@ -74,22 +74,11 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    vector<vector<float>> fvecsData;
-    
-    if (ends_with(base_file, ".ivecs")) {
-        vector<vector<int>> ivecsData = loadIvecs(base_file);
-    } else if (ends_with(base_file, ".fvecs")) {
-        fvecsData = loadFvecs(base_file);
-    } else if (ends_with(base_file, ".bvecs")) {
-        // nodes = load_bvecs(base_file);
-    } else {
-        cout << "Not a valid file" << endl;
-        return 1;
-    }
+    vector<vector<float>> data = ReadBin(base_file, k);
 
-    vector<Node*> nodes = createNodesFromVectors(fvecsData);
+    vector<Node*> nodes = createNodesFromVectors(data);
 
-    int n=nodes.size();
+    int n = nodes.size();
     //well connected
     if (R <= log2(n)){
         cerr << "R must be greater than log2(n), so that the graph is well connected"<<endl;
@@ -120,7 +109,7 @@ int main(int argc, char* argv[]) {
     cout << "The vamana graph has been successfully implemented" << endl;
     cout << "Execution time: " << duration.count() << " seconds" << endl;
 
-    vector<vector<float>> queries_vectors = loadFvecs(query_file);
+    vector<vector<float>> queries_vectors = ReadBin(query_file, k);
     vector<Node*> queries = createNodesFromVectors(queries_vectors);
 
     vector<vector<int>> groundtruth = loadIvecs(groundtruth_file);
