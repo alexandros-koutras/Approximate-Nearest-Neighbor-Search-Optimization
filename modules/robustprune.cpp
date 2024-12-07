@@ -16,7 +16,7 @@ bool compare_distance(Node* node1, Node* node2) {
     return node1->distance < node2->distance;
 }
 
-void RobustPrune(Node* node, vector<Node*> possible_neighbours, float a, unsigned int max_neighbours) {
+void RobustPrune(Node* node, vector<Node*> possible_neighbours, float a, int max_neighbours) {
     // Add the already existing neighbors to the possible neighbors
     for (Node* n_ptr : node->out_neighbors) {
         possible_neighbours.push_back(n_ptr);
@@ -50,7 +50,7 @@ void RobustPrune(Node* node, vector<Node*> possible_neighbours, float a, unsigne
         node->out_neighbors.push_back(closest);
         possible_neighbours.erase(possible_neighbours.begin());
 
-        if (node->out_neighbors.size() == max_neighbours) {
+        if (node->out_neighbors.size() == static_cast<size_t>(max_neighbours)) {
             break;
         }
 

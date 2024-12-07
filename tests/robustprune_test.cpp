@@ -60,14 +60,14 @@ void test_robust_prune() {
     vector<Node*> possible_neighbours = { node1, node2, node3, node4 };
 
     // Define parameters
-    unsigned int max_neighbours = 2;
+    int max_neighbours = 2;
     float a = 1.5;
 
     // Run RobustPrune
     RobustPrune(central_node, possible_neighbours, a, max_neighbours);
 
     // Check if the correct number of neighbors were selected
-    TEST_CHECK(central_node->out_neighbors.size() <= max_neighbours);
+    TEST_CHECK(central_node->out_neighbors.size() <= static_cast<size_t>(max_neighbours));
 
     // Validate that the closest neighbors are chosen
     vector<float> distances;
