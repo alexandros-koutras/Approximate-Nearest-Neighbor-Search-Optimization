@@ -53,5 +53,3 @@ Node* findCentroid(const vector<Node*>& cluster);
 vector<vector<Node*>> kMeansClustering(const vector<Node*>& nodes, int k, int maxIterations = 100);
 
 int approximateMedoid(const vector<Node*>& nodes, int k);
-
-vector<vector<float>> ReadBin(const string &file_path, const int num_dimensions);

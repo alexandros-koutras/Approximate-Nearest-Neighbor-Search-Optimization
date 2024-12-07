@@ -104,30 +104,3 @@ vector<Node*> createNodesFromVectors(const vector<vector<float>>& vectors) {
 
     return nodes;
 }
-
-/// @brief Reading binary data vectors. Raw data store as a (N x dim)
-/// @param file_path file path of binary data
-/// @param data returned 2D data vectors
-vector<vector<float>> ReadBin(const string &file_path, const int num_dimensions) {
-    cout << "Reading Data: " << file_path << endl;
-    ifstream ifs;
-    ifs.open(file_path, ios::binary);
-    assert(ifs.is_open());
-    uint32_t N;  // num of points
-    ifs.read((char *)&N, sizeof(uint32_t));
-    std::vector<std::vector<float>> data(N);
-    cout << "# of points: " << N << endl;
-    vector<float> buff(num_dimensions);
-    int counter = 0;
-    while (ifs.read((char *)buff.data(), num_dimensions * sizeof(float))) {
-        vector<float> row(num_dimensions);
-        for (int d = 0; d < num_dimensions; d++) {
-            row[d] = static_cast<float>(buff[d]);
-        }
-        data[counter++] = move(row);
-    }
-    ifs.close();
-    cout << "Finish Reading Data" << endl;
-
-    return data;
-}

@@ -17,7 +17,6 @@ MODULES_OBJ = $(patsubst $(MODULES)/%.cpp,$(MODULES)/%.o,$(MODULES_SRC))
 TESTS_OBJ = $(patsubst $(TESTS)/%.cpp,$(TESTS)/%.o,$(TESTS_SRC))
 
 # Executable program
-TEST_EXEC = run_tests
 EXEC = project
 
 # Default rule
