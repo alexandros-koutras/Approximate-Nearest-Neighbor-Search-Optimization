@@ -1,78 +1,59 @@
 #include "../include/vamana.h"
 
 // Function to read .ivecs file
-vector<Node*> load_ivecs(const string& filename) {
-    ifstream input(filename, ios::binary);
-    if (!input) {
-        cerr << "Could not open file: " << filename << endl;
-        exit(1);
+vector<vector<int>> loadIvecs(const string& filename) {
+    ifstream infile(filename, ios::binary);
+    if (!infile.is_open()) {
+        cerr << "Error opening file: " << filename << endl;
+        return {};
     }
 
-    vector<Node*> nodes;
+    vector<vector<int>> data;
+
     while (true) {
-        int d;
-        if (!input.read(reinterpret_cast<char*>(&d), sizeof(int))) {
-            if (input.eof()) break;
-            cerr << "Error reading dimensions from file." << endl;
-            break;
-        }
-        
-        Node* node = new Node();
-        node->coords.resize(d);
-        for (int i = 0; i < d; ++i) {
-            int value;
-            if (!input.read(reinterpret_cast<char*>(&value), sizeof(int))) {
-                cerr << "Error reading coordinates from file." << endl;
-                break;
-            }
-            node->coords[i] = value;
-            //out << "Value " << i << ": " << value << endl;
-        }
-        node->id = nodes.size();  // Assign node ID sequentially
-        nodes.push_back(node);
-    }
-    input.close();
+        int numDims;
+        infile.read(reinterpret_cast<char*>(&numDims), sizeof(int));
+        if (infile.eof()) break;
 
-    return nodes;
+        vector<int> vec(numDims);
+        infile.read(reinterpret_cast<char*>(vec.data()), numDims * sizeof(int));
+
+        data.push_back(vec);
+    }
+
+    infile.close();
+    return data;
 }
 
 // Function to read .fvecs file
-vector<Node*> load_fvecs(const string& filename) {
-    ifstream input(filename, ios::binary);
-    if (!input) {
-        cerr << "Could not open file: " << filename << endl;
-        exit(1);
+vector<vector<float>> loadFvecs(const string& filename) {
+    ifstream infile(filename, ios::binary);
+    if (!infile.is_open()) {
+        cerr << "Error opening file: " << filename << endl;
+        return {};
     }
 
-    vector<Node*> nodes;
+    vector<vector<float>> data;
+
     while (true) {
-        //  Read dimensions
-        int d;
-        if (!input.read(reinterpret_cast<char*>(&d), sizeof(int))) {
-            if (input.eof()) break;  
-            cerr << "Error reading dimensions from file." << endl;
+        unsigned int numDims; // First 4 bytes specify the number of dimensions
+        infile.read(reinterpret_cast<char*>(&numDims), sizeof(int));
+        if (infile.eof()) break;
+
+        vector<float> vec(numDims); // Read the `float` vector
+        infile.read(reinterpret_cast<char*>(vec.data()), numDims * sizeof(float));
+
+        if (infile.gcount() != static_cast<std::streamsize>(numDims * sizeof(float))) {
+            cerr << "Error reading vector data. Incomplete vector found." << endl;
             break;
         }
-        
-        Node* node = new Node();
-        node->coords.resize(d);
-        for (int i = 0; i < d; ++i) {
-            //  Read each coordinate
-            float value;
-            if (!input.read(reinterpret_cast<char*>(&value), sizeof(float))) {
-                cerr << "Error reading coordinates from file." << endl;
-                break;
-            }
-            node->coords[i] = value;
-            //cout << "Value " << i << ": " << value << endl;
 
-        }
-        node->id = nodes.size();  // Assign node ID sequentially
-        nodes.push_back(node);
+
+        data.push_back(vec);
     }
-    input.close();
 
-    return nodes;
+    infile.close();
+    return data;
 }
 
 // Function to read .bvecs file
@@ -112,33 +93,42 @@ vector<Node*> load_bvecs(const string& filename) {
     return nodes;
 }
 
-// Function to read .ivecs ground truth file
-vector<vector<int>> load_groundtruth(const string& filename) {
-    ifstream input(filename, ios::binary);
-    if (!input) {
-        cerr << "Could not open file: " << filename << endl;
-        exit(1);
+vector<Node*> createNodesFromVectors(const vector<vector<float>>& vectors) {
+    vector<Node*> nodes;
+
+    for (size_t i = 0; i < vectors.size(); ++i) {
+        Node* newNode = new Node;
+        newNode->id = i;  // Use index as the ID
+        newNode->coords.assign(vectors[i].begin(), vectors[i].end());  // Copy coordinates into the Node
+        nodes.push_back(newNode);  // Add the Node to the list
     }
 
-    vector<vector<int>> groundtruth;
-    while (true) {
-        int k;
-        if (!input.read(reinterpret_cast<char*>(&k), sizeof(int))) {
-            if (input.eof()) break;
-            cerr << "Error reading number of neighbors from file." << endl;
-            break;
-        }
+    return nodes;
+}
 
-        vector<int> neighbors(k);
-        for (int i = 0; i < k; ++i) {
-            if (!input.read(reinterpret_cast<char*>(&neighbors[i]), sizeof(int))) {
-                cerr << "Error reading neighbor IDs from file." << endl;
-                break;
-            }
+/// @brief Reading binary data vectors. Raw data store as a (N x dim)
+/// @param file_path file path of binary data
+/// @param data returned 2D data vectors
+vector<vector<float>> ReadBin(const string &file_path, const int num_dimensions) {
+    cout << "Reading Data: " << file_path << endl;
+    ifstream ifs;
+    ifs.open(file_path, ios::binary);
+    assert(ifs.is_open());
+    uint32_t N;  // num of points
+    ifs.read((char *)&N, sizeof(uint32_t));
+    std::vector<std::vector<float>> data(N);
+    cout << "# of points: " << N << endl;
+    vector<float> buff(num_dimensions);
+    int counter = 0;
+    while (ifs.read((char *)buff.data(), num_dimensions * sizeof(float))) {
+        vector<float> row(num_dimensions);
+        for (int d = 0; d < num_dimensions; d++) {
+            row[d] = static_cast<float>(buff[d]);
         }
-        groundtruth.push_back(neighbors);
+        data[counter++] = move(row);
     }
-    input.close();
+    ifs.close();
+    cout << "Finish Reading Data" << endl;
 
-    return groundtruth;
+    return data;
 }

@@ -11,7 +11,7 @@ bool ends_with(const string& str, const string& suffix) {
     }
 }
 
-double computeRecall(const vector<int>& groundTruth, const vector<Node*>& retrievedNeighbors) {
+float computeRecall(const vector<int>& groundTruth, const vector<Node*>& retrievedNeighbors) {
     int truePositiveCount = 0;
     unordered_set<int> retrievedIds;
 
@@ -28,7 +28,7 @@ double computeRecall(const vector<int>& groundTruth, const vector<Node*>& retrie
     }
 
     // Recall is the fraction of true positive neighbors
-    return static_cast<double>(truePositiveCount) / retrievedNeighbors.size();
+    return static_cast<float>(truePositiveCount) / retrievedNeighbors.size();
 }
 
 int main(int argc, char* argv[]) {
@@ -38,9 +38,11 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    string base_file, query_file, groundtruth_file;
+    string base_file;
+    string query_file;
+    string groundtruth_file;
     int k = 0, L = 0, R = 0;
-    double a = 0.0;
+    float a = 0.0;
 
     int opt;
     while ((opt = getopt(argc, argv, "i:q:g:k:l:r:a:")) != -1) {
@@ -71,24 +73,15 @@ int main(int argc, char* argv[]) {
                 return 1;
         }
     }
-    
 
-    vector<Node*> nodes;
-    if (ends_with(base_file, ".ivecs")) {
-        nodes = load_ivecs(base_file);
-    } else if (ends_with(base_file, ".fvecs")) {
-        nodes = load_fvecs(base_file);
-    } else if (ends_with(base_file, ".bvecs")) {
-        nodes = load_bvecs(base_file);
-    } else {
-        cout << "Not a valid file" << endl;
-        return 1;
-    }
+    vector<vector<float>> data = ReadBin(base_file, k);
 
-    int n=nodes.size();
+    vector<Node*> nodes = createNodesFromVectors(data);
+
+    int n = nodes.size();
     //well connected
-    if(R<=log2(n)){
-        cerr<<"R must be greater than log2(n), so that the graph is well connected"<<endl;
+    if (R <= log2(n)){
+        cerr << "R must be greater than log2(n), so that the graph is well connected"<<endl;
         return 1;
     }
 
@@ -107,15 +100,23 @@ int main(int argc, char* argv[]) {
     auto start = chrono::high_resolution_clock::now();
 
     // Run the Vamana Indexing Algorithm
-    VamanaIndexingAlgorithm(nodes,k, L, R, a,n);
+    VamanaIndexingAlgorithm(nodes, k, L, R, a, n);
 
-    cout << "Graph has been created!" <<endl;
+    // End time measurement
+    auto end = chrono::high_resolution_clock::now();
 
+    // Calculate elapsed time
+    chrono::duration<float> duration = end - start;
 
-    vector<Node*> queries = load_fvecs(query_file);
-    vector<vector<int>> groundtruth = load_groundtruth(groundtruth_file);
+    cout << "The vamana graph has been successfully implemented" << endl;
+    cout << "Execution time: " << duration.count() << " seconds" << endl;
 
-    double totalRecall = 0.0;
+    vector<vector<float>> queries_vectors = ReadBin(query_file, k);
+    vector<Node*> queries = createNodesFromVectors(queries_vectors);
+
+    vector<vector<int>> groundtruth = loadIvecs(groundtruth_file);
+
+    float totalRecall = 0.0;
     int queryCount = 0;
 
     for (size_t i = 0; i < queries.size(); ++i) {
@@ -123,8 +124,8 @@ int main(int argc, char* argv[]) {
         vector<int>& groundTruthForQuery = groundtruth[i];  // Get the ground truth for this query
 
         // Perform Greedy Search for the query
-        int randomIndex = rand() % nodes.size();
-        vector<Node*> nearestNeighbors = GreedySearch(nodes.at(randomIndex), queryNode, k, L);
+        int medoid = approximateMedoid(nodes,k);
+        vector<Node*> nearestNeighbors = GreedySearch(nodes.at(medoid), queryNode, k, L);
 
         // Print nearest neighbors from GreedySearch
         cout << "Nearest neighbors from GreedySearch for query " << queryNode->id << ": ";
@@ -141,7 +142,7 @@ int main(int argc, char* argv[]) {
         cout << endl;
 
         // Compute Recall for this query
-        double recall = computeRecall(groundTruthForQuery, nearestNeighbors);
+        float recall = computeRecall(groundTruthForQuery, nearestNeighbors);
         totalRecall += recall;
         queryCount++;
 
@@ -150,21 +151,15 @@ int main(int argc, char* argv[]) {
         cout << "--------------------------------------------------" << endl;
     }
 
-    double averageRecall = totalRecall / queryCount;
+    float averageRecall = totalRecall / queryCount;
     cout << "Average Recall: " << averageRecall << endl;
 
-    // End time measurement
-    auto end = chrono::high_resolution_clock::now();
+    // Cleanup: free memory
+    for (Node* node : nodes) 
+        delete node;
 
-    // Calculate elapsed time
-    chrono::duration<double> duration = end - start;
-
-    cout << "The vamana graph has been successfully implemented" << endl;
-    cout << "Execution time: " << duration.count() << " seconds" << endl;
-
-    //Free the allocated memory
-    for(Node* node: nodes) delete node;
-
+    for (Node* node : queries)
+        delete node;
 
     return 0;
 }

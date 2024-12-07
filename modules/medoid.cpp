@@ -1,44 +1,60 @@
 #include "../include/vamana.h"
 
-//find the centroid of a cluster 
+// Find the centroid of a cluster
 Node* findCentroid(const vector<Node*>& cluster) {
-    size_t dimensions = cluster[0]->coords.size();//number of dimensions
-    Node* centroid = new Node;//centroid node and coordinates initialization
+    if (cluster.empty()) {
+        throw std::invalid_argument("Cluster is empty, cannot find centroid");
+    }
+
+    size_t dimensions = cluster[0]->coords.size(); // Number of dimensions
+    Node* centroid = new Node; // Centroid node initialization
     centroid->coords.resize(dimensions, 0.0);
 
-    //Sum up the coordinates of each node
+    // Sum up the coordinates of each node
     for (const Node* point : cluster) {
         for (size_t i = 0; i < dimensions; ++i) {
             centroid->coords[i] += point->coords[i];
         }
     }
-    //Divide each coordinate sum by the number of points to get the centroid
-    for (double& value : centroid->coords) {
+
+    // Divide each coordinate sum by the number of points to get the centroid
+    for (float& value : centroid->coords) {
         value /= cluster.size();
     }
+
     return centroid;
 }
 
 // K-means clustering
-vector<vector<Node*>> kMeansClustering(const vector<Node*>& nodes, int k, int maxIterations = 100) {
+vector<vector<Node*>> kMeansClustering(const vector<Node*>& nodes, int k, int maxIterations) {
+    if (k <= 0 || k > (int)nodes.size()) {
+        throw std::invalid_argument("Invalid number of clusters");
+    }
+
     vector<Node*> centroids;
-    vector<vector<Node*>> clusters(k);//vector of clusters, one for each centroid
+    vector<vector<Node*>> clusters(k); // Vector of clusters, one for each centroid
 
     // Initialize random centroids
-    srand(time(0));
+    srand(static_cast<unsigned>(time(0)));
     for (int i = 0; i < k; ++i) {
-        centroids.push_back(nodes[rand() % nodes.size()]);
+        centroids.push_back(new Node(*nodes[rand() % nodes.size()])); // Create new nodes for centroids
     }
-    //K-means iterations
+
+    // K-means iterations
     for (int iter = 0; iter < maxIterations; ++iter) {
+        // Clear clusters for the current iteration
+        for (auto& cluster : clusters) {
+            cluster.clear();
+        }
+
         // Assign each node to the nearest centroid
         for (const Node* node : nodes) {
             int closestCluster = 0;
-            double minDist = euclidean(node, centroids[0]);//dist to the first centroid
+            float minDist = euclidean(node, centroids[0]); // Distance to the first centroid
             for (int j = 1; j < k; ++j) {
-                double dist = euclidean(node, centroids[j]);
-                if (dist < minDist) {//if a nearer centroid is found 
-                    minDist = dist;//update closest cluster 
+                float dist = euclidean(node, centroids[j]);
+                if (dist < minDist) { // If a nearer centroid is found
+                    minDist = dist;
                     closestCluster = j;
                 }
             }
@@ -48,55 +64,63 @@ vector<vector<Node*>> kMeansClustering(const vector<Node*>& nodes, int k, int ma
         // Recalculate centroids
         bool centroidsChanged = false;
         for (int i = 0; i < k; ++i) {
+            if (clusters[i].empty()) continue; // Skip empty clusters
+
             Node* newCentroid = findCentroid(clusters[i]);
-            if (euclidean(newCentroid, centroids[i]) > 1e-4) {// Check if the centroid has changed significantly, 1e-4 is a small threshold
+            if (euclidean(newCentroid, centroids[i]) > 1e-4) { // Check if the centroid has changed significantly
                 centroidsChanged = true;
             }
+
+            delete centroids[i]; // Clean up old centroid
             centroids[i] = newCentroid;
         }
 
         // If centroids don't change, break early
         if (!centroidsChanged) break;
+    }
 
-        // Clear clusters for the next iteration (except the last one)
-        if (iter < maxIterations - 1) {
-            for (auto& cluster : clusters) {
-                cluster.clear();
-            }
-        }
+    // Clean up allocated memory for centroids
+    for (Node* centroid : centroids) {
+        delete centroid;
     }
 
     return clusters;
 }
 
-//Find approximate medoid based on clustering
+// Find approximate medoid based on clustering
 int approximateMedoid(const vector<Node*>& nodes, int k) {
+    if (nodes.empty()) {
+        throw std::invalid_argument("Nodes are empty, cannot find medoid");
+    }
+
     auto clusters = kMeansClustering(nodes, k);
 
     // Find the cluster with the most nodes
     int largestClusterIndex = 0;
-    for (unsigned int i = 1; i < clusters.size(); ++i) {
+    for (size_t i = 1; i < clusters.size(); ++i) {
         if (clusters[i].size() > clusters[largestClusterIndex].size()) {
             largestClusterIndex = i;
         }
     }
 
-    //Find centroid of the largest cluster
+    if (clusters[largestClusterIndex].empty()) {
+        throw std::runtime_error("Largest cluster is empty, cannot find medoid");
+    }
+
+    // Find centroid of the largest cluster
     Node* centroid = findCentroid(clusters[largestClusterIndex]);
 
-     //Find the node within the largest cluster closest to the centroid
-     int medoidIndex = -1;
-    double minDist = numeric_limits<double>::max();
+    // Find the node within the largest cluster closest to the centroid
+    int medoidIndex = -1;
+    float minDist = std::numeric_limits<float>::max();
     for (const Node* node : clusters[largestClusterIndex]) {
-        double dist = euclidean(node, centroid);
+        float dist = euclidean(node, centroid);
         if (dist < minDist) {
             minDist = dist;
             medoidIndex = node->id;
         }
     }
 
-    delete centroid; 
-    return medoidIndex; 
+    delete centroid;
+    return medoidIndex;
 }
-
-

@@ -14,13 +14,15 @@
 #include <ctime>
 #include <sstream>
 #include <string>
+#include <unordered_map>
+#include <numeric>
 
 using namespace std;
 
 struct Node {
     unsigned int id;    
     float distance;                                         
-    vector<double> coords;  //coordinates
+    vector<float> coords;  //coordinates
     vector<Node*> out_neighbors; 
 
     ~Node() {
@@ -29,30 +31,32 @@ struct Node {
     }
 };
 
-double euclidean(const Node* a, const Node* b);
+float euclidean(const Node* a, const Node* b);
 
-vector<Node*> load_ivecs(const string& filename);
+vector<vector<int>> loadIvecs(const string& filename);
 
-vector<Node*> load_fvecs(const string& filename);
+vector<vector<float>> loadFvecs(const string& filename);
+
+vector<Node*> createNodesFromVectors(const vector<vector<float>>& vectors);
 
 vector<Node*> load_bvecs(const string& filename);
 
-vector<vector<int>> load_groundtruth(const string& filename);
-
-void RobustPrune(Node* node, vector<Node*> possible_neighbours, double a, unsigned int max_neighbours);
+void RobustPrune(Node* node, vector<Node*> possible_neighbours, float a, int max_neighbours);
 
 bool compare_distance(Node* node1, Node* node2);
 
 vector<Node*> GreedySearch(Node* s, const Node* x_q, unsigned int k, unsigned int list_size);
 
-void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, double a,int n);
+void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, float a,int n);
 
 void initializeRandomGraph(vector<Node*>& nodes, unsigned int R) ;
 
-Node* create_node(unsigned int id, const vector<double>& coords);
+Node* create_node(unsigned int id, const vector<float>& coords);
 
-double computeRecall(const vector<int>& groundTruth, const vector<Node*>& retrievedNeighbors);
+Node* findCentroid(const vector<Node*>& cluster);
 
+vector<vector<Node*>> kMeansClustering(const vector<Node*>& nodes, int k, int maxIterations = 100);
 
+int approximateMedoid(const vector<Node*>& nodes, int k);
 
-
+vector<vector<float>> ReadBin(const string &file_path, const int num_dimensions);

@@ -3,7 +3,7 @@
 #include "../include/vamana.h"
 
 // Helper function to create a Node with specified coordinates
-Node* create_node(unsigned int id, const vector<double>& coords) {
+Node* create_node(unsigned int id, const vector<float>& coords) {
     Node* node = new Node();
     node->id = id;
     node->coords = coords;
@@ -14,8 +14,11 @@ Node* create_node(unsigned int id, const vector<double>& coords) {
 void test_euclidean_distance() {
     Node* node1 = create_node(1, {1.0, 2.0, 3.0});
     Node* node2 = create_node(2, {4.0, 5.0, 6.0});
-    double expected_distance = sqrt(27.0);  // sqrt((4-1)^2 + (5-2)^2 + (6-3)^2)
+    float expected_distance = sqrt(27.0);  // sqrt((4-1)^2 + (5-2)^2 + (6-3)^2)
     TEST_CHECK(euclidean(node1, node2) == expected_distance);
+
+    delete node1;
+    delete node2;
 }
 
 void test_node_add_get_neighbour() {
@@ -25,6 +28,9 @@ void test_node_add_get_neighbour() {
 
     TEST_CHECK(node1->out_neighbors.size() == 1);
     TEST_CHECK(node1->out_neighbors.at(0)->coords == node2->coords);
+
+    delete node1;
+    delete node2;
 }
 
 void test_compare_func_for_nodes() {
@@ -37,6 +43,10 @@ void test_compare_func_for_nodes() {
 
     bool d = compare_distance(node1, node2);
     TEST_CHECK(d == true);
+
+    delete reference_node;
+    delete node1;
+    delete node2;
 }
 
 void test_robust_prune() {
@@ -50,25 +60,25 @@ void test_robust_prune() {
     vector<Node*> possible_neighbours = { node1, node2, node3, node4 };
 
     // Define parameters
-    unsigned int max_neighbours = 2;
-    double a = 1.5;
+    int max_neighbours = 2;
+    float a = 1.5;
 
     // Run RobustPrune
     RobustPrune(central_node, possible_neighbours, a, max_neighbours);
 
     // Check if the correct number of neighbors were selected
-    TEST_CHECK(central_node->out_neighbors.size() <= max_neighbours);
+    TEST_CHECK(central_node->out_neighbors.size() <= static_cast<size_t>(max_neighbours));
 
     // Validate that the closest neighbors are chosen
-    vector<double> distances;
+    vector<float> distances;
     for (Node* neighbor : central_node->out_neighbors) {
         distances.push_back(neighbor->distance);
     }
     
     // Check if distances are sorted and within the acceptable range
-    double closest_distance = distances.front();
+    float closest_distance = distances.front();
     bool in_range = true;
-    for (double dist : distances) {
+    for (float dist : distances) {
         TEST_CHECK(dist <= a * closest_distance);
         in_range = in_range && (dist <= a * closest_distance);
     }
@@ -76,6 +86,12 @@ void test_robust_prune() {
     // Ensure distances are sorted
     bool sorted = is_sorted(distances.begin(), distances.end());
     TEST_CHECK(sorted);
+
+    delete central_node;
+    delete node1;
+    delete node2;
+    delete node3;
+    delete node4;
 }
 
 

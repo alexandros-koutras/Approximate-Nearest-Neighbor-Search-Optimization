@@ -3,7 +3,7 @@
 #include "../include/vamana.h"
 
 
-Node* create_node(unsigned int id, const vector<double>& coords) {
+Node* create_node(unsigned int id, const vector<float>& coords) {
     Node* node = new Node();
     node->id = id;
     node->coords = coords;
@@ -38,7 +38,8 @@ void test_empty_graph() {
 
 
 void test_load_fvecs() {
-    vector<Node*> nodes = load_fvecs("siftsmall/siftsmall_base.fvecs");
+    vector<vector<float>> fvecsData = loadFvecs("siftsmall/siftsmall_base.fvecs");
+    vector<Node*> nodes = createNodesFromVectors(fvecsData);
     TEST_CHECK(!nodes.empty());  // Check if nodes are loaded
     TEST_CHECK(nodes[0]->coords.size() > 0);  // Check if coordinates are loaded
     
