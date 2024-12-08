@@ -24,11 +24,7 @@ struct Node {
     float distance;                                         
     vector<float> coords;  //coordinates
     vector<Node*> out_neighbors; 
-
-    ~Node() {
-        // Clear neighbors if needed (e.g., no shared ownership)
-        out_neighbors.clear();
-    }
+    float filter;
 };
 
 float euclidean(const Node* a, const Node* b);
@@ -60,3 +56,5 @@ vector<vector<Node*>> kMeansClustering(const vector<Node*>& nodes, int k, int ma
 int approximateMedoid(const vector<Node*>& nodes, int k);
 
 vector<vector<float>> ReadBin(const string &file_path, const int num_dimensions);
+
+void StitchedVamana(vector<Node*>& nodes, float a, int L_small, int R_small, int R_stiched);

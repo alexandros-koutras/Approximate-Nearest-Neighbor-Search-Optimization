@@ -57,7 +57,8 @@ void RobustPrune(Node* node, vector<Node*> possible_neighbours, float a, int max
         // Pruning method
         auto it = possible_neighbours.begin();
         while (it != possible_neighbours.end()) {
-            if (node->coords.at(0) != closest->coords.at(0) && (*it)->coords.at(0) != closest->coords.at(0)) {
+            if (node->filter != closest->filter && (*it)->filter != closest->filter) {
+                ++it;
                 continue;
             }
             float pruning = a * euclidean(closest, *it); 

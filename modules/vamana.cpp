@@ -98,22 +98,21 @@ void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, float a,
 
 void StitchedVamana(vector<Node*>& nodes, float a, int L_small, int R_small, int R_stiched) {
     // Find all the unique filters
-    unordered_set<float> uniqueFilters;
-    
-    for (Node* n : nodes) {
-        uniqueFilters.insert(n->coords.at(0));
-    }
-
     // Organise them
     unordered_map<float, vector<Node*>> commonFilter;
 
     for (Node* n : nodes) {
-        commonFilter[n->coords.at(0)].push_back(n);
+        commonFilter[n->filter].push_back(n);
     }
 
-    for (float filter : uniqueFilters) {
-        VamanaIndexingAlgorithm(commonFilter[filter], 100, L_small, R_small, a, 100);
+    cout << "map okay\n";
+
+    for (auto& [label, subset] : commonFilter) {
+        // Build a graph for nodes with the same label
+        VamanaIndexingAlgorithm(subset, 2, L_small, R_small, a, subset.size());
     }
+
+    cout << "vamana done and entering pruning\n";
 
     for (Node* n : nodes) {
         RobustPrune(n, n->out_neighbors, a, R_stiched);

@@ -99,7 +99,8 @@ vector<Node*> createNodesFromVectors(const vector<vector<float>>& vectors) {
     for (size_t i = 0; i < vectors.size(); ++i) {
         Node* newNode = new Node;
         newNode->id = i;  // Use index as the ID
-        newNode->coords.assign(vectors[i].begin(), vectors[i].end());  // Copy coordinates into the Node
+        newNode->filter = vectors[i].at(0);
+        newNode->coords.assign(vectors[i].begin() + 2, vectors[i].end());  // Copy coordinates into the Node
         nodes.push_back(newNode);  // Add the Node to the list
     }
 

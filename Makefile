@@ -16,8 +16,10 @@ MAIN_OBJ = $(patsubst %.cpp,%.o,$(MAIN_SRC))
 MODULES_OBJ = $(patsubst $(MODULES)/%.cpp,$(MODULES)/%.o,$(MODULES_SRC))
 TESTS_OBJ = $(patsubst $(TESTS)/%.cpp,$(TESTS)/%.o,$(TESTS_SRC))
 
+ARGS1 = -i siftsmall/siftsmall_base.fvecs -q siftsmall/siftsmall_query.fvecs \
+		-g siftsmall/siftsmall_groundtruth.ivecs -k 100 -l 200 -r 60 -a 1.2
+
 # Executable program
-TEST_EXEC = run_tests
 EXEC = project
 
 # Default rule
@@ -34,18 +36,22 @@ $(EXEC): $(MODULES_OBJ) $(MAIN_OBJ)
 tests: $(MODULES_OBJ)
 	$(foreach test_src, $(TESTS_SRC), \
 		$(CC) $(CFLAGS) -o $(basename $(test_src)) $(MODULES_OBJ) $(test_src); \
-		./$(basename $(test_src)) \
+		./$(basename $(test_src)) || exit 1; \
 	)
 
 valgrind_tests: $(MODULES_OBJ)
 	$(foreach test_src, $(TESTS_SRC), \
-		$(CC) $(CFLAGS) -o $(basename $(test_src)) $(MODULES_OBJ) $(test_src) && \
-		valgrind --leak-check=full --track-origins=yes ./$(basename $(test_src)); \
+		executable=$(basename $(test_src)); \
+		$(CC) $(CFLAGS) -o $$executable $(MODULES_OBJ) $(test_src); \
+		valgrind --leak-check=full --track-origins=yes ./$$executable || exit 1; \
 	)
 
 # Run the executable with additional arguments passed from the command line
 run: all
-	@./$(EXEC) $(ARGS)
+	./$(EXEC) $(ARGS)
+
+run1: all
+	./$(EXEC) $(ARGS1)
 
 check: tests
 
