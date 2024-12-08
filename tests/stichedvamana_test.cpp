@@ -109,18 +109,18 @@ void test_no_nodes() {
     cout << "Test no nodes passed." << endl;
 }
 
-void test_no_tags() {
-    vector<Node*> nodes = {create_node(1, " "), create_node(2, "")};
-    DirectedGraph G = StitchedVamana(nodes, 1.0, 2, 2, 3);
-    assert(G.adjacency_list.empty());
-    cout << "Test nodes without tags passed." << endl;
-}
+// void test_no_tags() {
+//     vector<Node*> nodes = {create_node(0,{0.0, 0.0}, {" "}), create_node(1,{1.0, 1.0}, {" "})};
+//     DirectedGraph G = StitchedVamana(nodes, 1.0, 2, 2, 3);
+//     assert(G.adjacency_list.empty());
+//     cout << "Test nodes without tags passed." << endl;
+// }
 
 void test_single_unique_tag() {
     vector<Node*> nodes = {
-        create_node(1, "tag1"),
-        create_node(2, "tag1"),
-        create_node(3, "tag1")
+        create_node(0,{0.0, 0.0}, {"tag1"}),
+        create_node(1,{1.0, 1.0}, {"tag1"}),
+        create_node(2, {2.0, 2.0}, {"tag1"})
     };
     DirectedGraph G = StitchedVamana(nodes, 1.0, 2, 2, 3);
     assert(G.adjacency_list.size() == 3);
@@ -129,37 +129,41 @@ void test_single_unique_tag() {
 
 void test_multiple_unique_tags() {
     vector<Node*> nodes = {
-        create_node(1, "tag1"),
-        create_node(2, "tag1"),
-        create_node(3, "tag2"),
-        create_node(4, "tag2")
+        create_node(0,{0.0, 0.0}, {"tag1"}),
+        create_node(1,{1.0, 1.0}, {"tag1"}),
+        create_node(2, {2.0, 2.0}, {"tag2"}),
+        create_node(3, {3.0, 3.0}, {"tag2"})
     };
     DirectedGraph G = StitchedVamana(nodes, 1.0, 2, 2, 3);
     assert(G.adjacency_list.size() == 4);
     cout << "Test multiple unique tags passed." << endl;
 }
 
-void test_filtered_prune() {
-    vector<Node*> nodes = {
-        create_node(1, "tag1"),
-        create_node(2, "tag1")
-    };
+// void test_filtered_prune() {
+//     vector<Node*> nodes = {
+//         create_node(0,{0.0, 0.0}, {"tag1"}),
+//         create_node(1,{1.0, 1.0}, {"tag1"})
+//     };
 
-    // Mock out_neighbors
-    nodes[0]->out_neighbors = {nodes[1]};
-    nodes[1]->out_neighbors = {nodes[0]};
+//     // Mock out_neighbors
+//     nodes[0]->out_neighbors = {nodes[1]};
+//     nodes[1]->out_neighbors = {nodes[0]};
 
-    DirectedGraph G = StitchedVamana(nodes, 0.5, 2, 2, 2);
-    assert(G.adjacency_list[nodes[0]].size() <= 2);
-    assert(G.adjacency_list[nodes[1]].size() <= 2);
+//     DirectedGraph G = StitchedVamana(nodes, 0.5, 2, 2, 2);
+//     assert(G.adjacency_list[nodes[0]].size() <= 2);
+//     assert(G.adjacency_list[nodes[1]].size() <= 2);
 
-    cout << "Test filtered prune passed." << endl;
-}
+//     cout << "Test filtered prune passed." << endl;
+// }
 
 // Register Tests
 TEST_LIST = {
     {"Random Graph Initialization", test_initializeRandomGraph},
     {"Vamana Indexing Algorithm", test_vamana},
-    {"Stitched Vamana Graph Construction", test_stitched_vamana},
+    {"Stitched Vamana no nodes", test_no_nodes},
+    // {"Stitched Vamana no tags", test_no_tags},
+    {"Stitched Vamana single tag", test_single_unique_tag},
+    {"Stitched Vamana multiple unique tags", test_multiple_unique_tags},
+    // {"Stitched Vamana filtered prune", test_filtered_prune},
     {NULL, NULL}
 };

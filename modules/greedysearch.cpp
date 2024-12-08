@@ -1,5 +1,5 @@
 
-#include "../includes/greedysearch.h"
+#include "../include/vamana.h"
 
 vector<Node*> load_fvecs(const string& filename) {
     ifstream input(filename, ios::binary);
