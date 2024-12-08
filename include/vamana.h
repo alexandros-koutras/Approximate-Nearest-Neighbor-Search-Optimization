@@ -38,7 +38,7 @@ struct DirectedGraph {
 
 double euclidean(const Node* a, const Node* b);
 
-vector<Node*> GreedySearch(Node* s, const Node* x_q, unsigned int k, unsigned int list_size);
+vector<Node*> GreedySearch(Node* s, const Node* x_q, unsigned int k, unsigned int list_size) ;
 
 vector<vector<int>> loadIvecs(const string& filename);
 
@@ -49,6 +49,8 @@ vector<Node*> createNodesFromVectors(const vector<vector<float>>& vectors);
 vector<Node*> load_bvecs(const string& filename);
 
 void FilteredRobustPrune(Node* node, vector<Node*> possible_neighbours, float a, unsigned int max_neighbours);
+
+void RobustPrune(Node* node, vector<Node*> possible_neighbours, double a, unsigned int max_neighbours);
 
 bool compare_distance(Node* node1, Node* node2);
 
@@ -67,3 +69,9 @@ int approximateMedoid(const vector<Node*>& nodes, int k);
 Node* findMedoid(const vector<Node*>& points,int k);
 
 void fisherYatesShuffle(vector<Node*>& databasePoints);
+
+DirectedGraph StitchedVamana(vector<Node*>& nodes, float a, int L_small, int R_small, int R_stiched);
+
+void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, float a, int n);
+
+void initializeRandomGraph(vector<Node*>& nodes, unsigned int R);
