@@ -13,6 +13,7 @@ struct Node{
     float distance;
     vector<float> coords;
     vector<Node*> out_neighbors;
+    float filter;
 };
 
 // Define a threshold for comparing floats (useful for floating-point equality checks)

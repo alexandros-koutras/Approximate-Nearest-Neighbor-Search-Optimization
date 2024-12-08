@@ -6,16 +6,25 @@
 
 using namespace std;
 
+// Helper function to create a Node
+Node* createNode(unsigned int id, float filter, const vector<float>& coords) {
+    Node* node = new Node();
+    node->id = id;
+    node->filter = filter; // Set the explicit filter
+    node->coords = coords;
+    return node;
+}
+
 void test_medoid_basic() {
-    // Create test nodes
+    // Create test nodes with explicit filters
     vector<Node*> nodes = {
-        new Node{0, 0.0, {1.0, 0.5, 0.2}}, // First coord is 1.0
-        new Node{1, 0.0, {2.0, 1.5, 0.3}}, // First coord is 2.0
-        new Node{2, 0.0, {1.0, 2.5, 0.8}}, // First coord is 1.0
-        new Node{3, 0.0, {3.0, 0.7, 0.9}}  // First coord is 3.0
+        createNode(0, 1.0, {0.5, 0.2}),
+        createNode(1, 2.0, {1.5, 0.3}),
+        createNode(2, 1.0, {2.5, 0.8}),
+        createNode(3, 3.0, {0.7, 0.9})
     };
 
-    // Define filters (first coordinate values)
+    // Define filters
     unordered_set<float> filters = {1.0, 2.0};
 
     // Number of random samples
@@ -37,14 +46,14 @@ void test_medoid_basic() {
 }
 
 void test_medoid_empty_filter() {
-    // Create test nodes
+    // Create test nodes with explicit filters
     vector<Node*> nodes = {
-        new Node{0, 0.0, {1.0, 0.5, 0.2}}, // First coord is 1.0
-        new Node{1, 0.0, {2.0, 1.5, 0.3}}  // First coord is 2.0
+        createNode(0, 1.0, {0.5, 0.2}),
+        createNode(1, 2.0, {1.5, 0.3})
     };
 
     // Define a filter not matching any node
-    unordered_set<float> filters = {3.0}; // No nodes with first coord 3.0
+    unordered_set<float> filters = {3.0}; // No nodes with filter 3.0
 
     // Number of random samples
     unsigned int tau = 1;
@@ -62,11 +71,11 @@ void test_medoid_empty_filter() {
 }
 
 void test_medoid_small_tau() {
-    // Create test nodes
+    // Create test nodes with explicit filters
     vector<Node*> nodes = {
-        new Node{0, 0.0, {1.0, 0.5, 0.2}},
-        new Node{1, 0.0, {1.0, 1.5, 0.3}},
-        new Node{2, 0.0, {1.0, 2.5, 0.8}}
+        createNode(0, 1.0, {0.5, 0.2}),
+        createNode(1, 1.0, {1.5, 0.3}),
+        createNode(2, 1.0, {2.5, 0.8})
     };
 
     // Define filters
@@ -88,6 +97,7 @@ void test_medoid_small_tau() {
     }
 }
 
+// Test Suite
 TEST_LIST = {
     {"Basic Medoid Test", test_medoid_basic},
     {"Empty Filter Test", test_medoid_empty_filter},

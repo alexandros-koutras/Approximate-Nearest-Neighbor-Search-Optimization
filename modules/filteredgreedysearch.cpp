@@ -7,11 +7,10 @@ vector<Node*> FilteredGreedySearch(vector<Node*> S, const Node* x_q, unsigned in
     unordered_set<Node*> V;  // Visited nodes
     vector<Node*> L;         // Search list
 
-    // Step 1: Initialize L with nodes whose first coordinate matches any of the filters in F_q
+    // Step 1: Initialize L with nodes whose filter matches any of the filters in filters_q
     for (Node* s : S) {
         if (!s) continue;
-        // Check if the first coordinate of the node matches any of the filters in the set F_q
-        if (filters_q.find(s->coords[0]) != filters_q.end()) {
+        if (filters_q.find(s->filter) != filters_q.end()) {
             L.push_back(s);
         }
     }
@@ -39,9 +38,9 @@ vector<Node*> FilteredGreedySearch(vector<Node*> S, const Node* x_q, unsigned in
         // Mark the node as visited
         V.insert(p_star);
 
-        // Add out-neighbors of `p_star` that match the query's filter (i.e., their first coordinate is in F_q)
+        // Add out-neighbors of `p_star` that match the query's filter
         for (Node* neighbor : p_star->out_neighbors) {
-            if (V.find(neighbor) == V.end() && filters_q.find(neighbor->coords[0]) != filters_q.end()) {
+            if (V.find(neighbor) == V.end() && filters_q.find(neighbor->filter) != filters_q.end()) {
                 L.push_back(neighbor);
                 pq.emplace(euclidean(neighbor, x_q), neighbor); // Add to priority queue
             }

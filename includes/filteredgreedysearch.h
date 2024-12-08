@@ -17,6 +17,7 @@ struct Node{
     float distance;
     vector<float> coords;
     vector<Node*> out_neighbors;
+    float filter;
 };
 
 

@@ -20,7 +20,7 @@ unordered_map<float,  unsigned int> findmedoid(const vector<Node*>& P, unsigned 
 
         // Collect all points matching the current filter
         for (const auto& node : P) {
-            if (fabs(node->coords[0] - f) < EPSILON) { 
+            if (fabs(node->filter - f) < EPSILON) { 
                 P_f.push_back(node->id);
             }
         }
