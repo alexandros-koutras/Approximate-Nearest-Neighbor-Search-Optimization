@@ -21,4 +21,4 @@ struct Node{
 
 
 double euclidean(const Node* a, const Node* b);
-vector<Node*> FilteredGreedySearch(const vector<Node*>& start_nodes, const Node* x_q, unsigned int k, unsigned int list_size, const unordered_set<float>& query_filter);
+vector<Node*> FilteredGreedySearch(vector<Node*> S, const Node* x_q, unsigned int k, unsigned int list_size, const unordered_set<float>& filters_q);
