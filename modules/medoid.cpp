@@ -3,7 +3,7 @@
 // Find the centroid of a cluster
 Node* findCentroid(const vector<Node*>& cluster) {
     if (cluster.empty()) {
-        throw std::invalid_argument("Cluster is empty, cannot find centroid");
+        throw invalid_argument("Cluster is empty, cannot find centroid");
     }
 
     size_t dimensions = cluster[0]->coords.size(); // Number of dimensions
@@ -28,7 +28,7 @@ Node* findCentroid(const vector<Node*>& cluster) {
 // K-means clustering
 vector<vector<Node*>> kMeansClustering(const vector<Node*>& nodes, int k, int maxIterations) {
     if (k <= 0 || k > (int)nodes.size()) {
-        throw std::invalid_argument("Invalid number of clusters");
+        throw invalid_argument("Invalid number of clusters");
     }
 
     vector<Node*> centroids;
@@ -90,7 +90,7 @@ vector<vector<Node*>> kMeansClustering(const vector<Node*>& nodes, int k, int ma
 // Find approximate medoid based on clustering
 int approximateMedoid(const vector<Node*>& nodes, int k) {
     if (nodes.empty()) {
-        throw std::invalid_argument("Nodes are empty, cannot find medoid");
+        throw invalid_argument("Nodes are empty, cannot find medoid");
     }
 
     auto clusters = kMeansClustering(nodes, k);
@@ -104,7 +104,7 @@ int approximateMedoid(const vector<Node*>& nodes, int k) {
     }
 
     if (clusters[largestClusterIndex].empty()) {
-        throw std::runtime_error("Largest cluster is empty, cannot find medoid");
+        throw runtime_error("Largest cluster is empty, cannot find medoid");
     }
 
     // Find centroid of the largest cluster
@@ -112,7 +112,7 @@ int approximateMedoid(const vector<Node*>& nodes, int k) {
 
     // Find the node within the largest cluster closest to the centroid
     int medoidIndex = -1;
-    float minDist = std::numeric_limits<float>::max();
+    float minDist = numeric_limits<float>::max();
     for (const Node* node : clusters[largestClusterIndex]) {
         float dist = euclidean(node, centroid);
         if (dist < minDist) {

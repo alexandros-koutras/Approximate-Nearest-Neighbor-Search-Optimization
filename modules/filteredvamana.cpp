@@ -1,8 +1,8 @@
-#include "../include/vamana.h" // Include FilteredGreedySearch and other dependencies
+#include "../include/vamana.h" 
 
 // Function to find the medoid
 Node* findMedoid(const vector<Node*>& points,int k) {
-    int medoidIndex = approximateMedoid(points, k); // Use clustering to determine approximate medoid
+    int medoidIndex = approximateMedoid(points, k);
     return points[medoidIndex];
 }
 
@@ -32,13 +32,15 @@ void fisherYatesShuffle(vector<Node*>& databasePoints) {
     databasePoints = shuffledDatabase;
 }
 
+//Filtered Vamana
 DirectedGraph FilteredVamana(vector<Node*>& databasePoints,int k, unsigned int L, unsigned int R, float alpha) {
-    // Step 1: Initialize Graph
+    //Initialize Graph
     DirectedGraph G;
-
+    
+    //find medoid
     Node* medoid = findMedoid(databasePoints,k);
 
-    // Randomize database points using Fisher-Yates shuffle
+    // Randomize database points
     fisherYatesShuffle(databasePoints);
 
     // Create initial structures
@@ -46,15 +48,15 @@ DirectedGraph FilteredVamana(vector<Node*>& databasePoints,int k, unsigned int L
         G.adjacency_list[point]= unordered_set<Node*>();
     }
 
-    // Iterate over the points in the shuffled order
+    // Iterate over the points
     for (Node* point : databasePoints) {
-        // Step 2: Define S_{F_x} as the start nodes for filtering
-        vector<Node*> S_Fx = {medoid}; // Assume medoid acts as st(f) for simplicity (expand as necessary)
+        //Define S_{F_x} as the start nodes for filtering
+        vector<Node*> S_Fx = {medoid}; //Using the medoid as st(f)
 
-        // Step 3: Perform FilteredGreedySearch
+        //FilteredGreedySearch
         vector<Node*> V_Fx = FilteredGreedySearch(S_Fx, point, 0, L, point->tags);
 
-        // Step 4: Update neighbors of the current point using FilteredRobustPrune
+        //FilteredRobustPrune
         FilteredRobustPrune(point, V_Fx, alpha, R);
 
         // Add these neighbors to the graph
@@ -62,11 +64,11 @@ DirectedGraph FilteredVamana(vector<Node*>& databasePoints,int k, unsigned int L
             G.adjacency_list[point].insert(neighbor);
         }
 
-        // Step 5: Update neighbors for each out-neighbor
-        for (Node* neighbor : G.adjacency_list[point]) {
+        //Update neighbors for each out-neighbor
+        for (Node* neighbor : G.adjacency_list[point]) {//Here i use the DirectedGraph struct(instead of node->out_neighbors)
             G.adjacency_list[neighbor].insert(point);
 
-            // Check if the out-degree exceeds R
+            // Check if the out-degree > R
             if (G.adjacency_list[neighbor].size() > R) {
                 vector<Node*> neighborList(G.adjacency_list[neighbor].begin(), G.adjacency_list[neighbor].end());
                 FilteredRobustPrune(neighbor, neighborList, alpha, R);

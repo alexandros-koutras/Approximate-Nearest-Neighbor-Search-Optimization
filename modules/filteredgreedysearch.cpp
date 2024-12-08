@@ -1,4 +1,4 @@
-#include "../includes/greedysearch.h"
+#include "../include/vamana.h"
 
 
 vector<Node*> FilteredGreedySearch(const vector<Node*>& start_nodes, const Node* x_q, unsigned int k, unsigned int list_size, const unordered_set<string>& query_filter) {

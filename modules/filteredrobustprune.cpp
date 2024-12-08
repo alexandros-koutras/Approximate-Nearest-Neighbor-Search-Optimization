@@ -1,5 +1,18 @@
 #include "../include/vamana.h"
 
+double euclidean(const Node* a, const Node* b) {
+    float sum = 0.0;
+    for (size_t i = 0; i < a->coords.size(); ++i) {
+        sum += pow (a->coords[i] - b->coords[i],2);
+    }
+    return sqrt(sum);
+}
+
+// Compare function for 2 nodes based to their distance to another common node
+bool compare_distance(Node* node1, Node* node2) {
+    return node1->distance < node2->distance;
+}
+
 void FilteredRobustPrune(Node* node, vector<Node*> possible_neighbours, float a, unsigned int max_neighbours) {
     // Add the already existing neighbors to the possible neighbors
     for (Node* n_ptr : node->out_neighbors) {

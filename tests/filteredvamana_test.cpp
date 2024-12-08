@@ -1,6 +1,6 @@
 #include "../include/acutest.h"
 #include "../include/vamana.h"
-// #include "../modules/filteredrobustprune.cpp"
+
 
 
 // Helper: Create a Node
@@ -29,7 +29,7 @@ void test_fisher_yates_shuffle() {
         ids.insert(node->id);
     }
     TEST_CHECK(ids.size() == 4);  // No duplicates
-    TEST_CHECK(ids.find(0) != ids.end());  // Node 0 exists
+    TEST_CHECK(ids.find(0) != ids.end()); 
     TEST_CHECK(ids.find(1) != ids.end());
     TEST_CHECK(ids.find(2) != ids.end());
     TEST_CHECK(ids.find(3) != ids.end());
@@ -108,7 +108,7 @@ void test_filtered_vamana() {
 
     for (Node* node : large_nodes) delete node;
 
-    // Edge Case: Single Node
+    //Single Node
     vector<Node*> single_node = {createNode(0, {0.0, 0.0})};
     DirectedGraph single_graph = FilteredVamana(single_node, k, L, R, alpha);
 
@@ -118,10 +118,41 @@ void test_filtered_vamana() {
     delete single_node[0];
 }
 
-// Register Tests
+void test_filtered_vamana_with_tags() {
+    vector<Node*> nodes = {
+        createNode(0, {0.0, 0.0}, {"A"}),
+        createNode(1, {1.0, 1.0}, {"A", "B"}),
+        createNode(2, {2.0, 2.0}, {"B"}),
+        createNode(3, {3.0, 3.0}, {"C"})
+    };
+
+    unsigned int k = 1, L = 2, R = 1;
+    float alpha = 1.5;
+
+    DirectedGraph graph = FilteredVamana(nodes, k, L, R, alpha);
+
+    // Ensure that neighbors respect tag-based filtering
+    for (Node* node : nodes) {
+        for (Node* neighbor : graph.adjacency_list[node]) {
+            TEST_CHECK(!node->tags.empty());
+            bool sharedTag = false;
+            for (const string& tag : node->tags) {
+                if (neighbor->tags.count(tag)) {
+                    sharedTag = true;
+                    break;
+                }
+            }
+            TEST_CHECK(sharedTag);  // Ensure shared tag exists
+        }
+    }
+
+    for (Node* node : nodes) delete node;
+}
+
 TEST_LIST = {
     {"Fisher-Yates Shuffle", test_fisher_yates_shuffle},
     {"Find Medoid", test_find_medoid},
     {"Filtered Vamana Edge Cases", test_filtered_vamana},
+    {"Filtered Vamana with tags", test_filtered_vamana_with_tags},
     {NULL, NULL}
 };
