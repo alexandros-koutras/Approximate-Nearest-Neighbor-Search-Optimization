@@ -74,7 +74,7 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    vector<vector<float>> data = ReadBin(base_file, k);
+    vector<vector<float>> data = loadFvecs(base_file);
 
     vector<Node*> nodes = createNodesFromVectors(data);
 
@@ -109,7 +109,7 @@ int main(int argc, char* argv[]) {
     cout << "The vamana graph has been successfully implemented" << endl;
     cout << "Execution time: " << duration.count() << " seconds" << endl;
 
-    vector<vector<float>> queries_vectors = ReadBin(query_file, k);
+    vector<vector<float>> queries_vectors = loadFvecs(query_file);
     vector<Node*> queries = createNodesFromVectors(queries_vectors);
 
     vector<vector<int>> groundtruth = loadIvecs(groundtruth_file);
@@ -122,7 +122,7 @@ int main(int argc, char* argv[]) {
         vector<int>& groundTruthForQuery = groundtruth[i];  // Get the ground truth for this query
 
         // Perform Greedy Search for the query
-        int medoid = approximateMedoid(nodes,k);
+        int medoid = rand() % nodes.size();
         vector<Node*> nearestNeighbors = GreedySearch(nodes.at(medoid), queryNode, k, L);
 
         // Print nearest neighbors from GreedySearch
