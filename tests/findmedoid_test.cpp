@@ -2,7 +2,7 @@
 #include <vector>
 #include <unordered_set>
 #include <unordered_map>
-#include "findmedoid.h" // Include your implementation
+#include "findmedoid.h" // Include the updated implementation
 
 using namespace std;
 
@@ -21,12 +21,14 @@ void test_medoid_basic() {
     // Number of random samples
     unsigned int tau = 2;
 
-    // Run findMedoid
-    unordered_map<float, Node*> medoids = findmedoid(nodes, tau, filters);
+    // Run findmedoid
+    unordered_map<float, unsigned int> medoids = findmedoid(nodes, tau, filters);
 
     // Verify results
-    TEST_CHECK(medoids[1.0] != nullptr); // Filter 1.0 should have a medoid
-    TEST_CHECK(medoids[2.0] != nullptr); // Filter 2.0 should have a medoid
+    TEST_CHECK(medoids.find(1.0) != medoids.end()); // Filter 1.0 should have a medoid
+    TEST_CHECK(medoids.find(2.0) != medoids.end()); // Filter 2.0 should have a medoid
+    TEST_MSG("Medoid ID for filter 1.0: %d", medoids[1.0]);
+    TEST_MSG("Medoid ID for filter 2.0: %d", medoids[2.0]);
 
     // Cleanup
     for (auto node : nodes) {
@@ -47,8 +49,8 @@ void test_medoid_empty_filter() {
     // Number of random samples
     unsigned int tau = 1;
 
-    // Run findMedoid
-    unordered_map<float, Node*> medoids = findmedoid(nodes, tau, filters);
+    // Run findmedoid
+    unordered_map<float, unsigned int> medoids = findmedoid(nodes, tau, filters);
 
     // Verify results
     TEST_CHECK(medoids.find(3.0) == medoids.end()); // No medoid should exist for filter 3.0
@@ -73,12 +75,12 @@ void test_medoid_small_tau() {
     // Small tau value
     unsigned int tau = 1;
 
-    // Run findMedoid
-    unordered_map<float, Node*> medoids = findmedoid(nodes, tau, filters);
+    // Run findmedoid
+    unordered_map<float, unsigned int> medoids = findmedoid(nodes, tau, filters);
 
     // Verify results
-    TEST_CHECK(medoids[1.0] != nullptr);
-    TEST_MSG("Medoid ID for filter 1.0: %d", medoids[1.0]->id);
+    TEST_CHECK(medoids.find(1.0) != medoids.end());
+    TEST_MSG("Medoid ID for filter 1.0: %d", medoids[1.0]);
 
     // Cleanup
     for (auto node : nodes) {

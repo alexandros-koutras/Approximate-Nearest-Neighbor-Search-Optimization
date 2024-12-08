@@ -17,4 +17,4 @@ struct Node{
 
 // Define a threshold for comparing floats (useful for floating-point equality checks)
 constexpr float EPSILON = 1e-6;
-unordered_map<float, Node*> findmedoid(const vector<Node*>& P, unsigned int tau, const unordered_set<float>& all_filters);
+unordered_map<float,  unsigned int> findmedoid(const vector<Node*>& P, unsigned int tau, const unordered_set<float>& all_filters);
