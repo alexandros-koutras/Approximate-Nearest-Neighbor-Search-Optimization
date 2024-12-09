@@ -3,7 +3,7 @@
 //random R-regulated directed graph
 void initializeRandomGraph(vector<Node*>& nodes, unsigned int R) {
     srand(static_cast<unsigned int>(time(nullptr)));
-    
+
     for (Node* node : nodes) {
         unordered_set<int> neighbors;
         
@@ -19,11 +19,14 @@ void initializeRandomGraph(vector<Node*>& nodes, unsigned int R) {
 
 void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, float a, int n) {
     //Step 1: Initialize a random R directed graph
+    cout << "nodes.size() = " << nodes.size() << "\n";
     initializeRandomGraph(nodes, R);
 
     //Step 2: Find the medoid s of the dataset 
     if (n == 0)
         return;     //empty
+
+    cout << "poytana g\n";
 
     //old medoid time consuming
     int medoid = 0;

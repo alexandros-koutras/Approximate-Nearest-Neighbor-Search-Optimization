@@ -35,6 +35,7 @@ DirectedGraph FilteredVamana(vector<Node*>& databasePoints,int k, unsigned int L
     unordered_map<float, unsigned int> medoids = findmedoid(databasePoints, tau);
 
     // Randomize database points
+    cout << "AAAAAAAAAA\n";
     fisherYatesShuffle(databasePoints);
 
     // Create initial structures

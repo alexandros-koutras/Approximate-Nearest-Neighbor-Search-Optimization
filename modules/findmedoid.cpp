@@ -12,7 +12,6 @@ unordered_map<float,  unsigned int> findmedoid(const vector<Node*>& P, unsigned 
         all_filters.insert(node->filter); 
     }
 
-
     // Random engine for sampling
     random_device rd;
     mt19937 gen(rd());

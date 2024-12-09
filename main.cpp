@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
     unsigned int tau = 0;
 
     int opt;
-    while ((opt = getopt(argc, argv, "i:q:g:k:l:r:a:z:w:t")) != -1) {
+    while ((opt = getopt(argc, argv, "i:q:g:k:l:r:a:z:w:t:")) != -1) {
         switch (opt) {
             case 'i':
                 base_file = optarg;
@@ -87,7 +87,7 @@ int main(int argc, char* argv[]) {
     // Run with the filtered vamana
     if (way == true) {
         // We don't already have the graph ready
-        if (gr.empty()) {
+        if (gr == "aa") {
             vector<vector<float>> data = ReadBin(base_file, 102);
 
             vector<Node*> nodes = createNodesFromVectors(data);
@@ -256,7 +256,7 @@ int main(int argc, char* argv[]) {
     // We use the stiched vamana
     } else {
         // We have to create the graph
-        if (gr.empty()) {
+        if (gr == "aa") {
             vector<vector<float>> data = ReadBin(base_file, 102);
 
             vector<Node*> nodes = createNodesFromVectors(data);
@@ -282,10 +282,13 @@ int main(int argc, char* argv[]) {
 
             // Start time measurement
             auto start = chrono::high_resolution_clock::now();
-            int R_Stitched = 10;
+            int R_Stitched = 30;
+
+            cout << n << endl;
 
             // Run the Vamana Indexing Algorithm
             StitchedVamana(nodes, a, L, R, R_Stitched);
+            cout << "AAAAAAAAAAA\n";
 
             // End time measurement
             auto end = chrono::high_resolution_clock::now();
