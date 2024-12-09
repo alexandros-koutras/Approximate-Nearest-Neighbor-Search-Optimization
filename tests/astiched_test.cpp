@@ -50,55 +50,54 @@ void test_compare_func_for_nodes() {
 }
 
 void testStitchedVamana() {
-    const float alpha = 1.2f;  // Παράμετρος κλαδέματος
-    const int L_small = 20;
+    const float alpha = 1.2f;
+    const int L_small = 15;
     const int R_small = 10;
-    const int R_stitched = 15;
+    const int R_stitched = 12;
 
-    Node* central_node = create_node(10, {0.0, 0.0, 0.0});
-    central_node->filter = 1.0;
+    // Generate 100 nodes with random coordinates
+    const int num_nodes = 100;
+    vector<Node*> nodes;
+    srand(static_cast<unsigned>(time(0)));
 
-    Node* node1 = create_node(1, {1.0, 0.0, 0.0});
-    node1->filter = 1.0;  // Same filter as central node
-    Node* node2 = create_node(2, {0.0, 1.0, 0.0});
-    node2->filter = 1.0;  // Same filter as central node
-    Node* node3 = create_node(3, {0.0, 0.0, 1.0});
-    node3->filter = 2.0;  // Different filter
-    Node* node4 = create_node(4, {2.0, 2.0, 2.0});
-    node4->filter = 3.0;  // Different filter
+    for (int i = 0; i < num_nodes; ++i) {
+        vector<float> coords = {static_cast<float>(rand() % 100) / 10.0f,
+                                static_cast<float>(rand() % 100) / 10.0f,
+                                static_cast<float>(rand() % 100) / 10.0f};
+        Node* node = create_node(i, coords);
+        node->filter = static_cast<float>(rand() % 3 + 1);
+        nodes.push_back(node);
+    }
 
-    Node* node5 = create_node(5, {1.0, 0.0, 0.0});
-    node1->filter = 1.0;  // Same filter as central node
-    Node* node6 = create_node(6, {0.0, 1.0, 0.0});
-    node2->filter = 1.0;  // Same filter as central node
-    Node* node7 = create_node(7, {0.0, 0.0, 1.0});
-    node3->filter = 2.0;  // Different filter
-    Node* node8 = create_node(8, {2.0, 2.0, 2.0});
-    node4->filter = 3.0;  // Different filter
+    cout << "Generated " << num_nodes << " nodes with random positions and filters." << endl;
 
-    vector<Node*> nodes = { node1, node2, node3, node4, node5, node6, node7, node8};
+    // Run the Stitched Vamana algorithm
+    try {
+        StitchedVamana(nodes, alpha, L_small, R_small, R_stitched);
+    } catch (const std::exception& e) {
+        cerr << "Error during StitchedVamana execution: " << e.what() << endl;
+        assert(false);
+    }
 
-    // Εκτέλεση της Stitched Vamana
-    StitchedVamana(nodes, alpha, L_small, R_small, R_stitched);
-
-    // Επαλήθευση Ιδιότητων του Τελικού Γράφου
+    // Verify properties of the final graph
     for (Node* n : nodes) {
-        // Βεβαιώνουμε ότι κανένας κόμβος δεν έχει περισσότερους από R_stitched γείτονες
         assert(n->out_neighbors.size() <= static_cast<size_t>(R_stitched));
-
-        // Βεβαιώνουμε ότι όλοι οι γείτονες έχουν κοινά φίλτρα με τον τρέχοντα κόμβο
         for (Node* neighbor : n->out_neighbors) {
             assert(n->filter == neighbor->filter);
         }
     }
 
-    cout << "All tests passed for StitchedVamana!" << endl;
+    cout << "All tests passed for StitchedVamana with " << num_nodes << " nodes!" << endl;
 
-    // Διαγραφή κόμβων για αποφυγή διαρροής μνήμης
+    // Cleanup
     for (Node* n : nodes) {
+        n->out_neighbors.clear(); // Avoid dangling references
         delete n;
     }
 }
+
+
+
 
 
 

@@ -25,23 +25,6 @@ void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, float a,
     if (n == 0)
         return;     //empty
 
-    //old medoid time consuming
-    // int medoid = 0;
-    // float min_dist = numeric_limits<float>::max();
-
-    // for (int i = 0; i < n; i++){
-    //     float total_dist  =0;
-    //     for(int j = 0; j < n; j++){
-    //         if(i != j){
-    //             total_dist += euclidean(nodes[i],nodes[j]);
-    //         }
-    //     }
-    //     if (total_dist < min_dist){
-    //         min_dist = total_dist;
-    //         medoid = i;
-    //     }
-    // }
-
     int medoid = approximateMedoid(nodes,k);
     Node* s = nodes[medoid];
 
@@ -105,14 +88,10 @@ void StitchedVamana(vector<Node*>& nodes, float a, int L_small, int R_small, int
         commonFilter[n->filter].push_back(n);
     }
 
-    cout << "map okay\n";
-
     for (auto& [label, subset] : commonFilter) {
         // Build a graph for nodes with the same label
         VamanaIndexingAlgorithm(subset, 2, L_small, R_small, a, subset.size());
     }
-
-    cout << "vamana done and entering pruning\n";
 
     for (Node* n : nodes) {
         RobustPrune(n, n->out_neighbors, a, R_stiched);
