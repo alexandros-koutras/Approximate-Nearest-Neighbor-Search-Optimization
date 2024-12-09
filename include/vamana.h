@@ -37,7 +37,7 @@ vector<Node*> createNodesFromVectors(const vector<vector<float>>& vectors);
 
 vector<Node*> load_bvecs(const string& filename);
 
-void RobustPrune(Node* node, vector<Node*> possible_neighbours, float a, int max_neighbours);
+void FilteredRobustPrune(Node* node, vector<Node*> possible_neighbours, float a, int max_neighbours);
 
 bool compare_distance(Node* node1, Node* node2);
 

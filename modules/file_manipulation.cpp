@@ -107,6 +107,33 @@ vector<Node*> createNodesFromVectors(const vector<vector<float>>& vectors) {
     return nodes;
 }
 
+vector<vector<float>> createVectorFromNodes(const vector<Node*>& nodes) {
+    vector<vector<float>> vectors;
+
+    for (Node* n : nodes) {
+        vector<float> node;
+
+        // Add the node ID (as an integer) and filter
+        node.push_back(n->filter);                   // Filter
+
+        // Add the coordinates to the node vector
+        node.insert(node.end(), n->coords.begin(), n->coords.end());
+
+        // Add the IDs of the neighbors
+        vector<float> neighbor_ids;
+        for (Node* neighbor : n->out_neighbors) {
+            neighbor_ids.push_back(static_cast<float>(neighbor->id));
+        }
+        node.insert(node.end(), neighbor_ids.begin(), neighbor_ids.end());
+
+        // Add this node vector to the main vectors list
+        vectors.push_back(node);
+    }
+
+    return vectors;
+}
+
+
 /// @brief Reading binary data vectors. Raw data store as a (N x dim)
 /// @param file_path file path of binary data
 /// @param data returned 2D data vectors
@@ -133,3 +160,59 @@ vector<vector<float>> ReadBin(const string &file_path, const int num_dimensions)
 
     return data;
 }
+
+/// @brief Save the vector of nodes (created by createVectorFromNodes) to a binary file
+/// @param vectors The 2D vector containing nodes (each row representing a node)
+/// @param file_path The path to the binary file
+void SaveVectorToBinary(const vector<vector<float>>& vectors, const string& file_path) {
+    ofstream ofs(file_path, ios::binary);
+    assert(ofs.is_open());
+
+    // Iterate through each node (each row in the 2D vector)
+    for (const vector<float>& node : vectors) {
+        // Write each element of the node (ID, filter, coordinates)
+        for (float value : node) {
+            ofs.write(reinterpret_cast<const char*>(&value), sizeof(float));
+        }
+    }
+
+    ofs.close();
+    cout << "Vector saved to " << file_path << endl;
+}
+
+vector<Node*> CreateGraph(const vector<vector<float>>& vectors) {
+    vector<Node*> nodes;
+
+    // Limit the iteration to the first 100 elements, or the size of vectors, whichever is smaller
+    for (size_t i = 0; i < vectors.size(); ++i) {
+        Node* newNode = new Node;
+        newNode->id = i;  // Use index as the ID
+        newNode->filter = vectors[i].at(0);
+
+        // Set the limit for the number of coordinates (up to 100)
+        size_t limit = std::min(vectors[i].size() - 1, size_t(100));  // Ensure not exceeding the size of the vector
+
+        // Copy the coordinates up to the limit (starting from the 2nd element)
+        newNode->coords.assign(vectors[i].begin() + 1, vectors[i].begin() + 1 + limit);
+
+        nodes.push_back(newNode);  // Add the Node to the list
+    }
+
+    // Second loop: Set neighbors for each node
+    for (size_t i = 0; i < vectors.size(); ++i) {
+        for (size_t j = 101; j < vectors[i].size(); ++j) {
+            float id = vectors[i].at(j);
+
+            // Find the node with the matching id (use a lambda to compare the node id)
+            auto it = std::find_if(nodes.begin(), nodes.end(), [id](Node* node) { return node->id == id; });
+
+            // If the node with the given id exists, add it as a neighbor
+            if (it != nodes.end()) {
+                (*it)->out_neighbors.push_back(nodes[i]);  // Add the current node to the neighbor's out_neighbors
+            }
+        }
+    }
+
+    return nodes;
+}
+

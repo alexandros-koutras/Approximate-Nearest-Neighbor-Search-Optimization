@@ -76,7 +76,7 @@ void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, float a,
         vector<Node*> V_p = GreedySearch(s, p, 1, L);
 
         //Run RobustPrune on p with V_p, a, and R
-        RobustPrune(p, V_p, a, R);
+        FilteredRobustPrune(p, V_p, a, R);
 
         //Add reverse edges 
         for (Node* neighbor : p->out_neighbors) {
@@ -85,31 +85,12 @@ void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, float a,
             if (neighbor->out_neighbors.size() + 1 > static_cast<size_t>(R)) {
             //Call RobustPrune with the current neighbors plus the new neighbor candidate p
                 neighbor->out_neighbors.push_back(p);  //Temporarily add p
-                RobustPrune(neighbor, neighbor->out_neighbors, a, R);
+                FilteredRobustPrune(neighbor, neighbor->out_neighbors, a, R);
             } else {
             //Safe to add p directly without exceeding R
                 neighbor->out_neighbors.push_back(p);
             }
 
         }
-    }
-}
-
-void StitchedVamana(vector<Node*>& nodes, float a, int L_small, int R_small, int R_stiched) {
-    // Find all the unique filters
-    // Organise them
-    unordered_map<float, vector<Node*>> commonFilter;
-
-    for (Node* n : nodes) {
-        commonFilter[n->filter].push_back(n);
-    }
-
-    for (auto& [label, subset] : commonFilter) {
-        // Build a graph for nodes with the same label
-        VamanaIndexingAlgorithm(subset, 2, L_small, R_small, a, subset.size());
-    }
-
-    for (Node* n : nodes) {
-        RobustPrune(n, n->out_neighbors, a, R_stiched);
     }
 }

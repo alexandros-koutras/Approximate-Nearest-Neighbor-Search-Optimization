@@ -2,14 +2,6 @@
 #include <getopt.h>
 #include <chrono>
 
-//function to check the kind of the base file
-bool ends_with(const string& str, const string& suffix) {
-    if (str.size() >= suffix.size()) {
-        return str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
-    } else {
-        return false;
-    }
-}
 
 float computeRecall(const vector<int>& groundTruth, const vector<Node*>& retrievedNeighbors) {
     int truePositiveCount = 0;
@@ -74,11 +66,12 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    vector<vector<float>> data = ReadBin(base_file, k);
+    vector<vector<float>> data = ReadBin(base_file, 102);
 
     vector<Node*> nodes = createNodesFromVectors(data);
 
     int n = nodes.size();
+
     //well connected
     if (R <= log2(n)){
         cerr << "R must be greater than log2(n), so that the graph is well connected"<<endl;
@@ -106,10 +99,10 @@ int main(int argc, char* argv[]) {
     auto end = chrono::high_resolution_clock::now();
 
     // Calculate elapsed time
-    chrono::duration<float> duration = end - start;
+    chrono::duration<float> graph_duration = end - start;
 
     cout << "The vamana graph has been successfully implemented" << endl;
-    cout << "Execution time: " << duration.count() << " seconds" << endl;
+    cout << "Time took to create graph: " << graph_duration.count() << " seconds" << endl;
 
     vector<vector<float>> queries_vectors = ReadBin(query_file, k);
     vector<Node*> queries = createNodesFromVectors(queries_vectors);
@@ -153,6 +146,18 @@ int main(int argc, char* argv[]) {
 
     float averageRecall = totalRecall / queryCount;
     cout << "Average Recall: " << averageRecall << endl;
+
+    end = chrono::high_resolution_clock::now();
+    chrono::duration<float> queries_duration = end - start;
+
+    cout << "The search from the querries is complete!" << endl;
+    cout << "Time took to complete the search: " << queries_duration.count() << " seconds" << endl;
+    cout << endl;
+
+    chrono::duration<float> total = graph_duration + queries_duration;
+    
+    cout << endl << "Total time: " << total.count() << " seconds" << endl;
+
 
     // Cleanup: free memory
     for (Node* node : nodes) 
