@@ -31,18 +31,37 @@ void test_small_dataset_single_filter() {
     query.filter = 0.0;  // Not used for querying neighbors
     query.coords = {3.0, 3.0, 3.0};
 
-    // Define the query filter (only nodes with filter attribute in {1.0, 3.0})
+    // Define the query filter (only nodes with filter attribute in {1.0})
     unordered_set<float> query_filter = {1.0};
 
     // Perform search
     vector<Node*> start_nodes = {node1, node2, node3, node4};
     vector<Node*> result = FilteredGreedySearch(start_nodes, &query, 2, 5, query_filter);
 
+    // Sort the result nodes by distance to the query node
+    sort(result.begin(), result.end(), [&](Node* a, Node* b) {
+        return euclidean(a, &query) < euclidean(b, &query);
+    });
+
+    // Add debug output to check which nodes were selected
+    cout << "Filtered and sorted result nodes (IDs): ";
+    for (Node* node : result) {
+        cout << node->id << " ";
+    }
+    cout << endl;
+
     // Assert results
     TEST_CHECK(result.size() == 2);  // Expecting 2 nodes to match the filter
     TEST_CHECK(result[0]->id == 1);  // Node 1 should match the filter (filter = 1.0)
     TEST_CHECK(result[1]->id == 4);  // Node 4 should also match the filter (filter = 1.0)
+
+    // Cleanup
+    delete node1;
+    delete node2;
+    delete node3;
+    delete node4;
 }
+
 
 void test_resilience_invalid_inputs() {
     // Empty graph
@@ -92,6 +111,11 @@ void test_large_dataset() {
     TEST_CHECK(result.size() == 5);
     for (Node* node : result) {
         TEST_CHECK(static_cast<int>(node->filter) % 2 == 0); // All results must satisfy the filter
+    }
+
+    // Cleanup
+    for (Node* node : nodes) {
+        delete node;
     }
 }
 

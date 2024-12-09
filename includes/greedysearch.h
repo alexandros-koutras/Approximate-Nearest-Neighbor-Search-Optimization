@@ -25,6 +25,6 @@ struct Node{
 
 double euclidean(const Node* a, const Node* b);
 vector<Node*> load_fvecs(const string& filename);
-vector<Node*> GreedySearch(Node* s, const Node* x_q, unsigned int k, unsigned int list_size);
+vector<Node> GreedySearch(Node s, const Node* x_q, unsigned int k, unsigned int list_size);
 
 #endif 
