@@ -216,3 +216,31 @@ vector<Node*> CreateGraph(const vector<vector<float>>& vectors) {
     return nodes;
 }
 
+vector<vector<float>> ReadGraph(const string &file_path) {
+    cout << "Reading Data: " << file_path << endl;
+    ifstream ifs(file_path, ios::binary);
+    assert(ifs.is_open());
+
+    uint32_t N;  // number of points
+    ifs.read((char*)&N, sizeof(uint32_t));  // Read the number of points
+
+    // Read a single data point to determine the number of dimensions
+    vector<float> first_point;
+    ifs.read(reinterpret_cast<char*>(first_point.data()), sizeof(float));  // Read a float from the first data point
+    size_t num_dimensions = first_point.size();
+
+    cout << "# of points: " << N << endl;
+    vector<vector<float>> data(N);
+    
+    // Loop through the file and read all data points
+    for (uint32_t i = 0; i < N; ++i) {
+        vector<float> row(num_dimensions);  // Create a row of appropriate size
+        ifs.read(reinterpret_cast<char*>(row.data()), num_dimensions * sizeof(float));  // Read a data point into the row
+        data[i] = move(row);  // Store the row in the data array
+    }
+
+    ifs.close();
+    cout << "Finished Reading Data" << endl;
+
+    return data;
+}

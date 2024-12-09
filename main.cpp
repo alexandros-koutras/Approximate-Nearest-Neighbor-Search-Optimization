@@ -25,19 +25,20 @@ float computeRecall(const vector<int>& groundTruth, const vector<Node*>& retriev
 
 int main(int argc, char* argv[]) {
     if (argc < 11) {
-        cerr << "Usage: " << argv[0] << " -i <base.vecs> -q <query.vecs>-g <groundtruth.vecs> -k <k> -l <L> -r <R> -a <a>\n";
-        
+        cerr << "Usage: " << argv[0] << " -i <base.vecs> -q <query.vecs>-g <groundtruth.vecs> -k <k> -l <L> -r <R> -a <a> -gr <gr> -w <w>\n";
         return 1;
     }
 
     string base_file;
     string query_file;
     string groundtruth_file;
+    string gr;
     int k = 0, L = 0, R = 0;
     float a = 0.0;
+    bool w;
 
     int opt;
-    while ((opt = getopt(argc, argv, "i:q:g:k:l:r:a:")) != -1) {
+    while ((opt = getopt(argc, argv, "i:q:g:k:l:r:a:gr:w")) != -1) {
         switch (opt) {
             case 'i':
                 base_file = optarg;
@@ -60,111 +61,345 @@ int main(int argc, char* argv[]) {
             case 'a':
                 a = stod(optarg);
                 break;
+            case 'gr':
+                gr = optarg;
+                break;
+            case 'w':
+                w = optarg;
+                break;
             default:
                 cerr << "Invalid arguments.\n";
                 return 1;
         }
     }
 
-    vector<vector<float>> data = ReadBin(base_file, 102);
+    if (w == true) {
+        if (gr.empty()) {
+            vector<vector<float>> data = ReadBin(base_file, 102);
 
-    vector<Node*> nodes = createNodesFromVectors(data);
+            vector<Node*> nodes = createNodesFromVectors(data);
 
-    int n = nodes.size();
+            int n = nodes.size();
 
-    //well connected
-    if (R <= log2(n)){
-        cerr << "R must be greater than log2(n), so that the graph is well connected"<<endl;
-        return 1;
-    }
+            //well connected
+            if (R <= log2(n)){
+                cerr << "R must be greater than log2(n), so that the graph is well connected"<<endl;
+                return 1;
+            }
 
-    cout << endl << endl;
-    cout << "Base file: " << base_file << endl;
-    cout << "Query file: " <<query_file << endl;
-    cout << "Groundtruth file: " << groundtruth_file << endl;
-    cout << "k: " << k << endl;
-    cout << "L: " << L << endl;
-    cout << "R: " << R << endl;
-    cout << "a: " << a << endl;
-    cout << endl;
-    cout << "Now the implementation of the vamana algorithm is starting!" << endl;
+            cout << endl << endl;
+            cout << "Base file: " << base_file << endl;
+            cout << "Query file: " <<query_file << endl;
+            cout << "Groundtruth file: " << groundtruth_file << endl;
+            cout << "k: " << k << endl;
+            cout << "L: " << L << endl;
+            cout << "R: " << R << endl;
+            cout << "a: " << a << endl;
+            cout << endl;
+            cout << "Now the implementation of the vamana algorithm is starting!" << endl;
 
-    // Start time measurement
-    auto start = chrono::high_resolution_clock::now();
+            // Start time measurement
+            auto start = chrono::high_resolution_clock::now();
 
-    // Run the Vamana Indexing Algorithm
-    VamanaIndexingAlgorithm(nodes, k, L, R, a, n);
+            // Run the Vamana Indexing Algorithm
+            VamanaIndexingAlgorithm(nodes, k, L, R, a, n);
 
-    // End time measurement
-    auto end = chrono::high_resolution_clock::now();
+            // End time measurement
+            auto end = chrono::high_resolution_clock::now();
 
-    // Calculate elapsed time
-    chrono::duration<float> graph_duration = end - start;
+            // Calculate elapsed time
+            chrono::duration<float> graph_duration = end - start;
 
-    cout << "The vamana graph has been successfully implemented" << endl;
-    cout << "Time took to create graph: " << graph_duration.count() << " seconds" << endl;
+            cout << "The vamana graph has been successfully implemented" << endl;
+            cout << "Time took to create graph: " << graph_duration.count() << " seconds" << endl;
 
-    vector<vector<float>> queries_vectors = ReadBin(query_file, k);
-    vector<Node*> queries = createNodesFromVectors(queries_vectors);
+            vector<vector<float>> queries_vectors = ReadBin(query_file, k);
+            vector<Node*> queries = createNodesFromVectors(queries_vectors);
 
-    vector<vector<int>> groundtruth = loadIvecs(groundtruth_file);
+            vector<vector<int>> groundtruth = loadIvecs(groundtruth_file);
 
-    float totalRecall = 0.0;
-    int queryCount = 0;
+            float totalRecall = 0.0;
+            int queryCount = 0;
 
-    for (size_t i = 0; i < queries.size(); ++i) {
-        Node* queryNode = queries[i];
-        vector<int>& groundTruthForQuery = groundtruth[i];  // Get the ground truth for this query
+            for (size_t i = 0; i < queries.size(); ++i) {
+                Node* queryNode = queries[i];
+                vector<int>& groundTruthForQuery = groundtruth[i];  // Get the ground truth for this query
 
-        // Perform Greedy Search for the query
-        int medoid = approximateMedoid(nodes,k);
-        vector<Node*> nearestNeighbors = GreedySearch(nodes.at(medoid), queryNode, k, L);
+                // Perform Greedy Search for the query
+                int medoid = approximateMedoid(nodes,k);
+                vector<Node*> nearestNeighbors = GreedySearch(nodes.at(medoid), queryNode, k, L);
 
-        // Print nearest neighbors from GreedySearch
-        cout << "Nearest neighbors from GreedySearch for query " << queryNode->id << ": ";
-        for (Node* neighbor : nearestNeighbors) {
-            cout << neighbor->id << " ";
+                // Print nearest neighbors from GreedySearch
+                cout << "Nearest neighbors from GreedySearch for query " << queryNode->id << ": ";
+                for (Node* neighbor : nearestNeighbors) {
+                    cout << neighbor->id << " ";
+                }
+                cout << endl;
+
+                // Print ground truth neighbors for the query
+                cout << "Ground truth neighbors for query " << queryNode->id << ": ";
+                for (int gtId : groundTruthForQuery) {
+                    cout << gtId << " ";
+                }
+                cout << endl;
+
+                // Compute Recall for this query
+                float recall = computeRecall(groundTruthForQuery, nearestNeighbors);
+                totalRecall += recall;
+                queryCount++;
+
+                // Print the recall for this query
+                cout << "Recall for query " << queryNode->id << ": " << recall << endl;
+                cout << "--------------------------------------------------" << endl;
+            }
+
+            float averageRecall = totalRecall / queryCount;
+            cout << "Average Recall: " << averageRecall << endl;
+
+            end = chrono::high_resolution_clock::now();
+            chrono::duration<float> queries_duration = end - start;
+
+            cout << "The search from the querries is complete!" << endl;
+            cout << "Time took to complete the search: " << queries_duration.count() << " seconds" << endl;
+            cout << endl;
+
+            chrono::duration<float> total = graph_duration + queries_duration;
+            
+            cout << endl << "Total time: " << total.count() << " seconds" << endl;
+
+            // Cleanup: free memory
+            for (Node* node : nodes) 
+                delete node;
+
+            for (Node* node : queries)
+                delete node;
+        } else {
+            vector<vector<float>> vector_graph = ReadGraph(gr);
+            vector<Node*> nodes = CreateGraph(vector_graph);
+
+            auto start = chrono::high_resolution_clock::now();
+
+            vector<vector<float>> queries_vectors = ReadBin(query_file, k);
+            vector<Node*> queries = createNodesFromVectors(queries_vectors);
+
+            vector<vector<int>> groundtruth = loadIvecs(groundtruth_file);
+
+            float totalRecall = 0.0;
+            int queryCount = 0;
+
+            for (size_t i = 0; i < queries.size(); ++i) {
+                Node* queryNode = queries[i];
+                vector<int>& groundTruthForQuery = groundtruth[i];  // Get the ground truth for this query
+
+                // Perform Greedy Search for the query
+                int medoid = approximateMedoid(nodes,k);
+                vector<Node*> nearestNeighbors = GreedySearch(nodes.at(medoid), queryNode, k, L);
+
+                // Print nearest neighbors from GreedySearch
+                cout << "Nearest neighbors from GreedySearch for query " << queryNode->id << ": ";
+                for (Node* neighbor : nearestNeighbors) {
+                    cout << neighbor->id << " ";
+                }
+                cout << endl;
+
+                // Print ground truth neighbors for the query
+                cout << "Ground truth neighbors for query " << queryNode->id << ": ";
+                for (int gtId : groundTruthForQuery) {
+                    cout << gtId << " ";
+                }
+                cout << endl;
+
+                // Compute Recall for this query
+                float recall = computeRecall(groundTruthForQuery, nearestNeighbors);
+                totalRecall += recall;
+                queryCount++;
+
+                // Print the recall for this query
+                cout << "Recall for query " << queryNode->id << ": " << recall << endl;
+                cout << "--------------------------------------------------" << endl;
+            }
+
+            float averageRecall = totalRecall / queryCount;
+            cout << "Average Recall: " << averageRecall << endl;
+
+            auto end = chrono::high_resolution_clock::now();
+            chrono::duration<float> queries_duration = end - start;
+
+            cout << "The search from the querries is complete!" << endl;
+            cout << "Time took to complete the search: " << queries_duration.count() << " seconds" << endl;
+            cout << endl;
+
+            // Cleanup: free memory
+            for (Node* node : nodes) 
+                delete node;
+
+            for (Node* node : queries)
+                delete node;
         }
-        cout << endl;
+    } else {
+        if (gr.empty()) {
+            vector<vector<float>> data = ReadBin(base_file, 102);
 
-        // Print ground truth neighbors for the query
-        cout << "Ground truth neighbors for query " << queryNode->id << ": ";
-        for (int gtId : groundTruthForQuery) {
-            cout << gtId << " ";
+            vector<Node*> nodes = createNodesFromVectors(data);
+
+            int n = nodes.size();
+
+            //well connected
+            if (R <= log2(n)){
+                cerr << "R must be greater than log2(n), so that the graph is well connected"<<endl;
+                return 1;
+            }
+
+            cout << endl << endl;
+            cout << "Base file: " << base_file << endl;
+            cout << "Query file: " <<query_file << endl;
+            cout << "Groundtruth file: " << groundtruth_file << endl;
+            cout << "k: " << k << endl;
+            cout << "L: " << L << endl;
+            cout << "R: " << R << endl;
+            cout << "a: " << a << endl;
+            cout << endl;
+            cout << "Now the implementation of the vamana algorithm is starting!" << endl;
+
+            // Start time measurement
+            auto start = chrono::high_resolution_clock::now();
+            int R_Stitched = 10;
+
+            // Run the Vamana Indexing Algorithm
+            StitchedVamana(nodes, a, L, R, R_Stitched);
+
+            // End time measurement
+            auto end = chrono::high_resolution_clock::now();
+
+            // Calculate elapsed time
+            chrono::duration<float> graph_duration = end - start;
+
+            cout << "The vamana graph has been successfully implemented" << endl;
+            cout << "Time took to create graph: " << graph_duration.count() << " seconds" << endl;
+
+            vector<vector<float>> queries_vectors = ReadBin(query_file, k);
+            vector<Node*> queries = createNodesFromVectors(queries_vectors);
+
+            vector<vector<int>> groundtruth = loadIvecs(groundtruth_file);
+
+            float totalRecall = 0.0;
+            int queryCount = 0;
+
+            for (size_t i = 0; i < queries.size(); ++i) {
+                Node* queryNode = queries[i];
+                vector<int>& groundTruthForQuery = groundtruth[i];  // Get the ground truth for this query
+
+                // Perform Greedy Search for the query
+                int medoid = approximateMedoid(nodes,k);
+                vector<Node*> nearestNeighbors = GreedySearch(nodes.at(medoid), queryNode, k, L);
+
+                // Print nearest neighbors from GreedySearch
+                cout << "Nearest neighbors from GreedySearch for query " << queryNode->id << ": ";
+                for (Node* neighbor : nearestNeighbors) {
+                    cout << neighbor->id << " ";
+                }
+                cout << endl;
+
+                // Print ground truth neighbors for the query
+                cout << "Ground truth neighbors for query " << queryNode->id << ": ";
+                for (int gtId : groundTruthForQuery) {
+                    cout << gtId << " ";
+                }
+                cout << endl;
+
+                // Compute Recall for this query
+                float recall = computeRecall(groundTruthForQuery, nearestNeighbors);
+                totalRecall += recall;
+                queryCount++;
+
+                // Print the recall for this query
+                cout << "Recall for query " << queryNode->id << ": " << recall << endl;
+                cout << "--------------------------------------------------" << endl;
+            }
+
+            float averageRecall = totalRecall / queryCount;
+            cout << "Average Recall: " << averageRecall << endl;
+
+            end = chrono::high_resolution_clock::now();
+            chrono::duration<float> queries_duration = end - start;
+
+            cout << "The search from the querries is complete!" << endl;
+            cout << "Time took to complete the search: " << queries_duration.count() << " seconds" << endl;
+            cout << endl;
+
+            chrono::duration<float> total = graph_duration + queries_duration;
+            
+            cout << endl << "Total time: " << total.count() << " seconds" << endl;
+
+            // Cleanup: free memory
+            for (Node* node : nodes) 
+                delete node;
+
+            for (Node* node : queries)
+                delete node;
+        } else {
+            vector<vector<float>> vector_graph = ReadGraph(gr);
+            vector<Node*> nodes = CreateGraph(vector_graph);
+
+            auto start = chrono::high_resolution_clock::now();
+
+            vector<vector<float>> queries_vectors = ReadBin(query_file, k);
+            vector<Node*> queries = createNodesFromVectors(queries_vectors);
+
+            vector<vector<int>> groundtruth = loadIvecs(groundtruth_file);
+
+            float totalRecall = 0.0;
+            int queryCount = 0;
+
+            for (size_t i = 0; i < queries.size(); ++i) {
+                Node* queryNode = queries[i];
+                vector<int>& groundTruthForQuery = groundtruth[i];  // Get the ground truth for this query
+
+                // Perform Greedy Search for the query
+                int medoid = approximateMedoid(nodes,k);
+                vector<Node*> nearestNeighbors = GreedySearch(nodes.at(medoid), queryNode, k, L);
+
+                // Print nearest neighbors from GreedySearch
+                cout << "Nearest neighbors from GreedySearch for query " << queryNode->id << ": ";
+                for (Node* neighbor : nearestNeighbors) {
+                    cout << neighbor->id << " ";
+                }
+                cout << endl;
+
+                // Print ground truth neighbors for the query
+                cout << "Ground truth neighbors for query " << queryNode->id << ": ";
+                for (int gtId : groundTruthForQuery) {
+                    cout << gtId << " ";
+                }
+                cout << endl;
+
+                // Compute Recall for this query
+                float recall = computeRecall(groundTruthForQuery, nearestNeighbors);
+                totalRecall += recall;
+                queryCount++;
+
+                // Print the recall for this query
+                cout << "Recall for query " << queryNode->id << ": " << recall << endl;
+                cout << "--------------------------------------------------" << endl;
+            }
+
+            float averageRecall = totalRecall / queryCount;
+            cout << "Average Recall: " << averageRecall << endl;
+
+            auto end = chrono::high_resolution_clock::now();
+            chrono::duration<float> queries_duration = end - start;
+
+            cout << "The search from the querries is complete!" << endl;
+            cout << "Time took to complete the search: " << queries_duration.count() << " seconds" << endl;
+            cout << endl;
+
+            // Cleanup: free memory
+            for (Node* node : nodes) 
+                delete node;
+
+            for (Node* node : queries)
+                delete node;
         }
-        cout << endl;
-
-        // Compute Recall for this query
-        float recall = computeRecall(groundTruthForQuery, nearestNeighbors);
-        totalRecall += recall;
-        queryCount++;
-
-        // Print the recall for this query
-        cout << "Recall for query " << queryNode->id << ": " << recall << endl;
-        cout << "--------------------------------------------------" << endl;
     }
-
-    float averageRecall = totalRecall / queryCount;
-    cout << "Average Recall: " << averageRecall << endl;
-
-    end = chrono::high_resolution_clock::now();
-    chrono::duration<float> queries_duration = end - start;
-
-    cout << "The search from the querries is complete!" << endl;
-    cout << "Time took to complete the search: " << queries_duration.count() << " seconds" << endl;
-    cout << endl;
-
-    chrono::duration<float> total = graph_duration + queries_duration;
-    
-    cout << endl << "Total time: " << total.count() << " seconds" << endl;
-
-
-    // Cleanup: free memory
-    for (Node* node : nodes) 
-        delete node;
-
-    for (Node* node : queries)
-        delete node;
-
     return 0;
 }

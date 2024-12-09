@@ -1,18 +1,23 @@
 #include "../include/vamana.h"
 
 // FindMedoid implementation
-unordered_map<float,  unsigned int> findmedoid(const vector<Node*>& P, unsigned int tau, const unordered_set<float>& all_filters) {
+unordered_map<float,  unsigned int> findmedoid(const vector<Node*>& P, unsigned int tau) {
     unordered_map<float,  unsigned int> M; // Map of filters to medoids
     unordered_map< unsigned int, unsigned int> T; // Counter for visits to each node
+    unordered_set<float> all_filters;
 
     // Initialize T with zeros for all points
     for (const auto& node : P) {
         T[node->id] = 0;
+        all_filters.insert(node->filter); 
     }
+
 
     // Random engine for sampling
     random_device rd;
     mt19937 gen(rd());
+
+
 
     // Process each filter
     for (const auto& f : all_filters) {
