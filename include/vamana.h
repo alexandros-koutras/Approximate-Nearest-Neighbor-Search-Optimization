@@ -58,3 +58,11 @@ int approximateMedoid(const vector<Node*>& nodes, int k);
 vector<vector<float>> ReadBin(const string &file_path, const int num_dimensions);
 
 void StitchedVamana(vector<Node*>& nodes, float a, int L_small, int R_small, int R_stiched);
+
+vector<Node*> FilteredGreedySearch(const vector<Node*>& start_nodes, const Node* x_q, unsigned int k, unsigned int list_size, const unordered_set<float>& query_filter) ;
+
+
+// Define a threshold for comparing floats (useful for floating-point equality checks)
+constexpr float EPSILON = 1e-6;
+
+unordered_map<float,  unsigned int> findmedoid(const vector<Node*>& P, unsigned int tau, const unordered_set<float>& all_filters);

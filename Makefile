@@ -1,11 +1,12 @@
 # Compiler and flags
-CC = g++
-CFLAGS = -Wall -Werror -g -I$(INCLUDE)
 
-# Paths
-MODULES = ./modules
-TESTS = ./tests
-INCLUDE = ./include
+CXX = g++
+CXXFLAGS = -std=c++17 -Wall -O2 -Iincludes
+
+# Folders
+INCLUDES = includes
+MODULES = modules
+TESTS = tests
 
 # Automatically find all .cpp files and convert them to .o
 MAIN_SRC = main.cpp
@@ -22,8 +23,10 @@ ARGS1 = -i siftsmall/siftsmall_base.fvecs -q siftsmall/siftsmall_query.fvecs \
 # Executable program
 EXEC = project
 
-# Default rule
-all: $(EXEC)
+# Rules
+.PHONY: all clean
+
+all: $(TEST_EXECUTABLES)
 
 # Link object files to create the executable
 $(EXEC): $(MODULES_OBJ) $(MAIN_OBJ)
