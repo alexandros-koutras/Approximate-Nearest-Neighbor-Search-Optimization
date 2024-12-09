@@ -53,7 +53,7 @@ unordered_map<float,  unsigned int> findmedoid(const vector<Node*>& P, unsigned 
 
 //ex1
 vector<Node*> GreedySearch(Node* s, const Node* x_q, unsigned int k, unsigned int list_size) ;
-void RobustPrune(Node* node, vector<Node*> possible_neighbours, double a, unsigned int max_neighbours);
+void RobustPrune(Node* node, vector<Node*> possible_neighbours, float a, int max_neighbours);
 void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, float a, int n);
 
 //ex2
