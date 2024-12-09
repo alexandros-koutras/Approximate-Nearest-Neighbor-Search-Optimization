@@ -27,7 +27,6 @@ struct Node {
     vector<float> coords;  //coordinates
     vector<Node*> out_neighbors; 
     float filter;
-    float filter;
 };
 
 struct DirectedGraph {
@@ -70,7 +69,17 @@ vector<Node*> load_bvecs(const string& filename);
 
 
 
-unordered_map<float,  unsigned int> findmedoid(const vector<Node*>& P, unsigned int tau, const unordered_set<float>& all_filters);
+unordered_map<float,  unsigned int> findmedoid(const vector<Node*>& P, unsigned int tau);
 // Define a threshold for comparing floats (useful for floating-point equality checks)
 constexpr float EPSILON = 1e-6;
 vector<vector<float>> ReadBin(const string &file_path, const int num_dimensions);
+
+vector<vector<float>> createVectorFromNodes(const vector<Node*>& nodes);
+
+vector<vector<float>> ReadBin(const string &file_path, const int num_dimensions);
+
+void SaveVectorToBinary(const vector<vector<float>>& vectors, const string& file_path);
+
+vector<Node*> CreateGraph(const vector<vector<float>>& vectors);
+
+vector<vector<float>> ReadGraph(const string &file_path);

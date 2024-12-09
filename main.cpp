@@ -25,7 +25,7 @@ float computeRecall(const vector<int>& groundTruth, const vector<Node*>& retriev
 
 int main(int argc, char* argv[]) {
     if (argc < 11) {
-        cerr << "Usage: " << argv[0] << " -i <base.vecs> -q <query.vecs>-g <groundtruth.vecs> -k <k> -l <L> -r <R> -a <a> -gr <gr> -w <w>\n";
+        cerr << "Usage: " << argv[0] << " -i <base.vecs> -q <query.vecs> -g <groundtruth.vecs> -k <k> -l <L> -r <R> -a <a> -z <z> -w <w>\n";
         return 1;
     }
 
@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
     unsigned int tau=0;
 
     int opt;
-    while ((opt = getopt(argc, argv, "i:q:g:k:l:r:a:gr:w")) != -1) {
+    while ((opt = getopt(argc, argv, "i:q:g:k:l:r:a:z:w")) != -1) {
         switch (opt) {
             case 'i':
                 base_file = optarg;
@@ -62,7 +62,7 @@ int main(int argc, char* argv[]) {
             case 'a':
                 a = stod(optarg);
                 break;
-            case 'gr':
+            case 'z':
                 gr = optarg;
                 break;
             case 'w':
