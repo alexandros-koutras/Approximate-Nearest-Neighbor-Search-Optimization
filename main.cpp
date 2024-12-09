@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
     unsigned int tau=0;
     cout << "2";
     int opt;
-    while ((opt = getopt(argc, argv, "i:q:g:k:l:r:a:z:w:t")) != -1) {
+    while ((opt = getopt(argc, argv, "i:q:g:k:l:r:a:z:w:t:")) != -1) {
         switch (opt) {
             case 'i':
                 base_file = optarg;
