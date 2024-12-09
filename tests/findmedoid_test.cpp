@@ -27,7 +27,7 @@ void test_medoid_basic() {
     unsigned int tau = 2;
 
     // Run findmedoid
-    unordered_map<float, unsigned int> medoids = findmedoid(nodes, tau, filters);
+    unordered_map<float, unsigned int> medoids = findmedoid(nodes, tau);
 
     // Verify results
     TEST_CHECK(medoids.find(1.0) != medoids.end()); // Filter 1.0 should have a medoid
@@ -55,7 +55,7 @@ void test_medoid_empty_filter() {
     unsigned int tau = 1;
 
     // Run findmedoid
-    unordered_map<float, unsigned int> medoids = findmedoid(nodes, tau, filters);
+    unordered_map<float, unsigned int> medoids = findmedoid(nodes, tau);
 
     // Verify results
     TEST_CHECK(medoids.find(3.0) == medoids.end()); // No medoid should exist for filter 3.0
@@ -81,7 +81,7 @@ void test_medoid_small_tau() {
     unsigned int tau = 1;
 
     // Run findmedoid
-    unordered_map<float, unsigned int> medoids = findmedoid(nodes, tau, filters);
+    unordered_map<float, unsigned int> medoids = findmedoid(nodes, tau);
 
     // Verify results
     TEST_CHECK(medoids.find(1.0) != medoids.end());

@@ -107,6 +107,25 @@ vector<Node*> createNodesFromVectors(const vector<vector<float>>& vectors) {
     return nodes;
 }
 
+vector<Node*> createQueriesFromVectors(const vector<vector<float>>& vectors) {
+    vector<Node*> nodes;
+
+    for (size_t i = 0; i < vectors.size(); ++i) {
+        Node* newNode = new Node;
+        newNode->id = i;  // Use index as the ID
+        newNode->distance = vectors[i].at(1);
+        if (newNode->distance == 2 || newNode->distance == 3) {
+            delete newNode;
+            continue;
+        } 
+        newNode->filter = vectors[i].at(1);
+        newNode->coords.assign(vectors[i].begin() + 2, vectors[i].end());  // Copy coordinates into the Node
+        nodes.push_back(newNode);  // Add the Node to the list
+    }
+
+    return nodes;
+}
+
 vector<vector<float>> createVectorFromNodes(const vector<Node*>& nodes) {
     vector<vector<float>> vectors;
 
