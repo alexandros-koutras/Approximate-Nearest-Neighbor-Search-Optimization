@@ -1,39 +1,87 @@
 # Compiler and flags
-
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -O2 -Iincludes
+CXXFLAGS = -std=c++17 -Wall -O2 -I$(INCLUDES)
 
 # Folders
 INCLUDES = includes
 MODULES = modules
 TESTS = tests
 
-# Source files
-MODULE_SRCS = $(MODULES)/greedysearch.cpp $(MODULES)/filteredgreedysearch.cpp
-MODULE_OBJS = $(MODULE_SRCS:.cpp=.o)
+# Automatically find all .cpp files and convert them to .o
+MAIN_SRC = main.cpp
+MODULES_SRC = $(wildcard $(MODULES)/*.cpp)
+TESTS_SRC = $(wildcard $(TESTS)/*.cpp)
 
-TEST_SRCS = $(TESTS)/filteredgreedysearch_test.cpp $(TESTS)/greedysearch_test.cpp
-TEST_OBJS = $(TEST_SRCS:.cpp=.o)
+MAIN_OBJ = $(patsubst %.cpp,%.o,$(MAIN_SRC))
+MODULES_OBJ = $(patsubst $(MODULES)/%.cpp,$(MODULES)/%.o,$(MODULES_SRC))
+TESTS_EXECUTABLES = $(patsubst %.cpp,%,$(TESTS_SRC))
 
-# Executables
-TEST_EXECUTABLES = test_greedysearch test_filteredgreedysearch
+ARGS1 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
+        -g "" -k 100 -l 120 -r 60 -a 1.2 \
+		-gr "" -w false
+
+ARGS2 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
+        -g "" -k 100 -l 120 -r 60 -a 1.2 \
+		-gr "" graph_binary.bin -w false
+
+ARGS3 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
+        -g "" -k 100 -l 120 -r 60 -a 1.2 \
+		-gr "" -2 true
+
+ARGS4 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
+        -g "" -k 100 -l 120 -r 60 -a 1.2 \
+		-gr "" graph_binary.bin -w true
+
+# Executable program
+EXEC = project
 
 # Rules
-.PHONY: all clean
+.PHONY: all clean tests valgrind_tests check run run1
 
-all: $(TEST_EXECUTABLES)
+all: $(EXEC)
 
-# Create executables for tests
-test_greedysearch: $(MODULE_OBJS) $(TESTS)/greedysearch_test.o
+# Link object files to create the executable
+$(EXEC): $(MODULES_OBJ) $(MAIN_OBJ)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
-test_filteredgreedysearch: $(MODULE_OBJS) $(TESTS)/filteredgreedysearch_test.o
-	$(CXX) $(CXXFLAGS) -o $@ $^
-
-# Compile object files
+# Compile .cpp files to .o
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Clean up generated files
+# Build and run tests
+tests: $(TESTS_EXECUTABLES)
+	@$(foreach test,$(TESTS_EXECUTABLES), ./$(test) || exit 1;)
+
+valgrind_tests: $(TESTS_EXECUTABLES)
+	@$(foreach test,$(TESTS_EXECUTABLES), \
+		valgrind --leak-check=full --track-origins=yes ./$(test) || exit 1;)
+
+# Build test executables
+$(TESTS_EXECUTABLES): % : %.cpp $(MODULES_OBJ)
+	$(CXX) $(CXXFLAGS) -o $@ $(MODULES_OBJ) $<
+
+# Run the executable with arguments
+run: $(EXEC)
+	./$(EXEC) $(ARGS)
+
+run1: $(EXEC)
+	./$(EXEC) $(ARGS1)
+
+run2: $(EXEC)
+	./$(EXEC) $(ARGS2)
+
+run3: $(EXEC)
+	./$(EXEC) $(ARGS3)
+
+run4: $(EXEC)
+	./$(EXEC) $(ARGS4)
+
+check: tests
+
+# Run the executable with Valgrind
+valgrind: $(EXEC)
+	valgrind --leak-check=full --track-origins=yes ./$(EXEC) $(ARGS)
+
+# Clean the build
 clean:
-	rm -f $(MODULE_OBJS) $(TEST_OBJS) $(TEST_EXECUTABLES)
+	rm -f $(MODULES_OBJ) $(MAIN_OBJ) $(EXEC) $(TESTS_EXECUTABLES)

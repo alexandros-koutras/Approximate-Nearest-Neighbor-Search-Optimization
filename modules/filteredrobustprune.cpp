@@ -1,9 +1,12 @@
 #include "../include/vamana.h"
 
-double euclidean(const Node* a, const Node* b) {
+
+// This is the euklideian method to calculate the distance of 2 nodes
+float euclidean(const Node* a, const Node* b) {
     float sum = 0.0;
     for (size_t i = 0; i < a->coords.size(); ++i) {
-        sum += pow (a->coords[i] - b->coords[i],2);
+        float diff = a->coords[i] - b->coords[i];
+        sum += diff * diff;
     }
     return sqrt(sum);
 }
@@ -13,7 +16,7 @@ bool compare_distance(Node* node1, Node* node2) {
     return node1->distance < node2->distance;
 }
 
-void FilteredRobustPrune(Node* node, vector<Node*> possible_neighbours, float a, unsigned int max_neighbours) {
+void FilteredRobustPrune(Node* node, vector<Node*> possible_neighbours, float a, int max_neighbours) {
     // Add the already existing neighbors to the possible neighbors
     for (Node* n_ptr : node->out_neighbors) {
         possible_neighbours.push_back(n_ptr);
@@ -47,14 +50,15 @@ void FilteredRobustPrune(Node* node, vector<Node*> possible_neighbours, float a,
         node->out_neighbors.push_back(closest);
         possible_neighbours.erase(possible_neighbours.begin());
 
-        if (node->out_neighbors.size() == max_neighbours) {
+        if (node->out_neighbors.size() == static_cast<size_t>(max_neighbours)) {
             break;
         }
 
         // Pruning method
         auto it = possible_neighbours.begin();
         while (it != possible_neighbours.end()) {
-            if (node->coords.at(0) != closest->coords.at(0) && (*it)->coords.at(0) != closest->coords.at(0)) {
+            if (node->filter != closest->filter && (*it)->filter != closest->filter) {
+                ++it;
                 continue;
             }
             float pruning = a * euclidean(closest, *it); 

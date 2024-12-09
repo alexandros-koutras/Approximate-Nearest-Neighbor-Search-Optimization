@@ -121,3 +121,4 @@ vector<Node*> GreedySearch(Node* s, const Node* x_q, unsigned int k, unsigned in
     }
     return L; 
 }
+
