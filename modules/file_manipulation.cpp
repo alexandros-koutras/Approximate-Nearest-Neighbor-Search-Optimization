@@ -187,9 +187,14 @@ void SaveVectorToBinary(const vector<vector<float>>& vectors, const string& file
     ofstream ofs(file_path, ios::binary);
     assert(ofs.is_open());
 
-    // Iterate through each node (each row in the 2D vector)
+    uint32_t N = vectors.size();
+    ofs.write(reinterpret_cast<const char*>(&N), sizeof(uint32_t));  // Write number of points
+
+    size_t num_dimensions = vectors.empty() ? 0 : vectors[0].size();
+    ofs.write(reinterpret_cast<const char*>(&num_dimensions), sizeof(size_t));  // Write number of dimensions
+
+    // Write the actual data
     for (const vector<float>& node : vectors) {
-        // Write each element of the node (ID, filter, coordinates)
         for (float value : node) {
             ofs.write(reinterpret_cast<const char*>(&value), sizeof(float));
         }
@@ -198,6 +203,8 @@ void SaveVectorToBinary(const vector<vector<float>>& vectors, const string& file
     ofs.close();
     cout << "Vector saved to " << file_path << endl;
 }
+
+
 
 vector<Node*> CreateGraph(const vector<vector<float>>& vectors) {
     vector<Node*> nodes;
@@ -242,15 +249,15 @@ vector<vector<float>> ReadGraph(const string &file_path) {
 
     uint32_t N;  // number of points
     ifs.read((char*)&N, sizeof(uint32_t));  // Read the number of points
-
-    // Read a single data point to determine the number of dimensions
-    vector<float> first_point;
-    ifs.read(reinterpret_cast<char*>(first_point.data()), sizeof(float));  // Read a float from the first data point
-    size_t num_dimensions = first_point.size();
-
     cout << "# of points: " << N << endl;
+
+    size_t num_dimensions;  // Number of dimensions
+    ifs.read((char*)&num_dimensions, sizeof(size_t));  // Read the number of dimensions
+
+    cout << "# of dimensions: " << num_dimensions << endl;
+
     vector<vector<float>> data(N);
-    
+
     // Loop through the file and read all data points
     for (uint32_t i = 0; i < N; ++i) {
         vector<float> row(num_dimensions);  // Create a row of appropriate size

@@ -22,7 +22,7 @@ ARGS1 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
 
 ARGS2 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
         -g "" -k 100 -l 120 -r 60 -a 1.2 \
-		-gr "" graph_binary.bin -w false
+		-gr graph_binary.bin -w false
 
 ARGS3 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
         -g aa -k 100 -l 120 -r 60 -a 1.2 \
@@ -30,7 +30,7 @@ ARGS3 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
 
 ARGS4 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
         -g "" -k 100 -l 120 -r 60 -a 1.2 \
-		-gr "" graph_binary.bin -w true
+		-gr graph_binary.bin -w true
 
 # Executable program
 EXEC = project

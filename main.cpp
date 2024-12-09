@@ -25,7 +25,7 @@ float computeRecall(const vector<int>& groundTruth, const vector<Node*>& retriev
 
 int main(int argc, char* argv[]) {
     if (argc < 11) {
-        cerr << "Usage: " << argv[0] << " -i <base.vecs> -q <query.vecs> -g <groundtruth.vecs> -k <k> -l <L> -r <R> -a <a> -z <z> -w <w>\n";
+        cerr << "Usage: " << argv[0] << " -i <base.vecs> -q <query.vecs> -g <groundtruth.vecs> -k <k> -l <L> -r <R> -a <a> -z <z> -w <w> -t <t>\n";
         return 1;
     }
     cout << "1";
@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
     unsigned int tau=0;
     cout << "2";
     int opt;
-    while ((opt = getopt(argc, argv, "i:q:g:k:l:r:a:z:w:")) != -1) {
+    while ((opt = getopt(argc, argv, "i:q:g:k:l:r:a:z:w:t")) != -1) {
         switch (opt) {
             case 'i':
                 base_file = optarg;
@@ -67,6 +67,9 @@ int main(int argc, char* argv[]) {
                 break;
             case 'w':
                 w = optarg;
+                break;
+            case 't':
+                tau = stoi(optarg);
                 break;
             default:
                 cerr << "Invalid arguments.\n";
@@ -99,7 +102,7 @@ int main(int argc, char* argv[]) {
 
             cout << endl << endl;
             cout << "Base file: " << base_file << endl;
-            cout << "Query file: " <<query_file << endl;
+            cout << "Query file: " << query_file << endl;
             cout << "Groundtruth file: " << groundtruth_file << endl;
             cout << "k: " << k << endl;
             cout << "L: " << L << endl;
@@ -112,7 +115,7 @@ int main(int argc, char* argv[]) {
             auto start = chrono::high_resolution_clock::now();
 
             // Run the Vamana Indexing Algorithm
-            VamanaIndexingAlgorithm(nodes, k, L, R, a, n);
+            DirectedGraph directed_graph = FilteredVamana(nodes, k, L, R, a, tau);
 
             // End time measurement
             auto end = chrono::high_resolution_clock::now();
@@ -123,8 +126,8 @@ int main(int argc, char* argv[]) {
             cout << "The vamana graph has been successfully implemented" << endl;
             cout << "Time took to create graph: " << graph_duration.count() << " seconds" << endl;
 
-            vector<vector<float>> queries_vectors = ReadBin(query_file, k);
-            vector<Node*> queries = createNodesFromVectors(queries_vectors);
+            vector<vector<float>> queries_vectors = ReadBin(query_file, 104);
+            vector<Node*> queries = createQueriesFromVectors(queries_vectors);
 
             vector<vector<int>> groundtruth = loadIvecs(groundtruth_file);
 
@@ -177,6 +180,9 @@ int main(int argc, char* argv[]) {
             
             cout << endl << "Total time: " << total.count() << " seconds" << endl;
 
+            vector<vector<float>> graph_vector = createVectorFromNodes(nodes);
+            SaveVectorToBinary(graph_vector, gr);
+
             // Cleanup: free memory
             for (Node* node : nodes) 
                 delete node;
@@ -190,8 +196,8 @@ int main(int argc, char* argv[]) {
 
             auto start = chrono::high_resolution_clock::now();
 
-            vector<vector<float>> queries_vectors = ReadBin(query_file, k);
-            vector<Node*> queries = createNodesFromVectors(queries_vectors);
+            vector<vector<float>> queries_vectors = ReadBin(query_file, 104);
+            vector<Node*> queries = createQueriesFromVectors(queries_vectors);
 
             vector<vector<int>> groundtruth = loadIvecs(groundtruth_file);
 
@@ -290,7 +296,7 @@ int main(int argc, char* argv[]) {
             cout << "The vamana graph has been successfully implemented" << endl;
             cout << "Time took to create graph: " << graph_duration.count() << " seconds" << endl;
 
-            vector<vector<float>> queries_vectors = ReadBin(query_file, k);
+            vector<vector<float>> queries_vectors = ReadBin(query_file, 104);
             vector<Node*> queries = createNodesFromVectors(queries_vectors);
 
             vector<vector<int>> groundtruth = loadIvecs(groundtruth_file);
@@ -344,6 +350,9 @@ int main(int argc, char* argv[]) {
             
             cout << endl << "Total time: " << total.count() << " seconds" << endl;
 
+            vector<vector<float>> graph_vector = createVectorFromNodes(nodes);
+            SaveVectorToBinary(graph_vector, gr);
+
             // Cleanup: free memory
             for (Node* node : nodes) 
                 delete node;
@@ -357,8 +366,8 @@ int main(int argc, char* argv[]) {
 
             auto start = chrono::high_resolution_clock::now();
 
-            vector<vector<float>> queries_vectors = ReadBin(query_file, k);
-            vector<Node*> queries = createNodesFromVectors(queries_vectors);
+            vector<vector<float>> queries_vectors = ReadBin(query_file, 104);
+            vector<Node*> queries = createQueriesFromVectors(queries_vectors);
 
             vector<vector<int>> groundtruth = loadIvecs(groundtruth_file);
 

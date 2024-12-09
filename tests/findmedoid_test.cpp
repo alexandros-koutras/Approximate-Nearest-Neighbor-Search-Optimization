@@ -1,6 +1,5 @@
 #include "../include/acutest.h"
-#include "../include/vamana.h"
-
+#include "../include/vamana.h" // Include the updated implementation
 
 // Helper function to create a Node
 Node* createNode(unsigned int id, float filter, const vector<float>& coords) {
@@ -19,9 +18,6 @@ void test_medoid_basic() {
         createNode(2, 1.0, {2.5, 0.8}),
         createNode(3, 3.0, {0.7, 0.9})
     };
-
-    // Define filters
-    unordered_set<float> filters = {1.0, 2.0};
 
     // Number of random samples
     unsigned int tau = 2;
@@ -48,9 +44,6 @@ void test_medoid_empty_filter() {
         createNode(1, 2.0, {1.5, 0.3})
     };
 
-    // Define a filter not matching any node
-    unordered_set<float> filters = {3.0}; // No nodes with filter 3.0
-
     // Number of random samples
     unsigned int tau = 1;
 
@@ -73,9 +66,6 @@ void test_medoid_small_tau() {
         createNode(1, 1.0, {1.5, 0.3}),
         createNode(2, 1.0, {2.5, 0.8})
     };
-
-    // Define filters
-    unordered_set<float> filters = {1.0};
 
     // Small tau value
     unsigned int tau = 1;
