@@ -83,3 +83,5 @@ void SaveVectorToBinary(const vector<vector<float>>& vectors, const string& file
 vector<Node*> CreateGraph(const vector<vector<float>>& vectors);
 
 vector<vector<float>> ReadGraph(const string &file_path);
+
+vector<Node*> createQueriesFromVectors(const vector<vector<float>>& vectors);
