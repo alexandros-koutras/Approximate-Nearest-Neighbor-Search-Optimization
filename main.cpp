@@ -32,8 +32,8 @@ float computeRecall(const vector<int>& groundTruth, const vector<Node*>& retriev
 }
 
 int main(int argc, char* argv[]) {
-    if (argc < 11) {
-        cerr << "Usage: " << argv[0] << " -i <base.vecs> -k <k> -l <L> -r <R> -a <a>\n";
+    if (argc < 12) {
+        cerr << "Usage: " << argv[0] << " -i <base.vecs> -k <k> -l <L> -r <R> -a <a> -t <tau>\n";
         
         return 1;
     }
@@ -43,6 +43,7 @@ int main(int argc, char* argv[]) {
     string groundtruth_file;
     int k = 0, L = 0, R = 0;
     float a = 0.0;
+    unsigned int tau=0;
 
     int opt;
     while ((opt = getopt(argc, argv, "i:q:g:k:l:r:a:")) != -1) {
@@ -67,6 +68,9 @@ int main(int argc, char* argv[]) {
                 break;
             case 'a':
                 a = stod(optarg);
+                break;
+            case 't':
+                tau = stoi(optarg);
                 break;
             default:
                 cerr << "Invalid arguments.\n";
@@ -102,6 +106,7 @@ int main(int argc, char* argv[]) {
     cout << "L: " << L << endl;
     cout << "R: " << R << endl;
     cout << "a: " << a << endl;
+    cout << "t: " << tau << endl;
     cout << endl;
     cout << "Now the implementation of the vamana algorithm is starting!" << endl;
 
@@ -109,7 +114,7 @@ int main(int argc, char* argv[]) {
     auto start = chrono::high_resolution_clock::now();
 
     // Run the Vamana Indexing Algorithm
-    DirectedGraph graph = FilteredVamana(nodes, k, L, R, a);
+    DirectedGraph graph = FilteredVamana(nodes, k, L, R, a,tau);
 
     // End time measurement
     auto end = chrono::high_resolution_clock::now();

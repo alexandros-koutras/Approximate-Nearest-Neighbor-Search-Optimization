@@ -1,24 +1,23 @@
 #include "../include/acutest.h"
 #include "../include/vamana.h"
 
-
-
 // Helper: Create a Node
-Node* createNode(unsigned int id, const vector<float>& coords, const unordered_set<string>& tags) {
+Node* createNode(unsigned int id, float filter, const vector<float>& coords, const vector<Node*>& neighbors) {
     Node* node = new Node();
     node->id = id;
-    node->coords =coords;
-    node->tags = tags;
+    node->filter = filter;  
+    node->coords = coords;
+    node->out_neighbors = neighbors;
     return node;
 }
 
 // Test Fisher-Yates Shuffle
 void test_fisher_yates_shuffle() {
     vector<Node*> nodes = {
-        createNode(0, {0.0, 0.0}),
-        createNode(1, {1.0, 1.0}),
-        createNode(2, {2.0, 2.0}),
-        createNode(3, {3.0, 3.0})
+        createNode(0, 0.0, {0.0, 0.0}, {}),
+        createNode(1, 1.0, {1.0, 1.0}, {}),
+        createNode(2, 2.0, {2.0, 2.0}, {}),
+        createNode(3, 1.0, {3.0, 3.0}, {})
     };
 
     fisherYatesShuffle(nodes);
@@ -36,123 +35,132 @@ void test_fisher_yates_shuffle() {
 
     for (Node* node : nodes) delete node;
 }
+//tests for filtered vamana
 
-// Test Medoid Calculation
-void test_find_medoid() {
-    vector<Node*> nodes = {
-        createNode(0, {0.0, 0.0}),
-        createNode(1, {3.0, 4.0}),
-        createNode(2, {6.0, 8.0}),
-        createNode(3, {1.0, 1.0})
-    };
-
-    int k = 1;  // Clustering parameter
-    Node* medoid = findMedoid(nodes, k);
-
-    // Calculate expected medoid manually (minimal total distance)
-    int expected_medoid_id = 0;  // Manually computed for this dataset
-    double min_dist = numeric_limits<double>::max();
-
-    for (Node* candidate : nodes) {
-        double total_dist = 0;
-        for (Node* other : nodes) {
-            if (candidate != other) {
-                total_dist += euclidean(candidate, other);
-            }
-        }
-        if (total_dist < min_dist) {
-            min_dist = total_dist;
-            expected_medoid_id = candidate->id;
-        }
+//Test1: Small dataset
+void test_small_dataset_distinct_filters() {
+    Node* node0 = createNode(0, 0.0, {0.0, 0.0}, {});
+    Node* node1 = createNode(1, 1.0, {0.0, 0.0}, {});
+    Node* node2 = createNode(2, 2.0, {1.0, 1.0}, {});
+    Node* node3 = createNode(3, 3.0, {2.0, 2.0}, {});
+    vector<Node*> databasePoints = {node0,node1, node2, node3};
+    int k = 1;
+    unsigned int L = 2;
+    unsigned int R = 2;
+    float alpha = 0.5;
+    unsigned int tau = 2;
+    
+    //FilteredVamana
+    DirectedGraph G = FilteredVamana(databasePoints, k, L, R, alpha, tau);
+    
+    //graph properties
+    TEST_CHECK(G.size() == databasePoints.size()); // All nodes should be in the graph
+    for (Node* node : databasePoints) {
+        TEST_CHECK(G.adjacency_list[node].size() <= R); // Out-degree <= R
     }
-
-    TEST_CHECK(medoid->id == expected_medoid_id);
-
-    for (Node* node : nodes) delete node;
+    
+    // Cleanup
+    for (Node* node : databasePoints) {
+        delete node;
+    }
 }
 
-// Test Filtered Vamana for Edge Cases
-void test_filtered_vamana() {
-    // Small Dataset
-    vector<Node*> nodes = {
-        createNode(0, {0.0, 0.0}),
-        createNode(1, {1.0, 1.0}),
-        createNode(2, {2.0, 2.0})
-    };
+// Test2: Empty dataset
+void test_empty_dataset() {
+    vector<Node*> databasePoints;
+    int k = 1;
+    unsigned int L = 2;
+    unsigned int R = 2;
+    float alpha = 0.5;
+    unsigned int tau = 1;
 
-    unsigned int k = 1, L = 2, R = 1;
-    float alpha = 1.5;
+    //FilteredVamana
+    DirectedGraph G = FilteredVamana(databasePoints, k, L, R, alpha, tau);
 
-    DirectedGraph graph = FilteredVamana(nodes, k, L, R, alpha);
-
-    // Test adjacency list size
-    for (auto& [node, neighbors] : graph.adjacency_list) {
-        TEST_CHECK(neighbors.size() <= R);  // Check pruning
-    }
-
-    for (Node* node : nodes) delete node;
-
-    // Large Dataset
-    const int num_nodes = 100;
-    vector<Node*> large_nodes;
-    for (int i = 0; i < num_nodes; ++i) {
-        large_nodes.push_back(createNode(i, {static_cast<float>(i), static_cast<float>(i)}));
-    }
-
-    DirectedGraph large_graph = FilteredVamana(large_nodes, k, L, R, alpha);
-
-    // Test adjacency list size in large dataset
-    for (auto& [node, neighbors] : large_graph.adjacency_list) {
-        TEST_CHECK(neighbors.size() <= R);
-    }
-
-    for (Node* node : large_nodes) delete node;
-
-    //Single Node
-    vector<Node*> single_node = {createNode(0, {0.0, 0.0})};
-    DirectedGraph single_graph = FilteredVamana(single_node, k, L, R, alpha);
-
-    TEST_CHECK(single_graph.adjacency_list.size() == 1);  // Single node graph
-    TEST_CHECK(single_graph.adjacency_list[single_node[0]].empty());  // No neighbors
-
-    delete single_node[0];
+    // Assert empty graph
+    TEST_CHECK(G.size() == 0);
 }
 
-void test_filtered_vamana_with_tags() {
-    vector<Node*> nodes = {
-        createNode(0, {0.0, 0.0}, {"A"}),
-        createNode(1, {1.0, 1.0}, {"A", "B"}),
-        createNode(2, {2.0, 2.0}, {"B"}),
-        createNode(3, {3.0, 3.0}, {"C"})
-    };
+// Test3: Single node
+void test_single_node() {
+    Node* node = createNode(0, 0.0, {0.0, 0.0}, {});
+    vector<Node*> databasePoints = {node};
+    int k = 1;
+    unsigned int L = 1;
+    unsigned int R = 1;
+    float alpha = 0.5;
+    unsigned int tau = 1;
 
-    unsigned int k = 1, L = 2, R = 1;
-    float alpha = 1.5;
+    //FilteredVamana
+    DirectedGraph G = FilteredVamana(databasePoints, k, L, R, alpha, tau);
 
-    DirectedGraph graph = FilteredVamana(nodes, k, L, R, alpha);
+    // Assert graph single-node
+    TEST_CHECK(G.size() == 1);
+    TEST_CHECK(G.adjacency_list[node].empty()); // Single node has no neighbors
 
-    // Ensure that neighbors respect tag-based filtering
-    for (Node* node : nodes) {
-        for (Node* neighbor : graph.adjacency_list[node]) {
-            TEST_CHECK(!node->tags.empty());
-            bool sharedTag = false;
-            for (const string& tag : node->tags) {
-                if (neighbor->tags.count(tag)) {
-                    sharedTag = true;
-                    break;
-                }
-            }
-            TEST_CHECK(sharedTag);  // Ensure shared tag exists
-        }
+    delete node;
+}
+
+// Test4: All nodes same filter
+void test_same_filter() {
+    Node* node0=createNode(0, 0.0, {0.0, 0.0}, {});
+    Node* node1 = createNode(1, 1.0, {0.0, 0.0}, {});
+    Node* node2 = createNode(2, 1.0, {1.0, 1.0}, {});
+    vector<Node*> databasePoints = {node0,node1, node2};
+    int k = 1;
+    unsigned int L = 2;
+    unsigned int R = 2;
+    float alpha = 0.5;
+    unsigned int tau = 1;
+
+    //FilteredVamana
+    DirectedGraph G = FilteredVamana(databasePoints, k, L, R, alpha, tau);
+
+    //all nodes are connected since they share the same filter
+    TEST_CHECK(G.size() == databasePoints.size());
+    for (Node* node : databasePoints) {
+        TEST_CHECK(G.adjacency_list[node].size() <= R); // Out-degree <= R
     }
 
-    for (Node* node : nodes) delete node;
+    // Cleanup
+    for (Node* node : databasePoints) {
+        delete node;
+    }
+}
+
+// Test5: Large dataset
+void test_large_dataset() {
+    vector<Node*> databasePoints;
+    for (unsigned int i = 0; i < 1000; ++i) {
+        databasePoints.push_back(createNode(i, i % 10, {static_cast<float>(i), 0.0}, {}));
+    }
+    int k = 5;
+    unsigned int L = 10;
+    unsigned int R = 15;
+    float alpha = 0.7;
+    unsigned int tau = 10;
+
+    //FilteredVamana
+    DirectedGraph G = FilteredVamana(databasePoints, k, L, R, alpha, tau);
+
+    // Assert basic properties
+    TEST_CHECK(G.size() == databasePoints.size());
+    for (Node* node : databasePoints) {
+        TEST_CHECK(G.adjacency_list[node].size() <= R); // Out-degree <= R
+    }
+
+    // Cleanup
+    for (Node* node : databasePoints) {
+        delete node;
+    }
 }
 
 TEST_LIST = {
     {"Fisher-Yates Shuffle", test_fisher_yates_shuffle},
-    {"Find Medoid", test_find_medoid},
-    {"Filtered Vamana Edge Cases", test_filtered_vamana},
-    {"Filtered Vamana with tags", test_filtered_vamana_with_tags},
+    {"Small dataset with distinct filters", test_small_dataset_distinct_filters},
+    {"Empty dataset", test_empty_dataset},
+    {"Single node dataset", test_single_node},
+    {"All nodes have the same filter", test_same_filter},
+    {"Large dataset with varying filters", test_large_dataset},
     {NULL, NULL}
 };

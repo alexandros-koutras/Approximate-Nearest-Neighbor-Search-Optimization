@@ -1,11 +1,5 @@
 #include "../include/vamana.h" 
 
-// Function to find the medoid
-Node* findMedoid(const vector<Node*>& points,int k) {
-    int medoidIndex = approximateMedoid(points, k);
-    return points[medoidIndex];
-}
-
 // Fisher-Yates Shuffle
 void fisherYatesShuffle(vector<Node*>& databasePoints) {
     int n = databasePoints.size();
@@ -33,12 +27,12 @@ void fisherYatesShuffle(vector<Node*>& databasePoints) {
 }
 
 //Filtered Vamana
-DirectedGraph FilteredVamana(vector<Node*>& databasePoints,int k, unsigned int L, unsigned int R, float alpha) {
+DirectedGraph FilteredVamana(vector<Node*>& databasePoints,int k, unsigned int L, unsigned int R, float alpha, unsigned int tau) {
     //Initialize Graph
     DirectedGraph G;
     
-    //find medoid
-    Node* medoid = findMedoid(databasePoints,k);
+    //find medoids for every filter
+    unordered_map<float, unsigned int> medoids = findmedoid(databasePoints, tau);
 
     // Randomize database points
     fisherYatesShuffle(databasePoints);
@@ -51,10 +45,26 @@ DirectedGraph FilteredVamana(vector<Node*>& databasePoints,int k, unsigned int L
     // Iterate over the points
     for (Node* point : databasePoints) {
         //Define S_{F_x} as the start nodes for filtering
-        vector<Node*> S_Fx = {medoid}; //Using the medoid as st(f)
+        vector<Node*> S_Fx; //Using the medoid as st(f)
+
+        // Add medoids corresponding to the filter of the point
+        float filter = point->filter;
+        if (medoids.find(filter) != medoids.end()) {
+            unsigned int medoid_id = medoids[filter];
+            auto it = find_if(databasePoints.begin(), databasePoints.end(),[&](Node* n) { return n->id == medoid_id; });
+            if (it != databasePoints.end()) {
+                S_Fx.push_back(*it);  
+            }
+        }
 
         //FilteredGreedySearch
-        vector<Node*> V_Fx = FilteredGreedySearch(S_Fx, point, 0, L, point->tags);
+        unordered_set<float> query_filter = {point->filter};
+        vector<Node*> V_Fx = FilteredGreedySearch(S_Fx, point, 0, L,query_filter);
+        
+        // Add the out-neighbors to the node's `out_neighbors`
+        for (Node* neighbor : V_Fx) {
+            point->out_neighbors.push_back(neighbor);
+        }
 
         //FilteredRobustPrune
         FilteredRobustPrune(point, V_Fx, alpha, R);

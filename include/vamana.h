@@ -19,12 +19,12 @@
 
 using namespace std;
 
-struct Node{
+struct Node {
     unsigned int id;
     float distance;
-    vector<float> coords;
-    vector<Node*> out_neighbors;
-    unordered_set<string> tags;
+    vector<float> coords;  //coordinates
+    vector<Node*> out_neighbors; 
+    float filter;
 };
 
 struct DirectedGraph {
@@ -47,7 +47,7 @@ void initializeRandomGraph(vector<Node*>& nodes, unsigned int R);
 Node* findCentroid(const vector<Node*>& cluster);
 vector<vector<Node*>> kMeansClustering(const vector<Node*>& nodes, int k, int maxIterations = 100);
 int approximateMedoid(const vector<Node*>& nodes, int k);
-Node* findMedoid(const vector<Node*>& points,int k);
+unordered_map<float,  unsigned int> findmedoid(const vector<Node*>& P, unsigned int tau);
 
 //ex1
 vector<Node*> GreedySearch(Node* s, const Node* x_q, unsigned int k, unsigned int list_size) ;
@@ -56,8 +56,8 @@ void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, float a,
 
 //ex2
 void FilteredRobustPrune(Node* node, vector<Node*> possible_neighbours, float a, unsigned int max_neighbours);
-vector<Node*> FilteredGreedySearch(const vector<Node*>& start_nodes, const Node* x_q, unsigned int k, unsigned int list_size, const unordered_set<string>& query_filter);
-DirectedGraph FilteredVamana(vector<Node*>& databasePoints,int k, unsigned int L, unsigned int R, float alpha);
+vector<Node*> FilteredGreedySearch(const vector<Node*>& start_nodes, const Node* x_q, unsigned int k, unsigned int list_size, const unordered_set<float>& query_filter);
+DirectedGraph FilteredVamana(vector<Node*>& databasePoints,int k, unsigned int L, unsigned int R, float alpha, unsigned int tau);
 DirectedGraph StitchedVamana(vector<Node*>& nodes, float a, int L_small, int R_small, int R_stiched);
 
 //file manipulation functions
@@ -65,3 +65,9 @@ vector<vector<int>> loadIvecs(const string& filename);
 vector<vector<float>> loadFvecs(const string& filename);
 vector<Node*> load_bvecs(const string& filename);
 
+
+
+unordered_map<float,  unsigned int> findmedoid(const vector<Node*>& P, unsigned int tau, const unordered_set<float>& all_filters);
+// Define a threshold for comparing floats (useful for floating-point equality checks)
+constexpr float EPSILON = 1e-6;
+vector<vector<float>> ReadBin(const string &file_path, const int num_dimensions);
