@@ -17,7 +17,7 @@ MODULES_OBJ = $(patsubst $(MODULES)/%.cpp,$(MODULES)/%.o,$(MODULES_SRC))
 TESTS_OBJ = $(patsubst $(TESTS)/%.cpp,$(TESTS)/%.o,$(TESTS_SRC))
 
 ARGS1 = -i siftsmall/siftsmall_base.fvecs -q siftsmall/siftsmall_query.fvecs \
-		-g siftsmall/siftsmall_groundtruth.ivecs -k 100 -l 200 -r 60 -a 1.2
+		-g siftsmall/siftsmall_groundtruth.ivecs -k 100 -l 120 -r 60 -a 1.2
 
 # Executable program
 EXEC = project

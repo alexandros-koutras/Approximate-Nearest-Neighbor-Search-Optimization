@@ -18,15 +18,17 @@ void test_basic_functionality() {
     node0->out_neighbors = {node1, node2};
 
     Node query;
-    query.coords = {0.5, 0.5};
+    query.coords = {0.1, 0.1};  // Ελαφρώς πιο κοντά στο node0
     vector<Node*> result = GreedySearch(node0, &query, 1, 3);
+
     TEST_CHECK(result.size() == 1);
-    TEST_CHECK(result[0]->id == 0);
+    TEST_CHECK(result[0]->id == 0);  // Περιμένουμε να επιστρέψει το node0
 
     delete node0;
     delete node1;
     delete node2;
 }
+
 
 // Test 2: Empty Graph Test
 void test_empty_graph() {
