@@ -1,15 +1,6 @@
 // FilteredGreedySearch function
 #include "../include/vamana.h"
 
-float euclidean(const Node* a, const Node* b) {
-    float sum = 0.0;
-    for (size_t i = 0; i < a->coords.size(); ++i) {
-        float diff = a->coords[i] - b->coords[i];
-        sum += diff * diff;
-    }
-    return sqrt(sum);
-}
-
 
 vector<Node*> FilteredGreedySearch(const vector<Node*>& start_nodes, const Node* x_q, unsigned int k, unsigned int list_size, const unordered_set<float>& query_filter) {
     if (start_nodes.empty()) {

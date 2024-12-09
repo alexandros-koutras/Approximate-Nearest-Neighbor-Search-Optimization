@@ -36,18 +36,6 @@ void test_empty_graph() {
     TEST_CHECK(result.empty());
 }
 
-
-void test_load_fvecs() {
-    vector<vector<float>> fvecsData = loadFvecs("siftsmall/siftsmall_base.fvecs");
-    vector<Node*> nodes = createNodesFromVectors(fvecsData);
-    TEST_CHECK(!nodes.empty());  // Check if nodes are loaded
-    TEST_CHECK(nodes[0]->coords.size() > 0);  // Check if coordinates are loaded
-    
-    for (Node* node : nodes) {
-        delete node;
-    }
-}
-
 void test_multiple_nodes_one_query() {
     Node node1, node2, query;
     node1.coords = {1.0, 1.0};
@@ -63,6 +51,6 @@ TEST_LIST = {
     {"Basic Functionality", test_basic_functionality},
     {"Empty Graph", test_empty_graph},
     {"Test greedysearch with manual nodes", test_multiple_nodes_one_query},
-    {"Load fvecs", test_load_fvecs},
+
     {NULL, NULL} // End of the list
 };

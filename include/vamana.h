@@ -61,7 +61,6 @@ void StitchedVamana(vector<Node*>& nodes, float a, int L_small, int R_small, int
 
 vector<Node*> FilteredGreedySearch(const vector<Node*>& start_nodes, const Node* x_q, unsigned int k, unsigned int list_size, const unordered_set<float>& query_filter) ;
 
-
 // Define a threshold for comparing floats (useful for floating-point equality checks)
 constexpr float EPSILON = 1e-6;
 
