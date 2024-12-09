@@ -16,8 +16,21 @@ MAIN_OBJ = $(patsubst %.cpp,%.o,$(MAIN_SRC))
 MODULES_OBJ = $(patsubst $(MODULES)/%.cpp,$(MODULES)/%.o,$(MODULES_SRC))
 TESTS_EXECUTABLES = $(patsubst %.cpp,%,$(TESTS_SRC))
 
-ARGS1 = -i siftsmall/siftsmall_base.fvecs -q siftsmall/siftsmall_query.fvecs \
-        -g siftsmall/siftsmall_groundtruth.ivecs -k 100 -l 120 -r 60 -a 1.2
+ARGS1 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
+        -g "" -k 100 -l 120 -r 60 -a 1.2 \
+		-gr "" -w false
+
+ARGS2 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
+        -g "" -k 100 -l 120 -r 60 -a 1.2 \
+		-gr "" graph_binary.bin -w false
+
+ARGS3 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
+        -g "" -k 100 -l 120 -r 60 -a 1.2 \
+		-gr "" -2 true
+
+ARGS4 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
+        -g "" -k 100 -l 120 -r 60 -a 1.2 \
+		-gr "" graph_binary.bin -w true
 
 # Executable program
 EXEC = project
@@ -53,6 +66,15 @@ run: $(EXEC)
 
 run1: $(EXEC)
 	./$(EXEC) $(ARGS1)
+
+run2: $(EXEC)
+	./$(EXEC) $(ARGS2)
+
+run3: $(EXEC)
+	./$(EXEC) $(ARGS3)
+
+run4: $(EXEC)
+	./$(EXEC) $(ARGS4)
 
 check: tests
 

@@ -33,9 +33,9 @@ int main(int argc, char* argv[]) {
     string query_file;
     string groundtruth_file;
     string gr;
+    string w;
     int k = 0, L = 0, R = 0;
     float a = 0.0;
-    bool w;
 
     int opt;
     while ((opt = getopt(argc, argv, "i:q:g:k:l:r:a:gr:w")) != -1) {
@@ -73,7 +73,16 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    if (w == true) {
+    bool way;
+    if (w == "true") {
+        way = true;
+    } else {
+        way = false;
+    }
+
+    // Run with the filtered vamana
+    if (way == true) {
+        // We don't already have the graph ready
         if (gr.empty()) {
             vector<vector<float>> data = ReadBin(base_file, 102);
 
@@ -173,6 +182,7 @@ int main(int argc, char* argv[]) {
 
             for (Node* node : queries)
                 delete node;
+        // The graph already exists
         } else {
             vector<vector<float>> vector_graph = ReadGraph(gr);
             vector<Node*> nodes = CreateGraph(vector_graph);
@@ -236,7 +246,9 @@ int main(int argc, char* argv[]) {
             for (Node* node : queries)
                 delete node;
         }
+    // We use the stiched vamana
     } else {
+        // We have to create the graph
         if (gr.empty()) {
             vector<vector<float>> data = ReadBin(base_file, 102);
 
@@ -337,6 +349,7 @@ int main(int argc, char* argv[]) {
 
             for (Node* node : queries)
                 delete node;
+        // We already have the graph in a binary
         } else {
             vector<vector<float>> vector_graph = ReadGraph(gr);
             vector<Node*> nodes = CreateGraph(vector_graph);
@@ -401,5 +414,6 @@ int main(int argc, char* argv[]) {
                 delete node;
         }
     }
+    
     return 0;
 }
