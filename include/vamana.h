@@ -84,4 +84,8 @@ vector<Node*> CreateGraph(const vector<vector<float>>& vectors);
 
 vector<vector<float>> ReadGraph(const string &file_path);
 
-vector<Node*> createQueriesFromVectors(const vector<vector<float>>& vectors);
+vector<vector<uint32_t>> bruteForceKNNWithFilter(const vector<Node*>& dataset, const vector< Node*>& queries, int k) ;
+
+vector<Node*> createQueriesFromVectors(const vector<vector<float>>& vectors) ;
+
+void SaveKNN(const vector<vector<uint32_t>> &knns,const string &path = "output.bin");

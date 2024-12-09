@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
         cerr << "Usage: " << argv[0] << " -i <base.vecs> -q <query.vecs> -g <groundtruth.vecs> -k <k> -l <L> -r <R> -a <a> -z <z> -w <w> -t <t>\n";
         return 1;
     }
-
+    cout << "1";
     string base_file;
     string query_file;
     string groundtruth_file;
@@ -36,8 +36,8 @@ int main(int argc, char* argv[]) {
     string w;
     int k = 0, L = 0, R = 0;
     float a = 0.0;
-    unsigned int tau = 0;
-
+    unsigned int tau=0;
+    cout << "2";
     int opt;
     while ((opt = getopt(argc, argv, "i:q:g:k:l:r:a:z:w:t:")) != -1) {
         switch (opt) {
