@@ -81,9 +81,9 @@ void testStitchedVamana() {
 
     // Verify properties of the final graph
     for (Node* n : nodes) {
-        assert(n->out_neighbors.size() <= static_cast<size_t>(R_stitched));
+        TEST_CHECK(n->out_neighbors.size() <= static_cast<size_t>(R_stitched));
         for (Node* neighbor : n->out_neighbors) {
-            assert(n->filter == neighbor->filter);
+            TEST_CHECK(n->filter == neighbor->filter);
         }
     }
 
