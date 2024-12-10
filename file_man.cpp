@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
 
             vector<vector<float>> queries = ReadBin(query_file, 104);
 
-            vector<Node*> query_nodes  = createQueriesFromVectors(data);
+            vector<Node*> query_nodes  = createQueriesFromVectors(queries);
 
             int n = nodes.size();
 

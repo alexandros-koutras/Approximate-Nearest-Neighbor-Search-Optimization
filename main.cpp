@@ -108,7 +108,7 @@ int main(int argc, char* argv[]) {
             cout << "R: " << R << endl;
             cout << "a: " << a << endl;
             cout << endl;
-            cout << "Now the implementation of the vamana algorithm is starting!" << endl;
+            cout << "Now the implementation of the filtered vamana algorithm is starting!" << endl;
 
             // Start time measurement
             auto start = chrono::high_resolution_clock::now();
@@ -122,7 +122,7 @@ int main(int argc, char* argv[]) {
             // Calculate elapsed time
             chrono::duration<float> graph_duration = end - start;
 
-            cout << "The vamana graph has been successfully implemented" << endl;
+            cout << "The filtered vamana graph has been successfully implemented" << endl;
             cout << "Time took to create graph: " << graph_duration.count() << " seconds" << endl;
 
             vector<vector<float>> queries_vectors = ReadBin(query_file, 104);
