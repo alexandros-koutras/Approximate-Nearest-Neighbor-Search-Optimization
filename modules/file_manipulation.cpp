@@ -108,7 +108,7 @@ vector<Node*> createNodesFromVectors(const vector<vector<float>>& vectors) {
 }
 
 vector<Node*> createQueriesFromVectors(const vector<vector<float>>& vectors) {
-    vector<Node*> nodes;
+    std::vector<Node*> nodes;
 
     for (size_t i = 0; i < vectors.size(); ++i) {
         Node* newNode = new Node;

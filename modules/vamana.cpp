@@ -26,7 +26,6 @@ void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, float a,
     if (n == 0)
         return;     //empty
 
-    cout << "poytana g\n";
 
     //old medoid time consuming
     int medoid = 0;
