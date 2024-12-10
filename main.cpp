@@ -28,7 +28,6 @@ int main(int argc, char* argv[]) {
         cerr << "Usage: " << argv[0] << " -i <base.vecs> -q <query.vecs> -g <groundtruth.vecs> -k <k> -l <L> -r <R> -a <a> -z <z> -w <w> -t <t>\n";
         return 1;
     }
-    cout << "1";
     string base_file;
     string query_file;
     string groundtruth_file;
@@ -37,7 +36,7 @@ int main(int argc, char* argv[]) {
     int k = 0, L = 0, R = 0;
     float a = 0.0;
     unsigned int tau=0;
-    cout << "2";
+
     int opt;
     while ((opt = getopt(argc, argv, "i:q:g:k:l:r:a:z:w:t:")) != -1) {
         switch (opt) {
@@ -181,7 +180,7 @@ int main(int argc, char* argv[]) {
             cout << endl << "Total time: " << total.count() << " seconds" << endl;
 
             vector<vector<float>> graph_vector = createVectorFromNodes(nodes);
-            SaveVectorToBinary(graph_vector, gr);
+            SaveVectorToBinary(graph_vector, "graph.bin");
 
             // Cleanup: free memory
             for (Node* node : nodes) 
@@ -288,7 +287,6 @@ int main(int argc, char* argv[]) {
 
             // Run the Vamana Indexing Algorithm
             StitchedVamana(nodes, a, L, R, R_Stitched);
-            cout << "AAAAAAAAAAA\n";
 
             // End time measurement
             auto end = chrono::high_resolution_clock::now();
@@ -354,7 +352,7 @@ int main(int argc, char* argv[]) {
             cout << endl << "Total time: " << total.count() << " seconds" << endl;
 
             vector<vector<float>> graph_vector = createVectorFromNodes(nodes);
-            SaveVectorToBinary(graph_vector, gr);
+            SaveVectorToBinary(graph_vector, "graph.bin");
 
             // Cleanup: free memory
             for (Node* node : nodes) 

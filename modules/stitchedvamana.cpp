@@ -7,15 +7,20 @@ void StitchedVamana(vector<Node*>& nodes, float a, int L_small, int R_small, int
 
 
     for (Node* n : nodes) {
+        if (n->filter == 123) {
+            cout << "Node " << n->id << " has filter: " << n->filter << endl;
+        }
         commonFilter[n->filter].push_back(n);
     }
 
+
     for (auto& [label, subset] : commonFilter) {
-        cout << "subset" << subset.size() << endl;
-        // Build a graph for nodes with the same label
-        VamanaIndexingAlgorithm(subset, 2, L_small, R_small, a, subset.size());
+        cout << "Subset with filter " << label << " has " << subset.size() << " nodes." << endl;
+        if (subset.size() <  150) {
+            continue;
+        }
+        VamanaIndexingAlgorithm(subset, 10, L_small, R_small, a, subset.size());
     }
-    cout << "BBBBBBBBBBB\n";
 
     for (Node* n : nodes) {
         FilteredRobustPrune(n, n->out_neighbors, a, R_stiched);
