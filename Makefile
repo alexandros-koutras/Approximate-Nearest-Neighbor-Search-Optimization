@@ -16,8 +16,21 @@ MAIN_OBJ = $(patsubst %.cpp,%.o,$(MAIN_SRC))
 MODULES_OBJ = $(patsubst $(MODULES)/%.cpp,$(MODULES)/%.o,$(MODULES_SRC))
 TESTS_OBJ = $(patsubst $(TESTS)/%.cpp,$(TESTS)/%.o,$(TESTS_SRC))
 
-ARGS1 = -i siftsmall/siftsmall_base.fvecs -q siftsmall/siftsmall_query.fvecs \
-		-g siftsmall/siftsmall_groundtruth.ivecs -k 100 -l 120 -r 60 -a 1.2
+ARGS1 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
+        -g datasets/dummy-groundtruth.bin -k 100 -l 120 -r 60 -a 1.2 \
+		-z aa -w true -t 50
+
+ARGS2 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
+        -g datasets/dummy-groundtruth.bin -k 100 -l 120 -r 60 -a 1.2 \
+		-z graph.bin -w true -t 50
+
+ARGS3 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
+        -g datasets/dummy-groundtruth.bin -k 100 -l 120 -r 60 -a 1.2 \
+		-z aa -w false -t 50
+
+ARGS4 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
+        -g datasets/dummy-groundtruth.bin -k 100 -l 120 -r 60 -a 1.2 \
+		-z graph.bin -w false -t 50
 
 # Executable program
 EXEC = project
