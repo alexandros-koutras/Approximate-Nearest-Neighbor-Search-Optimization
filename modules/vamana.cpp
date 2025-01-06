@@ -31,23 +31,22 @@ void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, float a,
         return;     //empty
 
     //old medoid time consuming
-    // int medoid = 0;
-    // float min_dist = numeric_limits<float>::max();
+    int medoid = 0;
+    double min_dist = numeric_limits<float>::max();
+    for (int i = 0; i < n; i++){
+        double total_dist  =0;
+        for(int j = 0; j < n; j++){
+            if(i != j){
+                total_dist += euclidean(nodes[i],nodes[j]);
+            }
+        }
+        if (total_dist < min_dist){
+            min_dist = total_dist;
+            medoid = i;
+        }
+    }
 
-    // for (int i = 0; i < n; i++){
-    //     float total_dist  =0;
-    //     for(int j = 0; j < n; j++){
-    //         if(i != j){
-    //             total_dist += euclidean(nodes[i],nodes[j]);
-    //         }
-    //     }
-    //     if (total_dist < min_dist){
-    //         min_dist = total_dist;
-    //         medoid = i;
-    //     }
-    // }
-
-    int medoid = approximateMedoid(nodes,k);
+    // int medoid = approximateMedoid(nodes,k);
     Node* s = nodes[medoid];
 
     cout << "The medoid point found: " << endl;
@@ -82,7 +81,7 @@ void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, float a,
         vector<Node*> V_p = GreedySearch(s, p, 1, L);
 
         //Run RobustPrune on p with V_p, a, and R
-        RobustPrune(p, V_p, a, R);
+        FilteredRobustPrune(p, V_p, a, R);
 
         //Add reverse edges 
         for (Node* neighbor : p->out_neighbors) {
@@ -91,7 +90,7 @@ void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, float a,
             if (neighbor->out_neighbors.size() + 1 > static_cast<size_t>(R)) {
             //Call RobustPrune with the current neighbors plus the new neighbor candidate p
                 neighbor->out_neighbors.push_back(p);  //Temporarily add p
-                RobustPrune(neighbor, neighbor->out_neighbors, a, R);
+                FilteredRobustPrune(neighbor, neighbor->out_neighbors, a, R);
             } else {
             //Safe to add p directly without exceeding R
                 neighbor->out_neighbors.push_back(p);

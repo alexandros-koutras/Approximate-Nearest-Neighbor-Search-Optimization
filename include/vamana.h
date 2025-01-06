@@ -3,6 +3,7 @@
 #include <vector>
 #include <iostream>
 #include <unordered_set>
+#include <unordered_map>
 #include <queue>
 #include <cmath>
 #include <limits>
@@ -16,6 +17,7 @@
 #include <string>
 #include <unordered_map>
 #include <numeric>
+#include <vector>
 
 using namespace std;
 
@@ -28,34 +30,28 @@ struct Node {
     float distance;
     vector<float> coords;
     vector<Node*> out_neighbors; 
+    float filter;
 };
 
+struct DirectedGraph {
+    unordered_map<Node*, unordered_set<Node*>> adjacency_list;
+
+    size_t size() const {
+        return adjacency_list.size();
+    }
+};
+
+//helper functions
 float euclidean(const Node* a, const Node* b);
-
-vector<vector<int>> loadIvecs(const string& filename);
-
-vector<vector<float>> loadFvecs(const string& filename);
-
 vector<Node*> createNodesFromVectors(const vector<vector<float>>& vectors);
-
-vector<Node*> load_bvecs(const string& filename);
-
-void RobustPrune(Node* node, vector<Node*> possible_neighbours, float a, int max_neighbours);
-
 bool compare_distance(Node* node1, Node* node2);
+Node* createNode(unsigned int id, float filter, const vector<float>& coords, const vector<Node*>& neighbors);
+void fisherYatesShuffle(vector<Node*>& databasePoints);
+void initializeRandomGraph(vector<Node*>& nodes, unsigned int R);
 
-vector<Node*> GreedySearch(Node* s, const Node* x_q, unsigned int k, unsigned int list_size);
-
-void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, float a,int n);
-
-void initializeRandomGraph(vector<Node*>& nodes, unsigned int R) ;
-
-Node* create_node(unsigned int id, const vector<float>& coords);
-
+//medoid functions
 Node* findCentroid(const vector<Node*>& cluster);
-
 vector<vector<Node*>> kMeansClustering(const vector<Node*>& nodes, int k, int maxIterations = 100);
-
 int approximateMedoid(const vector<Node*>& nodes, int k);
 unordered_map<float,  unsigned int> findmedoid(const vector<Node*>& P, unsigned int tau);
 

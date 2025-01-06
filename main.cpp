@@ -2,14 +2,6 @@
 #include <getopt.h>
 #include <chrono>
 
-//function to check the kind of the base file
-bool ends_with(const string& str, const string& suffix) {
-    if (str.size() >= suffix.size()) {
-        return str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
-    } else {
-        return false;
-    }
-}
 
 float computeRecall(const vector<float>& groundTruth, const vector<Node*>& retrievedNeighbors) {
     int truePositiveCount = 0;
@@ -33,19 +25,20 @@ float computeRecall(const vector<float>& groundTruth, const vector<Node*>& retri
 
 int main(int argc, char* argv[]) {
     if (argc < 11) {
-        cerr << "Usage: " << argv[0] << " -i <base.vecs> -k <k> -l <L> -r <R> -a <a>\n";
-        
+        cerr << "Usage: " << argv[0] << " -i <base.vecs> -q <query.vecs> -g <groundtruth.vecs> -k <k> -l <L> -r <R> -a <a> -z <z> -w <w> -t <t>\n";
         return 1;
     }
-
     string base_file;
     string query_file;
     string groundtruth_file;
+    string gr;
+    string w;
     int k = 0, L = 0, R = 0;
     float a = 0.0;
+    unsigned int tau=0;
 
     int opt;
-    while ((opt = getopt(argc, argv, "i:q:g:k:l:r:a:")) != -1) {
+    while ((opt = getopt(argc, argv, "i:q:g:k:l:r:a:z:w:t:")) != -1) {
         switch (opt) {
             case 'i':
                 base_file = optarg;
@@ -68,15 +61,35 @@ int main(int argc, char* argv[]) {
             case 'a':
                 a = stod(optarg);
                 break;
+            case 'z':
+                gr = optarg;
+                break;
+            case 'w':
+                w = optarg;
+                break;
+            case 't':
+                tau = stoi(optarg);
+                break;
             default:
                 cerr << "Invalid arguments.\n";
                 return 1;
         }
     }
 
-    vector<vector<float>> data = loadFvecs(base_file);
+    bool way;
+    if (w == "true") {
+        way = true;
+    } else {
+        way = false;
+    }
 
-    vector<Node*> nodes = createNodesFromVectors(data);
+    // Run with the filtered vamana
+    if (way == true) {
+        // We don't already have the graph ready
+        if (gr == "aa") {
+            vector<vector<float>> data = ReadBin(base_file, 102);
+
+            vector<Node*> nodes = createNodesFromVectors(data);
 
             int n = nodes.size();
 
@@ -255,37 +268,42 @@ int main(int argc, char* argv[]) {
                 return 1;
             }
 
-    cout << endl << endl;
-    cout << "Base file: " << base_file << endl;
-    cout << "k: " << k << endl;
-    cout << "L: " << L << endl;
-    cout << "R: " << R << endl;
-    cout << "a: " << a << endl;
-    cout << endl;
-    cout << "Now the implementation of the vamana algorithm is starting!" << endl;
+            cout << endl << endl;
+            cout << "Base file: " << base_file << endl;
+            cout << "Query file: " <<query_file << endl;
+            cout << "Groundtruth file: " << groundtruth_file << endl;
+            cout << "k: " << k << endl;
+            cout << "L: " << L << endl;
+            cout << "R: " << R << endl;
+            cout << "a: " << a << endl;
+            cout << endl;
+            cout << "Now the implementation of the vamana algorithm is starting!" << endl;
 
-    // Start time measurement
-    auto start = chrono::high_resolution_clock::now();
+            // Start time measurement
+            auto start = chrono::high_resolution_clock::now();
+            int R_Stitched = 30;
 
-    // Run the Vamana Indexing Algorithm
-    VamanaIndexingAlgorithm(nodes, k, L, R, a, n);
+            cout << n << endl;
 
-    // End time measurement
-    auto end = chrono::high_resolution_clock::now();
+            // Run the Vamana Indexing Algorithm
+            StitchedVamana(nodes, a, L, R, R_Stitched);
 
-    // Calculate elapsed time
-    chrono::duration<float> duration = end - start;
+            // End time measurement
+            auto end = chrono::high_resolution_clock::now();
 
-    cout << "The vamana graph has been successfully implemented" << endl;
-    cout << "Execution time: " << duration.count() << " seconds" << endl;
+            // Calculate elapsed time
+            chrono::duration<float> graph_duration = end - start;
+
+            cout << "The vamana graph has been successfully implemented" << endl;
+            cout << "Time took to create graph: " << graph_duration.count() << " seconds" << endl;
 
             vector<vector<float>> queries_vectors = ReadBin(query_file, 104);
             vector<Node*> queries = createQueriesFromVectors(queries_vectors);
 
             vector<vector<float>> groundtruth = ReadGroundTruth(groundtruth_file);
 
-    float totalRecall = 0.0;
-    int queryCount = 0;
+            float totalRecall = 0.0;
+            int queryCount = 0;
 
             for (size_t i = 0; i < queries.size(); ++i) {
                 Node* queryNode = queries[i];
@@ -368,39 +386,48 @@ int main(int argc, char* argv[]) {
                 int medoid = approximateMedoid(nodes,k);
                 vector<Node*> nearestNeighbors = GreedySearch(nodes.at(medoid), queryNode, k, L);
 
-        // Print nearest neighbors from GreedySearch
-        cout << "Nearest neighbors from GreedySearch for query " << queryNode->id << ": ";
-        for (Node* neighbor : nearestNeighbors) {
-            cout << neighbor->id << " ";
+                // Print nearest neighbors from GreedySearch
+                cout << "Nearest neighbors from GreedySearch for query " << queryNode->id << ": ";
+                for (Node* neighbor : nearestNeighbors) {
+                    cout << neighbor->id << " ";
+                }
+                cout << endl;
+
+                // Print ground truth neighbors for the query
+                cout << "Ground truth neighbors for query " << queryNode->id << ": ";
+                for (int gtId : groundTruthForQuery) {
+                    cout << gtId << " ";
+                }
+                cout << endl;
+
+                // Compute Recall for this query
+                float recall = computeRecall(groundTruthForQuery, nearestNeighbors);
+                totalRecall += recall;
+                queryCount++;
+
+                // Print the recall for this query
+                cout << "Recall for query " << queryNode->id << ": " << recall << endl;
+                cout << "--------------------------------------------------" << endl;
+            }
+
+            float averageRecall = totalRecall / queryCount;
+            cout << "Average Recall: " << averageRecall << endl;
+
+            auto end = chrono::high_resolution_clock::now();
+            chrono::duration<float> queries_duration = end - start;
+
+            cout << "The search from the querries is complete!" << endl;
+            cout << "Time took to complete the search: " << queries_duration.count() << " seconds" << endl;
+            cout << endl;
+
+            // Cleanup: free memory
+            for (Node* node : nodes) 
+                delete node;
+
+            for (Node* node : queries)
+                delete node;
         }
-        cout << endl;
-
-        // Print ground truth neighbors for the query
-        cout << "Ground truth neighbors for query " << queryNode->id << ": ";
-        for (int gtId : groundTruthForQuery) {
-            cout << gtId << " ";
-        }
-        cout << endl;
-
-        // Compute Recall for this query
-        float recall = computeRecall(groundTruthForQuery, nearestNeighbors);
-        totalRecall += recall;
-        queryCount++;
-
-        // Print the recall for this query
-        cout << "Recall for query " << queryNode->id << ": " << recall << endl;
-        cout << "--------------------------------------------------" << endl;
     }
-
-    float averageRecall = totalRecall / queryCount;
-    cout << "Average Recall: " << averageRecall << endl;
-
-    // Cleanup: free memory
-    for (Node* node : nodes) 
-        delete node;
-
-    for (Node* node : queries)
-        delete node;
-
+    
     return 0;
 }

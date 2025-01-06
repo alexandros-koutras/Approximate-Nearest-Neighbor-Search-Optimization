@@ -7,61 +7,57 @@ vector<Node*> GreedySearch(Node* s, const Node* x_q, unsigned int k, unsigned in
     }
 
     unordered_set<Node*> V;  // Visited nodes
-    vector<Node*> L = {s};   // Η λίστα αναζήτησης ξεκινά με τον κόμβο s
-    unordered_map<Node*, double> distances; // Χάρτης αποστάσεων (για αποφυγή επαναυπολογισμών)
+    unordered_set<Node*> unique_nodes; // Ensure unique nodes in the result
+    vector<Node*> L = {s};   // Start with the initial node in the search list
 
-    // Ενώ υπάρχουν κόμβοι στη λίστα L που δεν έχουν επισκεφθεί
-    while (any_of(L.begin(), L.end(), [&](Node* p){ return V.find(p) == V.end(); })) {
-        Node* p_star = nullptr;
-        double min_distance = numeric_limits<double>::max();
+    // Priority queue for efficiently finding the closest unvisited node
+    using NodeDistPair = pair<double, Node*>;
+    priority_queue<NodeDistPair, vector<NodeDistPair>, greater<>> pq;
 
-        // Εύρεση του πλησιέστερου μη επισκέψιμου κόμβου
-        for (Node* p : L) {
-            if (V.find(p) == V.end()) {
-                if (distances.find(p) == distances.end()) {
-                    distances[p] = euclidean(p, x_q); // Υπολογισμός απόστασης
-                }
-                double distance = distances[p];
-                if (distance < min_distance) {
-                    min_distance = distance;
-                    p_star = p;
-                }
+    // Prepopulate the priority queue with the starting node
+    pq.emplace(euclidean(s, x_q), s);
+
+    while (any_of(L.begin(), L.end(), [&](Node* p) { return V.find(p) == V.end(); })) {
+        // Find the closest unvisited node
+        auto top = pq.top();
+        Node* p_star = top.second;
+        pq.pop();
+
+        // Skip if already visited
+        if (V.find(p_star) != V.end()) {
+            continue;
+        }
+
+        // Mark the node as visited
+        V.insert(p_star);
+
+        // Add out-neighbors of `p_star` to `L` if not visited
+        for (Node* neighbor : p_star->out_neighbors) {
+            if (V.find(neighbor) == V.end() && unique_nodes.find(neighbor) == unique_nodes.end()) {
+                L.push_back(neighbor);
+                unique_nodes.insert(neighbor); // Mark as unique
+                pq.emplace(euclidean(neighbor, x_q), neighbor); // Add to priority queue
             }
         }
 
-        if (p_star) {
-            V.insert(p_star); // Σημείωση του p_star ως επισκέψιμου
-
-            // Προσθήκη των out-neighbors του p_star στη λίστα L
-            for (Node* neighbor : p_star->out_neighbors) {
-                if (V.find(neighbor) == V.end()) {
-                    L.push_back(neighbor);
-                }
-            }
-
-            // Αν η λίστα L ξεπερνά το list_size, κρατάμε μόνο τους list_size πιο κοντινούς κόμβους
-            if (L.size() > list_size) {
-                nth_element(L.begin(), L.begin() + list_size, L.end(), [&](Node* a, Node* b) {
-                    return euclidean(a, x_q) < euclidean(b, x_q);
-                });
-                L.resize(list_size);
-            }
-        } else {
-            break; // Τερματισμός αν δεν υπάρχει πλησιέστερος κόμβος
+        // If L exceeds the allowed size, retain only the closest `list_size` points
+        if (L.size() > list_size) {
+            nth_element(L.begin(), L.begin() + list_size, L.end(),
+                        [&](Node* a, Node* b) {
+                            return euclidean(a, x_q) < euclidean(b, x_q);
+                        });
+            L.resize(list_size);
         }
     }
 
-    // Αφαίρεση διπλοτύπων από τη λίστα L
-    unordered_set<Node*> unique_nodes(L.begin(), L.end());
-    L.assign(unique_nodes.begin(), unique_nodes.end());
-
-    // Περιορισμός της λίστας L στους k πιο κοντινούς γείτονες
+    // Extract the closest `k` nodes from L
     if (L.size() > k) {
-        nth_element(L.begin(), L.begin() + k, L.end(), [&](Node* a, Node* b) {
-            return euclidean(a, x_q) < euclidean(b, x_q);
-        });
+        nth_element(L.begin(), L.begin() + k, L.end(),
+                    [&](Node* a, Node* b) {
+                        return euclidean(a, x_q) < euclidean(b, x_q);
+                    });
         L.resize(k);
     }
 
-    return L;
+    return L; // Return the `k` closest unique points from `L`
 }

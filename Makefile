@@ -1,11 +1,11 @@
 # Compiler and flags
-CC = g++
-CFLAGS = -Wall -Werror -g -I$(INCLUDE)
+CXX = g++
+CXXFLAGS = -std=c++17 -Wall -O2 -I$(INCLUDES)
 
-# Paths
-MODULES = ./modules
-TESTS = ./tests
-INCLUDE = ./include
+# Folders
+INCLUDES = includes
+MODULES = modules
+TESTS = tests
 
 # Automatically find all .cpp files and convert them to .o
 MAIN_SRC = main.cpp
@@ -14,7 +14,7 @@ TESTS_SRC = $(wildcard $(TESTS)/*.cpp)
 
 MAIN_OBJ = $(patsubst %.cpp,%.o,$(MAIN_SRC))
 MODULES_OBJ = $(patsubst $(MODULES)/%.cpp,$(MODULES)/%.o,$(MODULES_SRC))
-TESTS_OBJ = $(patsubst $(TESTS)/%.cpp,$(TESTS)/%.o,$(TESTS_SRC))
+TESTS_EXECUTABLES = $(patsubst %.cpp,%,$(TESTS_SRC))
 
 ARGS1 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
         -g datasets/dummy-groundtruth.bin -k 100 -l 120 -r 60 -a 1.2 \
@@ -35,43 +35,53 @@ ARGS4 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
 # Executable program
 EXEC = project
 
-# Default rule
+# Rules
+.PHONY: all clean tests valgrind_tests check run run1
+
 all: $(EXEC)
 
 # Link object files to create the executable
 $(EXEC): $(MODULES_OBJ) $(MAIN_OBJ)
-	$(CC) $(CFLAGS) -o $@ $(MODULES_OBJ) $(MAIN_OBJ)
+	$(CXX) $(CXXFLAGS) -o $@ $^
 
-# Compile .cpp files from MODULES into .o files
+# Compile .cpp files to .o
 %.o: %.cpp
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-tests: $(MODULES_OBJ)
-	$(foreach test_src, $(TESTS_SRC), \
-		$(CC) $(CFLAGS) -o $(basename $(test_src)) $(MODULES_OBJ) $(test_src); \
-		./$(basename $(test_src)) || exit 1; \
-	)
+# Build and run tests
+tests: $(TESTS_EXECUTABLES)
+	@$(foreach test,$(TESTS_EXECUTABLES), ./$(test) || exit 1;)
 
-valgrind_tests: $(MODULES_OBJ)
-	$(foreach test_src, $(TESTS_SRC), \
-		executable=$(basename $(test_src)); \
-		$(CC) $(CFLAGS) -o $$executable $(MODULES_OBJ) $(test_src); \
-		valgrind --leak-check=full --track-origins=yes ./$$executable || exit 1; \
-	)
+valgrind_tests: $(TESTS_EXECUTABLES)
+	@$(foreach test,$(TESTS_EXECUTABLES), \
+		valgrind --leak-check=full --track-origins=yes ./$(test) || exit 1;)
 
-# Run the executable with additional arguments passed from the command line
-run: all
+# Build test executables
+$(TESTS_EXECUTABLES): % : %.cpp $(MODULES_OBJ)
+	$(CXX) $(CXXFLAGS) -o $@ $(MODULES_OBJ) $<
+
+# Run the executable with arguments
+run: $(EXEC)
 	./$(EXEC) $(ARGS)
 
-run1: all
+run1: $(EXEC)
 	./$(EXEC) $(ARGS1)
+
+run2: $(EXEC)
+	./$(EXEC) $(ARGS2)
+
+run3: $(EXEC)
+	./$(EXEC) $(ARGS3)
+
+run4: $(EXEC)
+	./$(EXEC) $(ARGS4)
 
 check: tests
 
 # Run the executable with Valgrind
-valgrind: all
+valgrind: $(EXEC)
 	valgrind --leak-check=full --track-origins=yes ./$(EXEC) $(ARGS)
 
-# Clean the executable files 
+# Clean the build
 clean:
-	rm -f $(MODULES_OBJ) $(TESTS_OBJ) $(MAIN_OBJ) $(EXEC) $(basename $(TESTS_SRC))
+	rm -f $(MODULES_OBJ) $(MAIN_OBJ) $(EXEC) $(TESTS_EXECUTABLES)
