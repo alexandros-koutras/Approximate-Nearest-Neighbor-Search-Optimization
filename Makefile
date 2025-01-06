@@ -17,19 +17,19 @@ MODULES_OBJ = $(patsubst $(MODULES)/%.cpp,$(MODULES)/%.o,$(MODULES_SRC))
 TESTS_EXECUTABLES = $(patsubst %.cpp,%,$(TESTS_SRC))
 
 ARGS1 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
-        -g aa -k 100 -l 120 -r 60 -a 1.2 \
+        -g datasets/dummy-groundtruth.bin -k 100 -l 120 -r 60 -a 1.2 \
 		-z aa -w true -t 50
 
 ARGS2 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
-        -g aa -k 100 -l 120 -r 60 -a 1.2 \
+        -g datasets/dummy-groundtruth.bin -k 100 -l 120 -r 60 -a 1.2 \
 		-z graph.bin -w true -t 50
 
 ARGS3 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
-        -g aa -k 100 -l 120 -r 60 -a 1.2 \
+        -g datasets/dummy-groundtruth.bin -k 100 -l 120 -r 60 -a 1.2 \
 		-z aa -w false -t 50
 
 ARGS4 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
-        -g aa -k 100 -l 120 -r 60 -a 1.2 \
+        -g datasets/dummy-groundtruth.bin -k 100 -l 120 -r 60 -a 1.2 \
 		-z graph.bin -w false -t 50
 
 # Executable program

@@ -3,7 +3,7 @@
 #include <chrono>
 
 
-float computeRecall(const vector<int>& groundTruth, const vector<Node*>& retrievedNeighbors) {
+float computeRecall(const vector<float>& groundTruth, const vector<Node*>& retrievedNeighbors) {
     int truePositiveCount = 0;
     unordered_set<int> retrievedIds;
 
@@ -128,14 +128,14 @@ int main(int argc, char* argv[]) {
             vector<vector<float>> queries_vectors = ReadBin(query_file, 104);
             vector<Node*> queries = createQueriesFromVectors(queries_vectors);
 
-            vector<vector<int>> groundtruth = loadIvecs(groundtruth_file);
+            vector<vector<float>> groundtruth = ReadGroundTruth(groundtruth_file);
 
             float totalRecall = 0.0;
             int queryCount = 0;
 
             for (size_t i = 0; i < queries.size(); ++i) {
                 Node* queryNode = queries[i];
-                vector<int>& groundTruthForQuery = groundtruth[i];  // Get the ground truth for this query
+                vector<float>& groundTruthForQuery = groundtruth[i];  // Get the ground truth for this query
 
                 // Perform Greedy Search for the query
                 int medoid = approximateMedoid(nodes,k);
@@ -198,14 +198,14 @@ int main(int argc, char* argv[]) {
             vector<vector<float>> queries_vectors = ReadBin(query_file, 104);
             vector<Node*> queries = createQueriesFromVectors(queries_vectors);
 
-            vector<vector<int>> groundtruth = loadIvecs(groundtruth_file);
+            vector<vector<float>> groundtruth = ReadGroundTruth(groundtruth_file);
 
             float totalRecall = 0.0;
             int queryCount = 0;
 
             for (size_t i = 0; i < queries.size(); ++i) {
                 Node* queryNode = queries[i];
-                vector<int>& groundTruthForQuery = groundtruth[i];  // Get the ground truth for this query
+                vector<float>& groundTruthForQuery = groundtruth[i];  // Get the ground truth for this query
 
                 // Perform Greedy Search for the query
                 int medoid = approximateMedoid(nodes,k);
@@ -298,20 +298,23 @@ int main(int argc, char* argv[]) {
             cout << "Time took to create graph: " << graph_duration.count() << " seconds" << endl;
 
             vector<vector<float>> queries_vectors = ReadBin(query_file, 104);
-            vector<Node*> queries = createNodesFromVectors(queries_vectors);
+            vector<Node*> queries = createQueriesFromVectors(queries_vectors);
 
-            vector<vector<int>> groundtruth = loadIvecs(groundtruth_file);
+            vector<vector<float>> groundtruth = ReadGroundTruth(groundtruth_file);
 
             float totalRecall = 0.0;
             int queryCount = 0;
 
             for (size_t i = 0; i < queries.size(); ++i) {
                 Node* queryNode = queries[i];
-                vector<int>& groundTruthForQuery = groundtruth[i];  // Get the ground truth for this query
+                vector<float>& groundTruthForQuery = groundtruth[queryNode->id];  // Get the ground truth for this query
 
                 // Perform Greedy Search for the query
                 int medoid = approximateMedoid(nodes,k);
-                vector<Node*> nearestNeighbors = GreedySearch(nodes.at(medoid), queryNode, k, L);
+                vector<Node*> nearestNeighbors;
+                if (queryNode->distance == 0) {
+                    nearestNeighbors = GreedySearch(nodes.at(medoid), queryNode, k, L);
+                }
 
                 // Print nearest neighbors from GreedySearch
                 cout << "Nearest neighbors from GreedySearch for query " << queryNode->id << ": ";
@@ -370,14 +373,14 @@ int main(int argc, char* argv[]) {
             vector<vector<float>> queries_vectors = ReadBin(query_file, 104);
             vector<Node*> queries = createQueriesFromVectors(queries_vectors);
 
-            vector<vector<int>> groundtruth = loadIvecs(groundtruth_file);
+            vector<vector<float>> groundtruth = ReadGroundTruth(groundtruth_file);
 
             float totalRecall = 0.0;
             int queryCount = 0;
 
             for (size_t i = 0; i < queries.size(); ++i) {
                 Node* queryNode = queries[i];
-                vector<int>& groundTruthForQuery = groundtruth[i];  // Get the ground truth for this query
+                vector<float>& groundTruthForQuery = groundtruth[i];  // Get the ground truth for this query
 
                 // Perform Greedy Search for the query
                 int medoid = approximateMedoid(nodes,k);

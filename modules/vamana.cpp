@@ -4,6 +4,11 @@
 void initializeRandomGraph(vector<Node*>& nodes, unsigned int R) {
     srand(static_cast<unsigned int>(time(nullptr)));
 
+    if (R >= nodes.size()) {
+        cerr << "Error: R must be less than the number of nodes." << endl;
+        return;
+    }
+
     for (Node* node : nodes) {
         unordered_set<int> neighbors;
         

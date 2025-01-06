@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <fstream>
 #include <cassert>
-#include <cstdlib>  // For rand() and srand()
+#include <cstdlib>
 #include <random>
 #include <ctime>
 #include <sstream>
@@ -21,10 +21,14 @@
 
 using namespace std;
 
+// Define a threshold for comparing floats
+constexpr float EPSILON = 1e-6;
+
+
 struct Node {
     unsigned int id;
     float distance;
-    vector<float> coords;  //coordinates
+    vector<float> coords;
     vector<Node*> out_neighbors; 
     float filter;
 };
@@ -63,15 +67,10 @@ DirectedGraph FilteredVamana(vector<Node*>& databasePoints,int k, unsigned int L
 void StitchedVamana(vector<Node*>& nodes, float a, int L_small, int R_small, int R_stiched);
 
 //file manipulation functions
-vector<vector<int>> loadIvecs(const string& filename);
-vector<vector<float>> loadFvecs(const string& filename);
-vector<Node*> load_bvecs(const string& filename);
-
 
 
 unordered_map<float,  unsigned int> findmedoid(const vector<Node*>& P, unsigned int tau);
-// Define a threshold for comparing floats (useful for floating-point equality checks)
-constexpr float EPSILON = 1e-6;
+
 vector<vector<float>> ReadBin(const string &file_path, const int num_dimensions);
 
 vector<vector<float>> createVectorFromNodes(const vector<Node*>& nodes);
@@ -80,7 +79,7 @@ vector<vector<float>> ReadBin(const string &file_path, const int num_dimensions)
 
 void SaveVectorToBinary(const vector<vector<float>>& vectors, const string& file_path);
 
-vector<Node*> CreateGraph(const vector<vector<float>>& vectors);
+vector<Node*> CreateGraph(vector<vector<float>> vectors);
 
 vector<vector<float>> ReadGraph(const string &file_path);
 
@@ -89,3 +88,5 @@ vector<vector<uint32_t>> bruteForceKNNWithFilter(const vector<Node*>& dataset, c
 vector<Node*> createQueriesFromVectors(const vector<vector<float>>& vectors) ;
 
 void SaveKNN(const vector<vector<uint32_t>> &knns,const string &path = "output.bin");
+
+vector<vector<float>> ReadGroundTruth(const string& file_path);

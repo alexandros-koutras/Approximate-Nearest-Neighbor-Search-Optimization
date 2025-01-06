@@ -59,7 +59,7 @@ DirectedGraph FilteredVamana(vector<Node*>& databasePoints,int k, unsigned int L
 
         //FilteredGreedySearch
         unordered_set<float> query_filter = {point->filter};
-        vector<Node*> V_Fx = FilteredGreedySearch(S_Fx, point, 0, L,query_filter);
+        vector<Node*> V_Fx = FilteredGreedySearch(S_Fx, point, 0, L, query_filter);
         
         // Add the out-neighbors to the node's `out_neighbors`
         for (Node* neighbor : V_Fx) {
