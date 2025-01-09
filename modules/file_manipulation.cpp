@@ -205,7 +205,7 @@ vector<Node*> createQueriesFromVectors(const vector<vector<float>>& vectors) {
         if (newNode->distance == 2 || newNode->distance == 3) {
             delete newNode;
             continue;
-        } 
+        }
         newNode->filter = vectors[i].at(1);
         newNode->coords.assign(vectors[i].begin() + 4, vectors[i].end());  // Copy coordinates into the Node
         nodes.push_back(newNode);  // Add the Node to the list
