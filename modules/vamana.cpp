@@ -28,13 +28,13 @@ void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, float a,
 
     //Step 2: Find the medoid s of the dataset 
     if (n == 0)
-        return;     //empty
+        return;
 
-    //old medoid time consuming
     int medoid = 0;
-    double min_dist = numeric_limits<float>::max();
+    float min_dist = numeric_limits<float>::max();
+
     for (int i = 0; i < n; i++){
-        double total_dist  =0;
+        float total_dist  =0;
         for(int j = 0; j < n; j++){
             if(i != j){
                 total_dist += euclidean(nodes[i],nodes[j]);
@@ -46,7 +46,6 @@ void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, float a,
         }
     }
 
-    // int medoid = approximateMedoid(nodes,k);
     Node* s = nodes[medoid];
 
     cout << "The medoid point found: " << endl;
@@ -81,7 +80,7 @@ void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, float a,
         vector<Node*> V_p = GreedySearch(s, p, 1, L);
 
         //Run RobustPrune on p with V_p, a, and R
-        FilteredRobustPrune(p, V_p, a, R);
+        RobustPrune(p, V_p, a, R);
 
         //Add reverse edges 
         for (Node* neighbor : p->out_neighbors) {
@@ -90,7 +89,7 @@ void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, float a,
             if (neighbor->out_neighbors.size() + 1 > static_cast<size_t>(R)) {
             //Call RobustPrune with the current neighbors plus the new neighbor candidate p
                 neighbor->out_neighbors.push_back(p);  //Temporarily add p
-                FilteredRobustPrune(neighbor, neighbor->out_neighbors, a, R);
+                RobustPrune(neighbor, neighbor->out_neighbors, a, R);
             } else {
             //Safe to add p directly without exceeding R
                 neighbor->out_neighbors.push_back(p);

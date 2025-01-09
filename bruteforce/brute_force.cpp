@@ -53,11 +53,12 @@ void SaveVectorToBinary(const vector<vector<float>>& vectors, const string& file
     uint32_t N = vectors.size();
     ofs.write(reinterpret_cast<const char*>(&N), sizeof(uint32_t));  // Write number of points
 
-    size_t num_dimensions = vectors.empty() ? 0 : vectors[0].size();
-    ofs.write(reinterpret_cast<const char*>(&num_dimensions), sizeof(size_t));  // Write number of dimensions
-
-    // Write the actual data
+    // Write the actual data for each vector
     for (const vector<float>& node : vectors) {
+        size_t num_dimensions = node.size();  // Get the number of dimensions for this particular vector
+        ofs.write(reinterpret_cast<const char*>(&num_dimensions), sizeof(size_t));  // Write number of dimensions for this vector
+
+        // Write the values of this vector
         for (float value : node) {
             ofs.write(reinterpret_cast<const char*>(&value), sizeof(float));
         }
@@ -66,6 +67,8 @@ void SaveVectorToBinary(const vector<vector<float>>& vectors, const string& file
     ofs.close();
     cout << "Vector saved to " << file_path << endl;
 }
+
+
 
 vector<Node*> createNodesFromVectors(const vector<vector<float>>& vectors) {
     vector<Node*> nodes;
@@ -120,25 +123,51 @@ vector<vector<float>> brute_force(vector<Node*>& nodes, vector<Node*>& queries) 
     int i = 0;
 
     for (Node* query : queries) {
-        for (Node* node : nodes) {
-            node->distance = euclidean(query, node);
-        }
-
-        sort(nodes.begin(), nodes.end(), compare_distance);
-
-        vector<float> k_closest;
-        int k = 0;
-        for (Node* node : nodes) {
-            if (k == 100) {
-                break;
+        if (query->distance == 0) {
+            for (Node* node : nodes) {
+                node->distance = euclidean(query, node);
             }
-            k_closest.push_back(static_cast<float>(node->id));
-            k++;
+
+            sort(nodes.begin(), nodes.end(), compare_distance);
+
+            vector<float> k_closest;
+            int k = 0;
+            for (Node* node : nodes) {
+                if (k == 100) {
+                    break;
+                }
+                k_closest.push_back(static_cast<float>(node->id));
+                k++;
+            }
+
+            groundtruth[i] = k_closest;
+
+            i++;
+        } else {
+            vector<Node*> new_nodes;
+            for (Node* node : nodes) {
+                if (node->filter == query->filter) {
+                    node->distance = euclidean(query, node);
+                    new_nodes.push_back(node);
+                }
+            }
+
+            sort(new_nodes.begin(), new_nodes.end(), compare_distance);
+
+            vector<float> k_closest;
+            int k = 0;
+            for (Node* node : new_nodes) {
+                if (k == 100 || k == new_nodes.size()) {
+                    break;
+                }
+                k_closest.push_back(static_cast<float>(node->id));
+                k++;
+            }
+
+            groundtruth[i] = k_closest;
+
+            i++;
         }
-
-        groundtruth[i] = k_closest;
-
-        i++;
     }
 
     return groundtruth;
@@ -150,9 +179,11 @@ void print_vectors(vector<float> coords) {
     }
 }
 
-void print_groundtruth(vector<vector<float>> groundtruth) {
-    for (size_t i = 0; i < groundtruth.size(); i++) {
-        cout << "Node id " << i << endl;
+void print_groundtruth(vector<vector<float>> groundtruth, vector<Node*> queries) {
+    for (size_t i = 0; i < queries.size(); i++) {
+        Node* query = queries[i];
+        vector<float> ground = groundtruth[i];
+        cout << "Node id " << query->id << endl;
         print_vectors(groundtruth.at(i));
         cout << endl << endl;
     }
@@ -169,7 +200,7 @@ int main() {
 
     SaveVectorToBinary(groundtruth, "dummy-groundtruth.bin");
 
-    print_groundtruth(groundtruth);
+    print_groundtruth(groundtruth, queries);
 
     cout << endl;
 }
