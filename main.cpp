@@ -126,11 +126,11 @@ int main(int argc, char* argv[]) {
                 int medoid = rand() % nodes.size();
 
                 vector<Node*> nearestNeighbors;
-                unordered_set<float> query_filter;
-                query_filter.insert(query->filter);
                 if (query->distance == 0) {
                     nearestNeighbors = GreedySearch(nodes.at(medoid), query, k, L);
                 } else {
+                    unordered_set<float> query_filter;
+                    query_filter.insert(query->filter);
                     nearestNeighbors = FilteredGreedySearch(nodes, nodes.at(medoid), k, L, query_filter);
                 }
 
@@ -282,7 +282,7 @@ int main(int argc, char* argv[]) {
 
             auto start = chrono::high_resolution_clock::now();
 
-            (nodes, a, 80, 40, R);
+            FilteredVamana(nodes, k, L, R, a, tau);
 
             auto end = chrono::high_resolution_clock::now();
 
@@ -309,6 +309,7 @@ int main(int argc, char* argv[]) {
                 unordered_set<float> query_filter;
                 query_filter.insert(query->filter);
                 if (query->distance == 0) {
+                    continue;
                     nearestNeighbors = GreedySearch(nodes.at(medoid), query, k, L);
                 } else {
                     nearestNeighbors = FilteredGreedySearch(nodes, nodes.at(medoid), k, L, query_filter);

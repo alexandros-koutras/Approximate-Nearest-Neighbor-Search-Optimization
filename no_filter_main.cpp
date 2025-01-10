@@ -126,7 +126,11 @@ int main(int argc, char* argv[]) {
 
         // Perform Greedy Search for the query
         int medoid = rand() % nodes.size();
-        vector<Node*> nearestNeighbors = GreedySearch(nodes.at(medoid), queryNode, k, L);
+
+        vector<Node*> nearestNeighbors;
+        if (queryNode->distance == 0) {
+            nearestNeighbors = GreedySearch(nodes.at(medoid), queryNode, k, L);
+        }
 
         // Print nearest neighbors from GreedySearch
         cout << "Nearest neighbors from GreedySearch for query " << queryNode->id << ": ";

@@ -24,13 +24,16 @@ ARGS2 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
         -g datasets/dummy-groundtruth.bin -k 100 -l 120 -r 60 -a 1.2 \
 		-s graph.bin -f stitched -t 50
 
-ARGS3 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
+ARGS1 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
         -g datasets/dummy-groundtruth.bin -k 100 -l 120 -r 60 -a 1.2 \
-		-z aa -w false -t 50
+		-s no -f filtered -t 50
 
 ARGS4 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
         -g datasets/dummy-groundtruth.bin -k 100 -l 120 -r 60 -a 1.2 \
 		-z graph.bin -w false -t 50
+
+ARGS5 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
+		-g datasets/dummy-groundtruth.bin -k 100 -l 120 -r 60 -a 1.2 \
 
 # Executable program
 EXEC = project
@@ -75,6 +78,9 @@ run3: $(EXEC)
 
 run4: $(EXEC)
 	./$(EXEC) $(ARGS4)
+
+run5: $(EXEC)
+	./$(EXEC) $(ARGS5)
 
 check: tests
 

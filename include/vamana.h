@@ -67,3 +67,10 @@ vector<Node*> FilteredGreedySearch(const vector<Node*>& start_nodes, const Node*
 void FilteredRobustPrune(Node* node, vector<Node*> possible_neighbours, float a, int max_neighbours);
 
 void StitchedVamana(vector<Node*>& nodes, float a, int L_small, int R_small, int R_stiched);
+
+unordered_map<float,  unsigned int> findmedoid(const vector<Node*>& P, unsigned int tau);
+
+void FilteredVamana(vector<Node*>& databasePoints,int k, unsigned int L, unsigned int R, float alpha, unsigned int tau);
+
+vector<vector<float>> brute_force(vector<Node*>& nodes, vector<Node*>& queries);
+
