@@ -18,19 +18,19 @@ TESTS_EXECUTABLES = $(patsubst %.cpp,%,$(TESTS_SRC))
 
 ARGS1 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
         -g datasets/dummy-groundtruth.bin -k 100 -l 120 -r 60 -a 1.2 \
-		-s no -f stitched -t 50
+        -s no -f stitched -t 50
 
 ARGS2 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
         -g datasets/dummy-groundtruth.bin -k 100 -l 120 -r 60 -a 1.2 \
 		-s graph.bin -f stitched -t 50
 
-ARGS1 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
+ARGS3 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
         -g datasets/dummy-groundtruth.bin -k 100 -l 120 -r 60 -a 1.2 \
 		-s no -f filtered -t 50
 
 ARGS4 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
         -g datasets/dummy-groundtruth.bin -k 100 -l 120 -r 60 -a 1.2 \
-		-z graph.bin -w false -t 50
+		-s graph.bin -f filtered -t 50
 
 ARGS5 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
 		-g datasets/dummy-groundtruth.bin -k 100 -l 120 -r 60 -a 1.2 \

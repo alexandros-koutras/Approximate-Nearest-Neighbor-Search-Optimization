@@ -2,9 +2,20 @@
 
 
 void FilteredRobustPrune(Node* node, vector<Node*> possible_neighbours, float a, int max_neighbours) {
-    // Add the already existing neighbors to the possible neighbors
+    // Use an unordered_set to track unique node IDs
+    std::unordered_set<int> unique_ids;
+
+    // Add the IDs of the initial possible neighbors
+    for (Node* n_ptr : possible_neighbours) {
+        unique_ids.insert(n_ptr->id);
+    }
+
+    // Add the existing neighbors to the possible neighbors, avoiding duplicates
     for (Node* n_ptr : node->out_neighbors) {
-        possible_neighbours.push_back(n_ptr);
+        if (unique_ids.find(n_ptr->id) == unique_ids.end()) {
+            possible_neighbours.push_back(n_ptr);
+            unique_ids.insert(n_ptr->id); // Mark as added
+        }
     }
 
     for (auto it = possible_neighbours.begin(); it != possible_neighbours.end(); ) {

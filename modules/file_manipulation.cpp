@@ -51,7 +51,7 @@ vector<vector<float>> ReadGroundTruth(const string& file_path) {
     for (uint32_t i = 0; i < N; ++i) {
         size_t num_dimensions;
         ifs.read(reinterpret_cast<char*>(&num_dimensions), sizeof(size_t));  // Number of dimensions for this row
-        cout << "Row " << i << " - Number of dimensions: " << num_dimensions << endl;
+        // cout << "Row " << i << " - Number of dimensions: " << num_dimensions << endl;
 
         if (ifs.fail()) {
             cerr << "Error: Failed to read the number of dimensions for row " << i << endl;
@@ -65,13 +65,6 @@ vector<vector<float>> ReadGroundTruth(const string& file_path) {
             cerr << "Error: Failed to read the data for row " << i << endl;
             break;
         }
-
-        // Print the raw data for verification
-        cout << "Row " << i << " data: ";
-        for (size_t j = 0; j < row.size(); ++j) {
-            cout << row[j] << " ";
-        }
-        cout << endl;
 
         data[i] = move(row);  // Store the row in the data vector
     }
@@ -90,17 +83,17 @@ vector<vector<float>> ReadGraph(const string &file_path) {
     ifs.read((char*)&N, sizeof(uint32_t));  // Read the number of points
     cout << "# of points: " << N << endl;
 
-    size_t num_dimensions;  // Number of dimensions
-    ifs.read((char*)&num_dimensions, sizeof(size_t));  // Read the number of dimensions
-
-    cout << "# of dimensions: " << num_dimensions << endl;
-
     vector<vector<float>> data(N);
 
     // Loop through the file and read all data points
     for (uint32_t i = 0; i < N; ++i) {
-        vector<float> row(num_dimensions);  // Create a row of appropriate size
-        ifs.read(reinterpret_cast<char*>(row.data()), num_dimensions * sizeof(float));  // Read a data point into the row
+        size_t num_dimensions;  // Dimensions for the current point
+        ifs.read((char*)&num_dimensions, sizeof(size_t));  // Read dimensions for this point
+
+        cout << "Point " << i << " dimensions: " << num_dimensions << endl;
+
+        vector<float> row(num_dimensions);  // Create a row with appropriate size
+        ifs.read(reinterpret_cast<char*>(row.data()), num_dimensions * sizeof(float));  // Read data into the row
         data[i] = move(row);  // Store the row in the data array
     }
 
@@ -122,7 +115,7 @@ vector<Node*> CreateGraph(vector<vector<float>> vectors) {
         newNode->filter = vf.at(0);
         
         vector<float> coords;
-        coords.insert(coords.end(), vf.begin() + 1, vf.begin() + 100);
+        coords.insert(coords.end(), vf.begin() + 1, vf.begin() + 101);
         newNode->coords = coords;
 
         nodes.push_back(newNode);

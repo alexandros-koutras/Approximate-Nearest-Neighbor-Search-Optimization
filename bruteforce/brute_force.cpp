@@ -115,8 +115,12 @@ float euclidean(const Node* a, const Node* b) {
 
 // Compare function for 2 nodes based to their distance to another common node
 bool compare_distance(Node* node1, Node* node2) {
+    if (node1->distance == node2->distance) {
+        return node1->id < node2->id; // Secondary criterion: sort by ID
+    }
     return node1->distance < node2->distance;
 }
+
 
 vector<vector<float>> brute_force(vector<Node*>& nodes, vector<Node*>& queries) {
     vector<vector<float>> groundtruth(5012);

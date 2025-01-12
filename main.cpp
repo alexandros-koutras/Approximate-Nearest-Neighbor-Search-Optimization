@@ -181,8 +181,8 @@ int main(int argc, char* argv[]) {
 
             auto start = chrono::high_resolution_clock::now();
 
-            vector<vector<float>> nodes_vecs = ReadBin(base_file, 102);
-            vector<Node*> nodes = createNodesFromVectors(nodes_vecs);
+            vector<vector<float>> nodes_vecs = ReadGraph(saved_graph);
+            vector<Node*> nodes = CreateGraph(nodes_vecs);
 
             cout << endl << endl;
             cout << "Base file: " << base_file << endl;
@@ -211,12 +211,11 @@ int main(int argc, char* argv[]) {
                 int medoid = rand() % nodes.size();
 
                 vector<Node*> nearestNeighbors;
-                unordered_set<float> query_filter;
-                query_filter.insert(query->filter);
                 if (query->distance == 0) {
-                    continue;
-                    // nearestNeighbors = GreedySearch(nodes.at(medoid), query, k, L);
+                    nearestNeighbors = GreedySearch(nodes.at(medoid), query, k, L);
                 } else {
+                    unordered_set<float> query_filter;
+                    query_filter.insert(query->filter);
                     nearestNeighbors = FilteredGreedySearch(nodes, nodes.at(medoid), k, L, query_filter);
                 }
 
@@ -306,12 +305,11 @@ int main(int argc, char* argv[]) {
                 int medoid = rand() % nodes.size();
 
                 vector<Node*> nearestNeighbors;
-                unordered_set<float> query_filter;
-                query_filter.insert(query->filter);
                 if (query->distance == 0) {
-                    continue;
                     nearestNeighbors = GreedySearch(nodes.at(medoid), query, k, L);
                 } else {
+                    unordered_set<float> query_filter;
+                    query_filter.insert(query->filter);
                     nearestNeighbors = FilteredGreedySearch(nodes, nodes.at(medoid), k, L, query_filter);
                 }
 
@@ -392,12 +390,11 @@ int main(int argc, char* argv[]) {
                 int medoid = rand() % nodes.size();
 
                 vector<Node*> nearestNeighbors;
-                unordered_set<float> query_filter;
-                query_filter.insert(query->filter);
                 if (query->distance == 0) {
-                    continue;
-                    // nearestNeighbors = GreedySearch(nodes.at(medoid), query, k, L);
+                    nearestNeighbors = GreedySearch(nodes.at(medoid), query, k, L);
                 } else {
+                    unordered_set<float> query_filter;
+                    query_filter.insert(query->filter);
                     nearestNeighbors = FilteredGreedySearch(nodes, nodes.at(medoid), k, L, query_filter);
                 }
 
