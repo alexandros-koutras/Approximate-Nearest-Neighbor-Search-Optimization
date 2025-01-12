@@ -1,25 +1,21 @@
 #include "../include/vamana.h"
 
 
-// This is the euklideian method to calculate the distance of 2 nodes
-float euclidean(const Node* a, const Node* b) {
-    float sum = 0.0;
-    for (size_t i = 0; i < a->coords.size(); ++i) {
-        float diff = a->coords[i] - b->coords[i];
-        sum += diff * diff;
-    }
-    return sqrt(sum);
-}
-
-// Compare function for 2 nodes based to their distance to another common node
-bool compare_distance(Node* node1, Node* node2) {
-    return node1->distance < node2->distance;
-}
-
 void FilteredRobustPrune(Node* node, vector<Node*> possible_neighbours, float a, int max_neighbours) {
-    // Add the already existing neighbors to the possible neighbors
+    // Use an unordered_set to track unique node IDs
+    std::unordered_set<int> unique_ids;
+
+    // Add the IDs of the initial possible neighbors
+    for (Node* n_ptr : possible_neighbours) {
+        unique_ids.insert(n_ptr->id);
+    }
+
+    // Add the existing neighbors to the possible neighbors, avoiding duplicates
     for (Node* n_ptr : node->out_neighbors) {
-        possible_neighbours.push_back(n_ptr);
+        if (unique_ids.find(n_ptr->id) == unique_ids.end()) {
+            possible_neighbours.push_back(n_ptr);
+            unique_ids.insert(n_ptr->id); // Mark as added
+        }
     }
 
     for (auto it = possible_neighbours.begin(); it != possible_neighbours.end(); ) {

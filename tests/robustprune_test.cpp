@@ -14,7 +14,7 @@ Node* create_node(unsigned int id, const vector<float>& coords) {
 void test_euclidean_distance() {
     Node* node1 = create_node(1, {1.0, 2.0, 3.0});
     Node* node2 = create_node(2, {4.0, 5.0, 6.0});
-    float expected_distance = sqrt(27.0);  // sqrt((4-1)^2 + (5-2)^2 + (6-3)^2)
+    float expected_distance = 27.0;
     TEST_CHECK(euclidean(node1, node2) == expected_distance);
 
     delete node1;

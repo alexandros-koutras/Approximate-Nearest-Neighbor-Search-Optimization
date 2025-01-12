@@ -27,20 +27,12 @@ void fisherYatesShuffle(vector<Node*>& databasePoints) {
 }
 
 //Filtered Vamana
-DirectedGraph FilteredVamana(vector<Node*>& databasePoints,int k, unsigned int L, unsigned int R, float alpha, unsigned int tau) {
-    //Initialize Graph
-    DirectedGraph G;
-    
+void FilteredVamana(vector<Node*>& databasePoints,int k, unsigned int L, unsigned int R, float alpha, unsigned int tau) {    
     //find medoids for every filter
     unordered_map<float, unsigned int> medoids = findmedoid(databasePoints, tau);
 
     // Randomize database points
     fisherYatesShuffle(databasePoints);
-
-    // Create initial structures
-    for (Node* point : databasePoints) {
-        G.adjacency_list[point]= unordered_set<Node*>();
-    }
 
     // Iterate over the points
     for (Node* point : databasePoints) {
@@ -68,24 +60,5 @@ DirectedGraph FilteredVamana(vector<Node*>& databasePoints,int k, unsigned int L
 
         //FilteredRobustPrune
         FilteredRobustPrune(point, V_Fx, alpha, R);
-
-        // Add these neighbors to the graph
-        for (Node* neighbor : V_Fx) {
-            G.adjacency_list[point].insert(neighbor);
-        }
-
-        //Update neighbors for each out-neighbor
-        for (Node* neighbor : G.adjacency_list[point]) {//Here i use the DirectedGraph struct(instead of node->out_neighbors)
-            G.adjacency_list[neighbor].insert(point);
-
-            // Check if the out-degree > R
-            if (G.adjacency_list[neighbor].size() > R) {
-                vector<Node*> neighborList(G.adjacency_list[neighbor].begin(), G.adjacency_list[neighbor].end());
-                FilteredRobustPrune(neighbor, neighborList, alpha, R);
-                G.adjacency_list[neighbor] = unordered_set<Node*>(neighborList.begin(), neighborList.end());
-            }
-        }
     }
-
-    return G;
 }
