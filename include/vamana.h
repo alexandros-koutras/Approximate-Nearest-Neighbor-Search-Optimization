@@ -38,6 +38,14 @@ struct Node {
     float filter;
 };
 
+struct DirectedGraph {
+    unordered_map<Node*, unordered_set<Node*>> adjacency_list;
+
+    size_t size() const {
+        return adjacency_list.size();
+    }
+};
+
 
 vector<Node*> GreedySearch(Node* s, const Node* x_q, unsigned int k, unsigned int list_size);
 
@@ -73,7 +81,12 @@ void StitchedVamana(vector<Node*>& nodes, float a, int L_small, int R_small, int
 
 unordered_map<float,  unsigned int> findmedoid(const vector<Node*>& P, unsigned int tau);
 
-void FilteredVamana(vector<Node*>& databasePoints,int k, unsigned int L, unsigned int R, float alpha, unsigned int tau);
+DirectedGraph FilteredVamana(vector<Node*>& databasePoints,int k, unsigned int L, unsigned int R, float alpha, unsigned int tau);
 
 vector<vector<float>> brute_force(vector<Node*>& nodes, vector<Node*>& queries);
 
+Node* findCentroid(const vector<Node*>& cluster);
+
+vector<vector<Node*>> kMeansClustering(const vector<Node*>& nodes, int k, int maxIterations = 100);
+
+int approximateMedoid(const vector<Node*>& nodes, int k);

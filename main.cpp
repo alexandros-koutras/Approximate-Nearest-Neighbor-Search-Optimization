@@ -281,7 +281,7 @@ int main(int argc, char* argv[]) {
 
             auto start = chrono::high_resolution_clock::now();
 
-            FilteredVamana(nodes, k, L, R, a, tau);
+            DirectedGraph d = FilteredVamana(nodes, k, L, R, a, tau);
 
             auto end = chrono::high_resolution_clock::now();
 
