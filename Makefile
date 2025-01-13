@@ -32,9 +32,6 @@ ARGS4 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
         -g datasets/dummy-groundtruth.bin -k 100 -l 120 -r 60 -a 1.2 \
 		-s graph.bin -f filtered -t 50
 
-ARGS5 = -i datasets/dummy-data.bin -q datasets/dummy-queries.bin \
-		-g datasets/dummy-groundtruth.bin -k 100 -l 120 -r 60 -a 1.2 \
-
 # Executable program
 EXEC = project
 
@@ -78,9 +75,6 @@ run3: $(EXEC)
 
 run4: $(EXEC)
 	./$(EXEC) $(ARGS4)
-
-run5: $(EXEC)
-	./$(EXEC) $(ARGS5)
 
 check: tests
 
