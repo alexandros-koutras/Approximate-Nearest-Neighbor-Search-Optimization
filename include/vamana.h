@@ -55,7 +55,7 @@ bool compare_distance(Node* node1, Node* node2);
 
 void RobustPrune(Node* node, vector<Node*> possible_neighbours, float a, int max_neighbours);
 
-void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, float a, int n);
+void VamanaIndexingAlgorithm(vector<Node*>& nodes, int k, int L, int R, float a, int n, int medoidCase, int subsetSize = 10);
 
 vector<vector<float>> ReadBin(const string &file_path, const int num_dimensions);
 
@@ -90,3 +90,7 @@ Node* findCentroid(const vector<Node*>& cluster);
 vector<vector<Node*>> kMeansClustering(const vector<Node*>& nodes, int k, int maxIterations = 100);
 
 int approximateMedoid(const vector<Node*>& nodes, int k);
+
+void fisherYatesShuffle(vector<Node*>& databasePoints);
+
+void initializeRandomGraph(vector<Node*>& nodes, unsigned int R);

@@ -1,26 +1,8 @@
 #include "../include/vamana.h"
+#include <thread>
+#include <mutex>
 
-
-// This is the euklideian method to calculate the distance of 2 nodes
-float euclidean(const Node* a, const Node* b) {
-    float sum = 0.0;
-    for (size_t i = 0; i < a->coords.size(); ++i) {
-        float diff = a->coords[i] - b->coords[i];
-        sum += diff * diff;
-    }
-    return sum;
-}
-
-
-// Compare function for 2 nodes based to their distance to another common node
-bool compare_distance(Node* node1, Node* node2) {
-    if (node1->distance == node2->distance) {
-        return node1->id < node2->id; // Secondary criterion: sort by ID
-    }
-    return node1->distance < node2->distance;
-}
-
-void RobustPrune(Node* node, vector<Node*> possible_neighbours, float a, int max_neighbours) {
+void RobustPrune_Threads(Node* node, vector<Node*> possible_neighbours, float a, int max_neighbours) {
     // Add existing neighbors to possible neighbors
     for (Node* n_ptr : node->out_neighbors) {
         possible_neighbours.push_back(n_ptr);

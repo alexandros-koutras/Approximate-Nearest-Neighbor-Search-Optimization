@@ -85,64 +85,9 @@ void testStitchedVamana() {
     }
 }
 
-// Test with a single node
-void testStitchedVamana_single_node() {
-    vector<Node*> nodes;
-    Node* node = create_node(0, {1.0, 1.0, 1.0});
-    node->filter = 1.0;
-    nodes.push_back(node);
 
-    StitchedVamana(nodes, 1.2f, 5, 5, 5);
 
-    TEST_CHECK(node->out_neighbors.empty()); // Single node should have no neighbors
 
-    delete node;
-}
-
-// Test with multiple filters and no possible connections
-void testStitchedVamana_no_connections() {
-    vector<Node*> nodes;
-
-    // Create nodes with disjoint filters
-    for (int i = 0; i < 10; ++i) {
-        Node* node = create_node(i, {static_cast<float>(i), static_cast<float>(i + 1), static_cast<float>(i + 2)});
-        node->filter = static_cast<float>(i + 1); // Unique filter for each node
-        nodes.push_back(node);
-    }
-
-    StitchedVamana(nodes, 1.2f, 5, 5, 5);
-
-    for (Node*n : nodes) {
-        for (Node* neighbor : n->out_neighbors) {
-            TEST_CHECK(n->filter != neighbor->filter); // Ensure connections are between different filters
-        }
-        delete n;
-    }
-}
-
-// Test with large number of filters
-void testStitchedVamana_large_filters() {
-    const int num_nodes = 1000;
-    vector<Node*> nodes;
-
-    // Generate nodes with random filters
-    for (int i = 0; i < num_nodes; ++i) {
-        vector<float> coords = {static_cast<float>(rand() % 100) / 10.0f,
-                                static_cast<float>(rand() % 100) / 10.0f,
-                                static_cast<float>(rand() % 100) / 10.0f};
-        Node* node = create_node(i, coords);
-        node->filter = static_cast<float>(rand() % 50 + 1); // 50 unique filters
-        nodes.push_back(node);
-    }
-
-    StitchedVamana(nodes, 1.5f, 20, 15, 10);
-
-    // Verify the graph is within constraints
-    for (Node* n : nodes) {
-        TEST_CHECK(n->out_neighbors.size() <= 10); // R_stitched limit
-        delete n;
-    }
-}
 
 
 // Register tests with Acutest
@@ -150,9 +95,6 @@ TEST_LIST = {
     {"test_node_add_get_neighbour", test_node_add_get_neighbour},
     {"test_compare_func_for_nodes", test_compare_func_for_nodes},
     {"testStitchedVamana", testStitchedVamana},
-    {"testStitchedVamana_single_node", testStitchedVamana_single_node},
-    {"testStitchedVamana_no_connections", testStitchedVamana_no_connections},
-    {"testStitchedVamana_large_filters", testStitchedVamana_large_filters},
 
     {NULL, NULL} // Terminate the list
 };

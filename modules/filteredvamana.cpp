@@ -34,12 +34,21 @@ DirectedGraph FilteredVamana(vector<Node*>& databasePoints,int k, unsigned int L
     //find medoids for every filter
     unordered_map<float, unsigned int> medoids = findmedoid(databasePoints, tau);
 
-    // Randomize database points
-    fisherYatesShuffle(databasePoints);
-
     // Create initial structures
     for (Node* point : databasePoints) {
         G.adjacency_list[point]= unordered_set<Node*>();
+    }
+
+    // **Add random edges between vertices** 
+    for (Node* point : databasePoints) {
+        fisherYatesShuffle(databasePoints);
+
+        // Add up to R random neighbors to the adjacency list
+        for (size_t i = 0; i < min(R, (unsigned int)databasePoints.size()); ++i) {
+            if (databasePoints[i] != point && G.adjacency_list[point].size() < R) { // Avoid self-loops
+                G.adjacency_list[point].insert(databasePoints[i]);
+            }
+        }
     }
 
     // Iterate over the points
@@ -59,7 +68,7 @@ DirectedGraph FilteredVamana(vector<Node*>& databasePoints,int k, unsigned int L
 
         //FilteredGreedySearch
         unordered_set<float> query_filter = {point->filter};
-        vector<Node*> V_Fx = FilteredGreedySearch(S_Fx, point, 0, L,query_filter);
+        vector<Node*> V_Fx = FilteredGreedySearch(S_Fx, point, 0, L, query_filter);
         
         // Add the out-neighbors to the node's `out_neighbors`
         for (Node* neighbor : V_Fx) {

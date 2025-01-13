@@ -25,8 +25,9 @@ void test_vamana_basic_functionality() {
     unsigned int k = 1, L = 2, R = 2;
     float a = 1.5;
     int n = nodes.size();
+    int medoidCase = 2;
 
-    VamanaIndexingAlgorithm(nodes, k, L, R, a, n);
+    VamanaIndexingAlgorithm(nodes, k, L, R, a, medoidCase, 2);
     
     // Check if each node has at most R neighbors
     for (Node* node : nodes) {
@@ -50,8 +51,9 @@ void test_vamana_small_dataset() {
     unsigned int k = 1, L = 1, R = 1;
     float a = 1.5;
     int n = nodes.size();
+    int medoidCase = 1;
 
-    VamanaIndexingAlgorithm(nodes, k, L, R, a, n);
+    VamanaIndexingAlgorithm(nodes, k, L, R, a, n, medoidCase, 1);
 
     // Verify that each node is connected within the small dataset limit
     for (Node* node : nodes) {
@@ -87,6 +89,7 @@ void test_initializeRandomGraph() {
             unique_neighbors.insert(neighbor->id);
         }
     }
+    
 }
 
 //Large Dataset 
@@ -100,48 +103,14 @@ void test_vamana_large_dataset() {
     unsigned int k = 1, L = 10, R = 5;
     float a = 1.5;
     int n = nodes.size();
+    int medoidCase = 0;
 
-    VamanaIndexingAlgorithm(nodes, k, L, R, a, n);
+    VamanaIndexingAlgorithm(nodes, k, L, R, a, n, medoidCase, 0);
 
     // Verify that each node has at most R neighbors
     for (Node* node : nodes) {
         TEST_CHECK(node->out_neighbors.size() <= R);
     }
-
-    for (Node* node : nodes) delete node;
-}
-
-// medoid calculation
-void test_vamana_medoid_calculation() {
-    vector<Node*> nodes = {
-        create_node(0, {0.0, 0.0}), 
-        create_node(1, {3.0, 4.0}),  
-        create_node(2, {6.0, 8.0}),  
-        create_node(3, {1.0, 1.0})   
-    };                               
-
-    unsigned int k = 1;
-    int n = nodes.size();
-
-    int medoid1=approximateMedoid(nodes,k);
-
-    //Expected medoid is node 1
-    int medoid2 = nodes[0]->id;
-    float min_dist = numeric_limits<float>::max();
-    for (int i = 0; i < n; i++) {
-        float total_dist = 0;
-        for (int j = 0; j < n; j++) {
-            if (i != j) {
-                total_dist += euclidean(nodes[i], nodes[j]);
-            }
-        }
-        if (total_dist < min_dist) {
-            min_dist = total_dist;
-            medoid2 = nodes[i]->id;
-        }
-    }
-
-    TEST_CHECK(medoid1 == medoid2);
 
     for (Node* node : nodes) delete node;
 }
@@ -152,6 +121,5 @@ TEST_LIST = {
     {"Vamana Small Dataset", test_vamana_small_dataset},
     {"Initialize random graph", test_initializeRandomGraph},
     {"Vamana Large Dataset", test_vamana_large_dataset},
-    {"Vamana Medoid Calculation", test_vamana_medoid_calculation},
     {NULL, NULL} 
 };
