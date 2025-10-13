@@ -105,6 +105,7 @@ Alexandros Koutras(me)      Stitched Vamana Implementation, Filtered Robust Prun
                             Groundtruth calculation
 
 Anastasia Orfanoudaki       Find_Medoid with Filters, Filtered Greedy Search, Threads Optimization for Search and
-                            Distance Calculations using Threads 
+                            Distance Calculations using Threads, Project proposal creation
 
-Ioulia Osadtsiv             Filtered Vamana Implementation and its Optimizations, Stitched Vamana Optimizations
+Ioulia Osadtsiv             Filtered Vamana Implementation and its Optimizations, Stitched Vamana Optimizations, Project proposal
+                            creation
