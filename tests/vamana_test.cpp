@@ -24,7 +24,7 @@ void test_vamana_basic_functionality() {
     
     unsigned int k = 1, L = 2, R = 2;
     float a = 1.5;
-    int n = nodes.size();
+    // int n = nodes.size();
     int medoidCase = 2;
 
     VamanaIndexingAlgorithm(nodes, k, L, R, a, medoidCase, 2);

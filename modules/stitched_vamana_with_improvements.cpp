@@ -27,7 +27,7 @@ void StitchedVamana_WithImprovement(vector<Node*>& nodes, float a, int L_small, 
             vector<Node*>& filterGroup2 = commonFilter[filters[j]];
 
             // Randomly connect a few nodes between filter groups
-            for (size_t k = 0; k < R_stitched; ++k) {
+            for (int k = 0; k < R_stitched; ++k) {
                 if (filterGroup1.empty() || filterGroup2.empty()) break;
 
                 Node* node1 = filterGroup1[rand() % filterGroup1.size()];
