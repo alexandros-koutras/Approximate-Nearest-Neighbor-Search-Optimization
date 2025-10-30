@@ -14,16 +14,13 @@ This project is an implementation of advanced graph-based algorithms for Approxi
 
 ## ⚙️ Features
 
-The project addresses several core challenges in high-dimensional ANNS and performance optimization:
-
 - **Filtered ANNS (F-Vamana)**: Implementation of the Filtered Vamana indexing algorithm and the associated Filtered Greedy Search for efficient queries with label filters.
 - **Stitched ANNS (S-Vamana)**: Implementation of the Stitched Vamana algorithm, which constructs the graph by merging (stitching) smaller Vamana indices built on labeled subsets of the data.
-- **Graph Pruning**: Includes the Filtered Robust Prune procedure to maintain a bounded maximum out-degree (R) for the graph.
+- **Graph Pruning**: Includes the Filtered Robust Prune procedure to maintain a bounded maximum out-degree for the graph.
 - **Performance Optimization**: Incorporates performance enhancements achieved through:
 - Parallel Execution using threading (e.g., pthreads or std::thread/OpenMP).
 - Optimizations such as calculating distances, initializing graphs with random edges, and modifying medoid selection.
 - **Software Testing**: Utilizes appropriate libraries for software testing and verifies correctness automatically via GitHub Actions upon every commit/push.
-- **Coding Standards**: Adherence to the code specifications and standards set by the SIGMOD 2024 Programming Contest.
 
 
 ---
@@ -68,7 +65,7 @@ Each target corresponds to a different predefined argument set, allowing quick t
 ---
 
 
-# 📂 Project Structure
+## 📂 Project Structure
 
 Approximate-Nearest-Neighbor-Search-Optimization/
 ├── bruteforce/             # Implemantation of bruteforce and tests
@@ -84,21 +81,12 @@ Approximate-Nearest-Neighbor-Search-Optimization/
 
 ---
 
-Anastasia Orfanoudaki 1115202100129
-Ενασχόληση με find medoid με φίλτρα, filtered greedy search και με threads για τον υπολογισμό αποστάσεων σε greedy και robust prune και brute_force.
 
-Alexandros Koutras 1115202100073
-Ενασχόληση με stitched vamana, filtered robust prune, threads για την stitched vamana και threads για παράλληλη εκτέλεση της greedy search στη main, αποθήκευση και διάβασμα γράφου, main, brute_force και groundtruth.
-
-Ioulia Osadtsiv 1115202100130
-Ενασχόληση με filtered vamana και με βελτιστοποιήσεις και με βελτιστοποιημένη StitchedVamana.
-
-
-# 👥 Authors
+## 👥 Authors
 
 The project was done by a group of 3 people
 
-name                        Contribution
+Name                        Contribution
 ---
 Alexandros Koutras(me)      Stitched Vamana Implementation, Filtered Robust Prune, Parallel (Threads) Stitched Vamana, Parallel
                             (Threads) Greedy Search in Main, Save and Reading the Graph, Main Function Logic, Brute Force,
